@@ -1,0 +1,57 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-16T03:56:45.625Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 2,
+    "implemented": 2,
+    "items": [
+      {
+        "id": "REQ-5",
+        "summary": "Add a predefined item catalog (a list of items with fixed unit prices) to the calculator UI so a user can quickly add an item into the current line items/cart without manually typing the name and unit price.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/calculator/catalog.ts",
+          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/calculator/catalog.ts",
+          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Provide basic catalog usability so the predefined list is practical to use when it grows beyond a few items.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "build-request.json",
+    "build-template/README.md",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+    "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+    "frontend/src/features/calculator/catalog.ts",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

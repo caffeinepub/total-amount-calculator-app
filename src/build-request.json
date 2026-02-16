@@ -1,0 +1,68 @@
+{
+  "kind": "build_request",
+  "title": "Add predefined item list with fixed prices for quick add to cart",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-5",
+      "text": "Add a predefined item catalog (a list of items with fixed unit prices) to the calculator UI so a user can quickly add an item into the current line items/cart without manually typing the name and unit price.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "i want to add a list of items with a set amount for each item so that it is easy to add in to the cart"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A new UI section is visible on the main calculator page that displays a list of predefined items with their names and fixed unit prices.",
+        "Each catalog entry includes an explicit action (e.g., “Add”) that adds the item to the line items table.",
+        "When a catalog item is added, a new line item row is created with: label prefilled to the catalog item name, unitPrice prefilled to the catalog item price, and quantity set to a sensible default (e.g., 1).",
+        "Adding catalog items updates the subtotal and final total immediately using the existing calculation logic.",
+        "User-facing text for the new UI is in English."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Provide basic catalog usability so the predefined list is practical to use when it grows beyond a few items.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "add a list of items with a set amount for each item"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The catalog UI supports quickly finding items (e.g., a search/filter input that filters by item name).",
+        "Catalog prices are displayed using the existing currency formatting (consistent with the rest of the app).",
+        "The catalog UI is responsive and does not break the existing layout on mobile and desktop (e.g., stacks appropriately in the current grid)."
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything in frontend/src/components/ui (compose existing UI components instead).",
+    "Keep all logic client-side unless persistence is explicitly requested; backend/main.mo currently has no methods and should not be changed for this request."
+  ],
+  "nonGoals": [
+    "Persisting the predefined item list or cart contents across sessions/devices.",
+    "Implementing checkout, payments, inventory management, or multi-user carts.",
+    "Adding third-party integrations or external databases."
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

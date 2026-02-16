@@ -1,0 +1,20 @@
+{
+  "backend/main.mo": "Minimal Motoko canister actor with no methods.",
+  "feature_evidence.json": "Feature evidence listing two catalog‑related features with involved files, components, tests, and confidence.",
+  "frontend-file-summaries.txt": "JSON-style text summarizing major frontend calculator and catalog files.",
+  "frontend/index.css": "Tailwind base styles defining color tokens, dark mode variables, and global background/foreground rules.",
+  "frontend/index.html": "HTML entry point mounting the React app and loading main.tsx.",
+  "frontend/src/App.tsx": "Root React component rendering TotalAmountCalculatorPage.",
+  "frontend/src/features/calculator/catalog.ts": "Defines CatalogItem type and a static predefined item list.",
+  "frontend/src/features/calculator/format.ts": "Number and currency formatting helpers using Intl.",
+  "frontend/src/features/calculator/PredefinedItemCatalog.tsx": "Catalog UI with search, category grouping, and Add-item actions.",
+  "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx": "Main calculator page managing line items, tax/discount inputs, and catalog integration.",
+  "frontend/src/features/calculator/types.ts": "Type definitions for line items, calculator state, and breakdown results.",
+  "frontend/src/features/calculator/utils.ts": "Numeric parsing, clamping, and calculation helpers for subtotal, tax, discount, and line totals.",
+  "frontend/src/hooks/useActor.ts": "Hook that creates and manages an authenticated or anonymous backend actor and invalidates dependent queries.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides a React context and provider for managing Internet Identity authentication using AuthClient, exposing identity state, login, logout, and status flags.",
+  "frontend/src/index.css": "Defines Tailwind base styles and CSS variables for light/dark themes, applying global background, text, and border styling.",
+  "frontend/src/main.tsx": "Bootstraps the React app, wrapping it with React Query and InternetIdentityProvider before rendering.",
+  "frontend/tailwind.config.js": "Configures Tailwind with custom colors mapped to CSS variables, extended theming, animations, and plugin integrations.",
+  "project_state.json": "Stores project metadata, existing features, pending requests, and overall app goals for the total amount calculator project."
+}

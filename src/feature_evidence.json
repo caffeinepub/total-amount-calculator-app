@@ -1,0 +1,44 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-add-a-predefined-item-catalog-a-list-of-items-with-fixed-unit-prices-to-the-calculator-ui-so-a-user-can-quickly-add-an-item-into-the-current-line-items-cart-without-manually-typing-the-name-and-unit-price",
+      "featureTitle": "Add a predefined item catalog (a list of items with fixed unit prices) to the calculator UI so a user can quickly add an item into the current line items/cart without manually typing the name and unit price.",
+      "files": [
+        "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+        "frontend/src/features/calculator/catalog.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-provide-basic-catalog-usability-so-the-predefined-list-is-practical-to-use-when-it-grows-beyond-a-few-items",
+      "featureTitle": "Provide basic catalog usability so the predefined list is practical to use when it grows beyond a few items.",
+      "files": [
+        "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

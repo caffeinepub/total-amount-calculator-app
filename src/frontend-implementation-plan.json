@@ -1,0 +1,56 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Predefined item catalog for quick add to calculator cart",
+  "requirements": [
+    {
+      "id": "REQ-5",
+      "summary": "Add a predefined item catalog section to the main calculator page to quickly add fixed-price items into line items.",
+      "acceptanceCriteria": [
+        "A new UI section is visible on the main calculator page that displays a list of predefined items with their names and fixed unit prices.",
+        "Each catalog entry includes an explicit action (e.g., “Add”) that adds the item to the line items table.",
+        "When a catalog item is added, a new line item row is created with: label prefilled to the catalog item name, unitPrice prefilled to the catalog item price, and quantity set to a sensible default (e.g., 1).",
+        "Adding catalog items updates the subtotal and final total immediately using the existing calculation logic.",
+        "User-facing text for the new UI is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/calculator/catalog.ts",
+          "operation": "create",
+          "description": "Create a client-side predefined catalog data module exporting a list of items (name + fixed unit price) for the calculator UI (no persistence)."
+        },
+        {
+          "path": "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "operation": "create",
+          "description": "Create a reusable catalog UI component that renders predefined items and exposes an onAdd action callback. Use shadcn-ui components (e.g., Card, Input, Button, Table) for consistent styling and behavior. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+          "operation": "modify",
+          "description": "Wire the predefined catalog section into the main calculator page UI and implement the add-to-line-items behavior: clicking “Add” creates a new line item row with label and unitPrice prefilled from the catalog and quantity defaulted to 1, reusing existing state update and calculation logic. Use shadcn-ui components for the new section layout. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Add search/filter, currency-formatted prices, and responsive layout behavior for the predefined item catalog section.",
+      "acceptanceCriteria": [
+        "The catalog UI supports quickly finding items (e.g., a search/filter input that filters by item name).",
+        "Catalog prices are displayed using the existing currency formatting (consistent with the rest of the app).",
+        "The catalog UI is responsive and does not break the existing layout on mobile and desktop (e.g., stacks appropriately in the current grid)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "operation": "modify",
+          "description": "Add a client-side search/filter input that filters catalog entries by name; display item prices using the existing formatCurrency utility for consistent currency formatting; ensure the catalog list layout is responsive (e.g., scroll/stack appropriately) using existing Tailwind patterns and shadcn-ui components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+          "operation": "modify",
+          "description": "Adjust the main calculator page layout to accommodate the catalog section responsively alongside existing line items and summary (e.g., ensure mobile stacking and desktop grid do not overflow or break). Use existing Tailwind utility classes and shadcn-ui composition. Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

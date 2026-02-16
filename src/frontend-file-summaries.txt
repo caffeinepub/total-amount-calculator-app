@@ -1,0 +1,11 @@
+{
+  "frontend/src/App.tsx": "Main app component that renders the TotalAmountCalculatorPage as the primary view.",
+  "frontend/src/features/calculator/types.ts": "TypeScript interfaces for line items, calculator state, and calculation breakdown structures.",
+  "frontend/src/features/calculator/utils.ts": "Pure calculation helpers for safe numeric parsing, line totals, subtotals, and tax/discount breakdown with validation.",
+  "frontend/src/features/calculator/format.ts": "Currency and number formatting utilities using Intl API for consistent display.",
+  "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx": "Main calculator page with integrated predefined item catalog sidebar, line items table, tax/discount adjustments, and live-updating breakdown using responsive grid layout.",
+  "frontend/src/index.css": "Global styles with OKLCH color system using emerald/green primary palette (hue 160) for a fresh finance-focused aesthetic in both light and dark modes.",
+  "frontend/tailwind.config.js": "Tailwind configuration with extended theme tokens matching the emerald/green color system.",
+  "frontend/src/features/calculator/catalog.ts": "Defines predefined catalog items with names, prices, and categories for quick add functionality in the calculator.",
+  "frontend/src/features/calculator/PredefinedItemCatalog.tsx": "Reusable catalog UI component with search/filter functionality that displays categorized items with formatted prices and Add buttons."
+}
