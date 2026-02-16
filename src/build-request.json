@@ -1,104 +1,39 @@
 {
   "kind": "build_request",
-  "title": "Switch currency to Indian Rupees and replace/manage catalog with common Indian food items",
+  "title": "Merge duplicate catalog-added line items by incrementing quantity",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-7",
-      "text": "Change all currency formatting and currency-related UI labels in the calculator to Indian Rupees (₹/INR), including line totals, subtotal/tax/discount/final total, and the fixed-discount selector/labels.",
+      "id": "REQ-35",
+      "text": "When a user adds an item from the Quick Add Items catalog and that same item already exists in the current bill’s line items, do not create a new duplicate line item; instead, increment the existing matching line item’s quantity by 1.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-3"
+          "msg-4"
         ],
         "quotes": [
-          "change the currency to rupees"
+          "in the line items if an item and the same item is added again then don't add it again but add it in the quantity"
         ]
       },
       "acceptanceCriteria": [
-        "All monetary values rendered via the app’s currency formatter display in INR with the ₹ symbol.",
-        "The discount type toggle/tab and breakdown label for fixed discount no longer show '$' and instead show '₹' (or 'INR' where appropriate).",
-        "No USD currency formatting remains in the UI for totals, catalog prices, or breakdown amounts."
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Remove the current predefined catalog items and replace them with a common list of Indian food items (English names) with reasonable default unit prices in INR and sensible categories.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3",
-          "msg-6"
-        ],
-        "quotes": [
-          "delete the present items and add indian food names",
-          "ues common list"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The predefined catalog no longer contains the existing non-food items (e.g., office supplies/electronics/services).",
-        "The catalog displays a common Indian food list (e.g., Idli, Dosa, Samosa, Biryani, Paneer Butter Masala, Chapati, Rice, Dal, etc.) grouped into appropriate categories.",
-        "Each catalog item has a unit price in INR and displays correctly using the INR currency formatter."
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Add catalog management controls in the UI to allow users to add new catalog items and delete existing catalog items from the predefined catalog list during runtime.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "give an option to add and delete items"
-        ]
-      },
-      "acceptanceCriteria": [
-        "The catalog UI includes a clear way to add a new catalog item with at least: name, unit price, and optional category.",
-        "The catalog UI includes a delete control for each catalog item to remove it from the catalog list.",
-        "Adding or deleting catalog items immediately updates the catalog list and search results without requiring a page reload."
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Add an \"Out of stock\" status/toggle per catalog item and prevent out-of-stock items from being added to the line items cart.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-3"
-        ],
-        "quotes": [
-          "and out of stock"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each catalog item in the UI has an \"Out of stock\" toggle/status indicator.",
-        "When a catalog item is marked out of stock, the \"Add\" action is disabled (or otherwise blocked) and the UI clearly indicates it is out of stock.",
-        "Attempting to add an out-of-stock item does not add a new line item to the calculator."
+        "Given the current bill already contains a line item with label matching the selected catalog item name (case-insensitive, trimmed), clicking the catalog item’s Add button increases that existing line item’s quantity by 1.",
+        "When a matching line item is found and incremented, the total number of line items does not increase.",
+        "If no matching line item exists, clicking Add creates a new line item with quantity = 1 and unitPrice = the catalog item’s unitPrice (current behavior).",
+        "Out-of-stock catalog items remain blocked from being added (no new line item is created and no quantity is incremented).",
+        "The catalog’s per-item added-count badge continues to reflect the correct total quantity for that item after repeated Add clicks."
       ]
     }
   ],
   "constraints": [
-    "Frontend files listed as immutable in SYSTEM_CONTEXT must not be edited; compose with existing components instead.",
-    "Do not introduce additional backend services or databases; keep changes within the existing React+TypeScript frontend unless explicitly required."
+    "Frontend immutable paths must not be modified: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui.",
+    "Keep the current single-page calculator behavior and existing print/daily-totals flows unchanged aside from how catalog Add merges quantities."
   ],
   "nonGoals": [
-    "Persisting catalog changes (add/delete/out-of-stock) across browser refreshes or across devices/users.",
-    "Adding backend APIs, authentication changes, or Internet Identity requirements for catalog management.",
-    "Adding new non-calculator features unrelated to currency/catalog management."
+    "Do not implement any backend changes for this behavior.",
+    "Do not change how manual line item entry/label editing dedupes items unless explicitly requested."
   ],
   "imageRequirements": {
     "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [],
-    "goalsToRemove": [],
-    "preferencesToAdd": [],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

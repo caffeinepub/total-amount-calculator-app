@@ -9,10 +9,13 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { CatalogItem } from './catalog';
+import { LineItem } from './types';
 import { formatCurrency } from './format';
+import { getAddedCountForCatalogItem } from './lineItemCatalogMatching';
 
 interface PredefinedItemCatalogProps {
   items: CatalogItem[];
+  lineItems: LineItem[];
   onAddItem: (item: CatalogItem) => void;
   onAddNewItem: (item: Omit<CatalogItem, 'id'>) => void;
   onDeleteItem: (id: string) => void;
@@ -21,6 +24,7 @@ interface PredefinedItemCatalogProps {
 
 export function PredefinedItemCatalog({
   items,
+  lineItems,
   onAddItem,
   onAddNewItem,
   onDeleteItem,
@@ -188,66 +192,78 @@ export function PredefinedItemCatalog({
                     <div className="h-px flex-1 bg-border" />
                   </div>
                   <div className="space-y-2">
-                    {categoryItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`flex items-start justify-between gap-3 p-3 rounded-lg border bg-card transition-colors ${
-                          item.outOfStock
-                            ? 'opacity-60 bg-muted/50'
-                            : 'hover:bg-accent/50'
-                        }`}
-                      >
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <p className={`font-medium text-sm truncate ${item.outOfStock ? 'line-through' : ''}`}>
-                              {item.name}
+                    {categoryItems.map((item) => {
+                      const addedCount = getAddedCountForCatalogItem(item.name, lineItems);
+                      
+                      return (
+                        <div
+                          key={item.id}
+                          className={`flex items-start justify-between gap-3 p-3 rounded-lg border bg-card transition-colors ${
+                            item.outOfStock
+                              ? 'opacity-60 bg-muted/50'
+                              : 'hover:bg-accent/50'
+                          }`}
+                        >
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <p className={`font-medium text-sm truncate ${item.outOfStock ? 'line-through' : ''}`}>
+                                {item.name}
+                              </p>
+                              {item.outOfStock && (
+                                <Badge variant="destructive" className="text-xs shrink-0">
+                                  <PackageX className="h-3 w-3 mr-1" />
+                                  Out of Stock
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-primary font-semibold">
+                              {formatCurrency(item.unitPrice)}
                             </p>
-                            {item.outOfStock && (
-                              <Badge variant="destructive" className="text-xs shrink-0">
-                                <PackageX className="h-3 w-3 mr-1" />
-                                Out of Stock
-                              </Badge>
-                            )}
+                            <div className="flex items-center gap-2 pt-1">
+                              <Switch
+                                id={`stock-${item.id}`}
+                                checked={item.outOfStock || false}
+                                onCheckedChange={() => onToggleOutOfStock(item.id)}
+                                className="scale-75"
+                              />
+                              <Label
+                                htmlFor={`stock-${item.id}`}
+                                className="text-xs text-muted-foreground cursor-pointer"
+                              >
+                                Out of stock
+                              </Label>
+                            </div>
                           </div>
-                          <p className="text-sm text-primary font-semibold">
-                            {formatCurrency(item.unitPrice)}
-                          </p>
-                          <div className="flex items-center gap-2 pt-1">
-                            <Switch
-                              id={`stock-${item.id}`}
-                              checked={item.outOfStock || false}
-                              onCheckedChange={() => onToggleOutOfStock(item.id)}
-                              className="scale-75"
-                            />
-                            <Label
-                              htmlFor={`stock-${item.id}`}
-                              className="text-xs text-muted-foreground cursor-pointer"
+                          <div className="flex flex-col gap-1 shrink-0">
+                            <Button
+                              size="sm"
+                              onClick={() => onAddItem(item)}
+                              disabled={item.outOfStock}
+                              className="gap-1 h-8 relative"
                             >
-                              Out of stock
-                            </Label>
+                              <Plus className="h-3 w-3" />
+                              Add
+                              {addedCount > 0 && (
+                                <Badge 
+                                  variant="secondary" 
+                                  className="ml-1 h-5 min-w-5 px-1.5 text-xs font-semibold"
+                                >
+                                  {addedCount}
+                                </Badge>
+                              )}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => onDeleteItem(item.id)}
+                              className="gap-1 h-8 text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
                           </div>
                         </div>
-                        <div className="flex flex-col gap-1 shrink-0">
-                          <Button
-                            size="sm"
-                            onClick={() => onAddItem(item)}
-                            disabled={item.outOfStock}
-                            className="gap-1 h-8"
-                          >
-                            <Plus className="h-3 w-3" />
-                            Add
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => onDeleteItem(item.id)}
-                            className="gap-1 h-8 text-destructive hover:text-destructive"
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ))}

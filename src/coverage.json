@@ -1,65 +1,26 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T04:07:42.935Z",
+  "generatedAt": "2026-02-16T12:50:36.967Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 4,
-    "implemented": 4,
+    "total": 1,
+    "implemented": 1,
     "items": [
       {
-        "id": "REQ-10",
-        "summary": "Add an \"Out of stock\" status/toggle per catalog item and prevent out-of-stock items from being added to the line items cart.",
+        "id": "REQ-35",
+        "summary": "When a user adds an item from the Quick Add Items catalog and that same item already exists in the current bill’s line items, do not create a new duplicate line item; instead, increment the existing matching line item’s quantity by 1.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/calculator/catalog.ts",
-          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/lineItemCatalogMatching.ts",
           "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/calculator/catalog.ts",
-          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/lineItemCatalogMatching.ts",
           "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-7",
-        "summary": "Change all currency formatting and currency-related UI labels in the calculator to Indian Rupees (₹/INR), including line totals, subtotal/tax/discount/final total, and the fixed-discount selector/labels.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/calculator/format.ts",
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/calculator/format.ts",
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-8",
-        "summary": "Remove the current predefined catalog items and replace them with a common list of Indian food items (English names) with reasonable default unit prices in INR and sensible categories.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/calculator/catalog.ts"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/calculator/catalog.ts"
-        ]
-      },
-      {
-        "id": "REQ-9",
-        "summary": "Add catalog management controls in the UI to allow users to add new catalog items and delete existing catalog items from the predefined catalog list during runtime.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-          "frontend/src/features/calculator/PredefinedItemCatalog.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-          "frontend/src/features/calculator/PredefinedItemCatalog.tsx"
         ]
       }
     ]
@@ -69,10 +30,8 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
     "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-    "frontend/src/features/calculator/catalog.ts",
-    "frontend/src/features/calculator/format.ts",
+    "frontend/src/features/calculator/lineItemCatalogMatching.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

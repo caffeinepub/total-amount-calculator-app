@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Update the calculator to use Indian Rupees (₹/INR) and swap the predefined catalog to common Indian food items with basic runtime catalog management.
+**Goal:** Prevent duplicate line items when adding the same catalog item multiple times by incrementing the existing line item quantity instead.
 
 **Planned changes:**
-- Change all currency formatting and currency-related labels from USD to INR (₹) across line totals and all subtotal/tax/discount/final total breakdown UI, including fixed-discount labels.
-- Replace the existing predefined catalog items with a categorized list of common Indian food items (English names) with reasonable default unit prices in INR.
-- Add UI controls to add new catalog items (name, unit price, optional category) and delete existing catalog items during runtime (no persistence required).
-- Add an “Out of stock” toggle/status per catalog item and block/disable adding out-of-stock items to the cart/line items.
+- Update the Quick Add Items “Add” behavior to detect an existing matching line item by label (case-insensitive, trimmed) and increment its quantity by 1 rather than creating a new line item.
+- Keep current behavior when no match exists: create a new line item with quantity = 1 and unitPrice from the catalog item.
+- Ensure out-of-stock catalog items remain blocked from being added (no quantity increment and no new line item).
+- Keep the catalog’s per-item added-count badge accurate as quantities are incremented via repeated Add clicks.
 
-**User-visible outcome:** All prices display in ₹ (INR). Users see a catalog of common Indian foods, can add/delete catalog items during the session, and can mark items out of stock so they can’t be added to the calculator.
+**User-visible outcome:** Clicking “Add” on a catalog item that’s already on the bill increases that line item’s quantity, avoiding duplicate rows, while out-of-stock items still cannot be added and the added-count badge stays correct.

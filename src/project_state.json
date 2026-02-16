@@ -1,8 +1,14 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 7,
-  "summary": "Project to build a total amount calculator app with line items, adjustments, usability features, and a visual theme; includes a predefined item catalog for quick add-to-cart, now customized for Indian Rupees and an Indian food catalog with catalog management and out-of-stock control.",
-  "architectural_notes": [],
+  "projectStateVersion": 27,
+  "summary": "Project to build a total amount calculator app with line items, adjustments, usability features, and a visual theme; includes a predefined item catalog for quick add-to-cart, now customized for Indian Rupees and an Indian food catalog with catalog management and out-of-stock control; renamed to \"Varshini Classic Cuisine\" with a red-and-yellow theme requested; printing a bill should open a dedicated print view in a separate tab and automatically save the bill; additionally, add a separate Daily Totals page that automatically records each printed bill, persists totals across days, allows selecting any past day, and shows only (a) total money gained and (b) per-item quantities sold for the selected day.",
+  "architectural_notes": [
+    "Daily Totals data should be derived from bills saved on each Print Bill action and persisted per-day so users can view any past day.",
+    "Daily Totals page requirements: day selector + display total money gained and per-item quantities sold only (no individual bill listing).",
+    "Print-flow UX change requested: do not leave the printed bill/receipt visible in the separate print tab after printing (consider auto-close tab or clear/replace content post-print).",
+    "Catalog quick-add UI should reflect current cart state by showing per-item added quantity (e.g., badge/count on the Add control).",
+    "Line items behavior: adding the same item again should merge into the existing line item by incrementing its quantity (instead of creating a duplicate line)."
+  ],
   "known_issues": [],
   "isFixRequest": false,
   "existing_features": [
@@ -85,6 +91,198 @@
         "REQ-10"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-rename-the-application-to-varshini-classic-cuisine-anywhere-the-app-name-is-user-visible-including-the-top-header-title-and-the-browser-tab-document-title",
+      "title": "Rename the application to \"Varshini Classic Cuisine\" anywhere the app name is user-visible, including the top header title and the browser tab/document title.",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-app-visual-theme-to-use-a-red-and-yellow-palette-as-the-primary-brand-colors-across-the-ui-buttons-highlights-accents-key-emphasis-updating-the-tailwind-css-theme-variables-used-by-the-app-for-both-light-and-dark-modes",
+      "title": "Update the app visual theme to use a red-and-yellow palette as the primary brand colors across the UI (buttons, highlights, accents, key emphasis), updating the Tailwind/CSS theme variables used by the app for both light and dark modes.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-print-option-to-the-calculator-so-the-user-can-print-the-current-bill-receipt-for-the-current-line-items-and-totals",
+      "title": "Add a print option to the calculator so the user can print the current bill/receipt for the current line items and totals.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-new-user-accessible-option-labeled-balance-sheet-in-the-app-ui-that-opens-a-dedicated-view-for-tracking-and-viewing-the-total-money-gained-in-a-day",
+      "title": "Add a new user-accessible option labeled \"Balance Sheet\" in the app UI that opens a dedicated view for tracking and viewing the total money gained in a day.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-daily-totals-ledger-so-that-completed-bills-can-be-recorded-and-later-summed-for-a-selected-day-the-balance-sheet-view-must-display-the-selected-day-and-the-total-money-gained-for-that-day-in-inr-formatting",
+      "title": "Implement a daily totals ledger so that completed bills can be recorded and later summed for a selected day; the \"Balance Sheet\" view must display the selected day and the total money gained for that day in INR formatting.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-balance-sheet-option-from-the-main-app-navigation-and-prevent-any-balance-sheet-ui-from-being-accessible-in-the-app",
+      "title": "Remove the Balance Sheet option from the main app navigation and prevent any Balance Sheet UI from being accessible in the app.",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-bill-saving-to-balance-sheet-behavior-from-the-calculator-ui-including-the-save-bill-action-that-records-bills-to-the-balance-sheet-ledger",
+      "title": "Remove bill-saving-to-balance-sheet behavior from the calculator UI, including the Save Bill action that records bills to the Balance Sheet ledger.",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-balance-sheet-related-frontend-modules-that-are-no-longer-used-after-balance-sheet-removal-view-hooks-and-ledger-utilities-and-ensure-the-frontend-builds-cleanly-with-no-unused-imports-or-missing-module-errors",
+      "title": "Remove Balance Sheet-related frontend modules that are no longer used after Balance Sheet removal (view, hooks, and ledger utilities), and ensure the frontend builds cleanly with no unused imports or missing-module errors.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-the-print-bill-flow-so-that-clicking-the-print-bill-button-opens-a-dedicated-print-view-in-a-new-browser-tab-instead-of-printing-the-current-tab-renders-the-same-receipt-content-and-automatically-triggers-the-browser-print-dialog-in-that-new-tab",
+      "title": "Change the \"Print Bill\" flow so that clicking the \"Print Bill\" button opens a dedicated print view in a new browser tab (instead of printing the current tab), renders the same receipt content, and automatically triggers the browser print dialog in that new tab.",
+      "reqIds": [
+        "REQ-20"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-save-the-current-bill-every-time-the-user-clicks-print-bill-by-storing-a-serialized-bill-record-in-browser-storage-and-ensure-the-new-print-tab-can-load-the-exact-bill-being-printed-from-that-saved-record",
+      "title": "Persist (save) the current bill every time the user clicks \"Print Bill\" by storing a serialized bill record in browser storage, and ensure the new print tab can load the exact bill being printed from that saved record.",
+      "reqIds": [
+        "REQ-21"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-lightweight-print-view-entrypoint-in-the-frontend-that-can-render-a-single-saved-bill-by-id-key-from-the-url-using-the-existing-receipt-ui-and-show-a-clear-fallback-message-in-english-if-the-bill-cannot-be-found",
+      "title": "Add a lightweight print-view entrypoint in the frontend that can render a single saved bill (by ID/key from the URL) using the existing receipt UI, and show a clear fallback message in English if the bill cannot be found.",
+      "reqIds": [
+        "REQ-22"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-daily-totals-page-in-the-frontend-that-is-accessible-from-the-normal-non-print-app-ui-as-a-separate-page-view",
+      "title": "Create a new \"Daily Totals\" page in the frontend that is accessible from the normal (non-print) app UI as a separate page/view.",
+      "reqIds": [
+        "REQ-23"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-daily-totals-ledger-in-browser-storage-that-automatically-records-each-bill-when-the-user-clicks-print-bill-grouping-records-by-local-calendar-day-and-preserving-past-days",
+      "title": "Implement a Daily Totals ledger in browser storage that automatically records each bill when the user clicks \"Print Bill\", grouping records by local calendar day and preserving past days.",
+      "reqIds": [
+        "REQ-24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-on-the-daily-totals-page-allow-the-user-to-select-any-available-past-day-and-display-1-the-total-money-gained-for-that-day-and-2-per-item-quantities-sold-for-that-day-derived-from-the-printed-saved-bills-do-not-display-the-list-of-individual-bills",
+      "title": "On the Daily Totals page, allow the user to select any available past day and display (1) the total money gained for that day and (2) per-item quantities sold for that day, derived from the printed/saved bills; do not display the list of individual bills.",
+      "reqIds": [
+        "REQ-25"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-per-item-quantities-sold-are-computed-from-printed-bills-by-summing-quantities-for-line-items-with-a-non-empty-label-and-quantity-0-using-a-consistent-normalization-rule-so-labels-that-differ-only-by-leading-trailing-whitespace-are-treated-as-the-same-item",
+      "title": "Ensure per-item quantities sold are computed from printed bills by summing quantities for line items with a non-empty label and quantity > 0, using a consistent normalization rule so labels that differ only by leading/trailing whitespace are treated as the same item.",
+      "reqIds": [
+        "REQ-26"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-feature-using-the-existing-project-structure-by-populating-the-currently-empty-balance-sheet-placeholder-modules-with-the-new-daily-totals-functionality-page-view-component-storage-ledger-utilities-and-any-hook-used-by-the-view-and-ensure-the-frontend-builds-cleanly-with-no-unused-imports-or-missing-module-errors",
+      "title": "Implement the feature using the existing project structure by populating the currently-empty balance sheet placeholder modules with the new Daily Totals functionality (page/view component, storage/ledger utilities, and any hook used by the view), and ensure the frontend builds cleanly with no unused imports or missing module errors.",
+      "reqIds": [
+        "REQ-27"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-daily-totals-ledger-in-browser-storage-that-records-the-final-total-for-each-bill-every-time-the-user-clicks-print-bill-grouping-records-by-the-user-s-local-calendar-day-and-preserving-past-days",
+      "title": "Implement a Daily Totals ledger in browser storage that records the final total for each bill every time the user clicks \"Print Bill\", grouping records by the user’s local calendar day and preserving past days.",
+      "reqIds": [
+        "REQ-28"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-new-non-print-daily-totals-page-view-in-the-normal-app-ui-that-allows-selecting-any-available-past-day-and-displays-1-the-total-money-gained-for-that-day-in-inr-formatting-and-2-per-item-quantities-sold-for-that-day-computed-from-printed-saved-bills-do-not-display-the-list-of-individual-bills",
+      "title": "Create a new non-print \"Daily Totals\" page/view in the normal app UI that allows selecting any available past day and displays (1) the total money gained for that day in INR formatting and (2) per-item quantities sold for that day computed from printed/saved bills; do not display the list of individual bills.",
+      "reqIds": [
+        "REQ-29"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-compute-per-item-quantities-sold-on-the-daily-totals-page-by-summing-quantities-for-line-items-that-have-a-non-empty-label-and-quantity-0-using-a-consistent-normalization-rule-so-labels-that-differ-only-by-leading-trailing-whitespace-are-treated-as-the-same-item",
+      "title": "Compute per-item quantities sold on the Daily Totals page by summing quantities for line items that have a non-empty label and quantity > 0, using a consistent normalization rule so labels that differ only by leading/trailing whitespace are treated as the same item.",
+      "reqIds": [
+        "REQ-30"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-daily-totals-feature-using-the-existing-project-structure-by-populating-the-currently-empty-balance-sheet-placeholder-modules-page-view-component-storage-ledger-utilities-and-any-hook-used-by-the-view-and-ensure-the-frontend-builds-cleanly-with-no-unused-imports-or-missing-module-errors",
+      "title": "Implement the Daily Totals feature using the existing project structure by populating the currently-empty balance sheet placeholder modules (page/view component, storage ledger utilities, and any hook used by the view), and ensure the frontend builds cleanly with no unused imports or missing-module errors.",
+      "reqIds": [
+        "REQ-31"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-dedicated-print-tab-experience-so-that-after-the-browser-print-dialog-completes-print-or-cancel-the-print-tab-no-longer-leaves-the-bill-receipt-visible-to-the-user-preferably-auto-close-the-tab-if-auto-close-is-blocked-replace-the-receipt-ui-with-a-simple-completion-screen",
+      "title": "Update the dedicated print-tab experience so that after the browser print dialog completes (print or cancel), the print tab no longer leaves the bill/receipt visible to the user (preferably auto-close the tab; if auto-close is blocked, replace the receipt UI with a simple completion screen).",
+      "reqIds": [
+        "REQ-32"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-print-view-page-cleans-up-ui-state-after-printing-so-the-receipt-is-not-re-shown-if-the-user-stays-on-the-print-tab-e-g-navigating-back-forward-or-focusing-the-tab-again",
+      "title": "Ensure the print view page cleans up UI state after printing so the receipt is not re-shown if the user stays on the print tab (e.g., navigating back/forward or focusing the tab again).",
+      "reqIds": [
+        "REQ-33"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-quick-add-items-catalog-list-display-how-many-of-each-catalog-item-the-user-has-already-added-to-the-current-bill-directly-on-next-to-that-item-s-add-button",
+      "title": "In the Quick Add Items catalog list, display how many of each catalog item the user has already added to the current bill, directly on/next to that item’s “Add” button.",
+      "reqIds": [
+        "REQ-34"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-when-a-user-adds-an-item-from-the-quick-add-items-catalog-and-that-same-item-already-exists-in-the-current-bill-s-line-items-do-not-create-a-new-duplicate-line-item-instead-increment-the-existing-matching-line-item-s-quantity-by-1",
+      "title": "When a user adds an item from the Quick Add Items catalog and that same item already exists in the current bill’s line items, do not create a new duplicate line item; instead, increment the existing matching line item’s quantity by 1.",
+      "reqIds": [
+        "REQ-35"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -123,10 +321,66 @@
       "summary": "Add an 'Out of stock' toggle/status per catalog item that prevents adding it to the cart/line items",
       "reqIds": [],
       "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Rename the app to \"Varshini Classic Cuisine\" and update the visual theme colors to red and yellow",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Add a print option for the bill (print/export the current calculation as a printable bill/receipt)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-12",
+      "summary": "Remove Balance Sheet / daily-ledger backend API surface that is no longer needed, so the canister no longer exposes Balance Sheet-specific methods (daily totals ledger and related user profile endpoints).",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-13",
+      "summary": "Automatically save the current bill whenever the user clicks \"Print Bill\", opening/handling the print flow in another tab",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Add a separate Daily Totals page that calculates total money gained per day from printed bills, persists past days, and allows selecting any past day to view totals",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Track and display per-item quantities sold per selected day (derived from saved/printed bills) on the Daily Totals page; show only totals and per-item counts (no bill list)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Update the Print Bill new-tab flow so the bill/receipt is not left visible in the other tab (e.g., auto-close the print tab after printing or replace the content after triggering print)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "In the item catalog/quick-add UI, show the quantity count for an item that the user has already added (e.g., display the number on/near the Add button).",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "When adding an item that already exists in the current line items, do not create a new duplicate line; instead, increase the existing line item's quantity",
+      "reqIds": [],
+      "status": "pending"
     }
   ],
   "gameProjectType": "none",
-  "projectName": "Total Amount Calculator App",
+  "projectName": "Varshini Classic Cuisine",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
