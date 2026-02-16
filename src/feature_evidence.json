@@ -2,8 +2,64 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-predefined-item-catalog-a-list-of-items-with-fixed-unit-prices-to-the-calculator-ui-so-a-user-can-quickly-add-an-item-into-the-current-line-items-cart-without-manually-typing-the-name-and-unit-price",
-      "featureTitle": "Add a predefined item catalog (a list of items with fixed unit prices) to the calculator UI so a user can quickly add an item into the current line items/cart without manually typing the name and unit price.",
+      "featureId": "feature-change-all-currency-formatting-and-currency-related-ui-labels-in-the-calculator-to-indian-rupees-inr-including-line-totals-subtotal-tax-discount-final-total-and-the-fixed-discount-selector-labels",
+      "featureTitle": "Change all currency formatting and currency-related UI labels in the calculator to Indian Rupees (₹/INR), including line totals, subtotal/tax/discount/final total, and the fixed-discount selector/labels.",
+      "files": [
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+        "frontend/src/features/calculator/format.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-remove-the-current-predefined-catalog-items-and-replace-them-with-a-common-list-of-indian-food-items-english-names-with-reasonable-default-unit-prices-in-inr-and-sensible-categories",
+      "featureTitle": "Remove the current predefined catalog items and replace them with a common list of Indian food items (English names) with reasonable default unit prices in INR and sensible categories.",
+      "files": [
+        "frontend/src/features/calculator/catalog.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-catalog-management-controls-in-the-ui-to-allow-users-to-add-new-catalog-items-and-delete-existing-catalog-items-from-the-predefined-catalog-list-during-runtime",
+      "featureTitle": "Add catalog management controls in the UI to allow users to add new catalog items and delete existing catalog items from the predefined catalog list during runtime.",
+      "files": [
+        "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-out-of-stock-status-toggle-per-catalog-item-and-prevent-out-of-stock-items-from-being-added-to-the-line-items-cart",
+      "featureTitle": "Add an \"Out of stock\" status/toggle per catalog item and prevent out-of-stock items from being added to the line items cart.",
       "files": [
         "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
         "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
@@ -17,26 +73,7 @@
         "github-export-icp-cli@1.0.0"
       ],
       "testIds": [
-        "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-provide-basic-catalog-usability-so-the-predefined-list-is-practical-to-use-when-it-grows-beyond-a-few-items",
-      "featureTitle": "Provide basic catalog usability so the predefined list is practical to use when it grows beyond a few items.",
-      "files": [
-        "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
+        "REQ-10"
       ],
       "confidence": "high"
     }

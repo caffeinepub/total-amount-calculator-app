@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Add a predefined item catalog with fixed prices to the calculator so users can quickly add common items to the cart/line items.
+**Goal:** Update the calculator to use Indian Rupees (₹/INR) and swap the predefined catalog to common Indian food items with basic runtime catalog management.
 
 **Planned changes:**
-- Add a new catalog section on the main calculator page showing predefined item names and their fixed unit prices.
-- Provide an “Add” action per catalog item that inserts a new line item row with label and unit price prefilled and a default quantity (e.g., 1).
-- Add a simple search/filter input to quickly find catalog items by name.
-- Ensure catalog prices use the app’s existing currency formatting and the new UI remains responsive across mobile/desktop layouts.
+- Change all currency formatting and currency-related labels from USD to INR (₹) across line totals and all subtotal/tax/discount/final total breakdown UI, including fixed-discount labels.
+- Replace the existing predefined catalog items with a categorized list of common Indian food items (English names) with reasonable default unit prices in INR.
+- Add UI controls to add new catalog items (name, unit price, optional category) and delete existing catalog items during runtime (no persistence required).
+- Add an “Out of stock” toggle/status per catalog item and block/disable adding out-of-stock items to the cart/line items.
 
-**User-visible outcome:** Users can browse or search a predefined list of items and add them to the cart with one click, immediately updating subtotal and total using the existing calculation logic.
+**User-visible outcome:** All prices display in ₹ (INR). Users see a catalog of common Indian foods, can add/delete catalog items during the session, and can mark items out of stock so they can’t be added to the calculator.

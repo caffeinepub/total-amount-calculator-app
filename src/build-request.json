@@ -1,55 +1,91 @@
 {
   "kind": "build_request",
-  "title": "Add predefined item list with fixed prices for quick add to cart",
+  "title": "Switch currency to Indian Rupees and replace/manage catalog with common Indian food items",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-5",
-      "text": "Add a predefined item catalog (a list of items with fixed unit prices) to the calculator UI so a user can quickly add an item into the current line items/cart without manually typing the name and unit price.",
+      "id": "REQ-7",
+      "text": "Change all currency formatting and currency-related UI labels in the calculator to Indian Rupees (₹/INR), including line totals, subtotal/tax/discount/final total, and the fixed-discount selector/labels.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3"
         ],
         "quotes": [
-          "i want to add a list of items with a set amount for each item so that it is easy to add in to the cart"
+          "change the currency to rupees"
         ]
       },
       "acceptanceCriteria": [
-        "A new UI section is visible on the main calculator page that displays a list of predefined items with their names and fixed unit prices.",
-        "Each catalog entry includes an explicit action (e.g., “Add”) that adds the item to the line items table.",
-        "When a catalog item is added, a new line item row is created with: label prefilled to the catalog item name, unitPrice prefilled to the catalog item price, and quantity set to a sensible default (e.g., 1).",
-        "Adding catalog items updates the subtotal and final total immediately using the existing calculation logic.",
-        "User-facing text for the new UI is in English."
+        "All monetary values rendered via the app’s currency formatter display in INR with the ₹ symbol.",
+        "The discount type toggle/tab and breakdown label for fixed discount no longer show '$' and instead show '₹' (or 'INR' where appropriate).",
+        "No USD currency formatting remains in the UI for totals, catalog prices, or breakdown amounts."
       ]
     },
     {
-      "id": "REQ-6",
-      "text": "Provide basic catalog usability so the predefined list is practical to use when it grows beyond a few items.",
+      "id": "REQ-8",
+      "text": "Remove the current predefined catalog items and replace them with a common list of Indian food items (English names) with reasonable default unit prices in INR and sensible categories.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-3",
+          "msg-6"
         ],
         "quotes": [
-          "add a list of items with a set amount for each item"
+          "delete the present items and add indian food names",
+          "ues common list"
         ]
       },
       "acceptanceCriteria": [
-        "The catalog UI supports quickly finding items (e.g., a search/filter input that filters by item name).",
-        "Catalog prices are displayed using the existing currency formatting (consistent with the rest of the app).",
-        "The catalog UI is responsive and does not break the existing layout on mobile and desktop (e.g., stacks appropriately in the current grid)."
+        "The predefined catalog no longer contains the existing non-food items (e.g., office supplies/electronics/services).",
+        "The catalog displays a common Indian food list (e.g., Idli, Dosa, Samosa, Biryani, Paneer Butter Masala, Chapati, Rice, Dal, etc.) grouped into appropriate categories.",
+        "Each catalog item has a unit price in INR and displays correctly using the INR currency formatter."
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "text": "Add catalog management controls in the UI to allow users to add new catalog items and delete existing catalog items from the predefined catalog list during runtime.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "give an option to add and delete items"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The catalog UI includes a clear way to add a new catalog item with at least: name, unit price, and optional category.",
+        "The catalog UI includes a delete control for each catalog item to remove it from the catalog list.",
+        "Adding or deleting catalog items immediately updates the catalog list and search results without requiring a page reload."
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "text": "Add an \"Out of stock\" status/toggle per catalog item and prevent out-of-stock items from being added to the line items cart.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-3"
+        ],
+        "quotes": [
+          "and out of stock"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each catalog item in the UI has an \"Out of stock\" toggle/status indicator.",
+        "When a catalog item is marked out of stock, the \"Add\" action is disabled (or otherwise blocked) and the UI clearly indicates it is out of stock.",
+        "Attempting to add an out-of-stock item does not add a new line item to the calculator."
       ]
     }
   ],
   "constraints": [
-    "Do not modify files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or anything in frontend/src/components/ui (compose existing UI components instead).",
-    "Keep all logic client-side unless persistence is explicitly requested; backend/main.mo currently has no methods and should not be changed for this request."
+    "Frontend files listed as immutable in SYSTEM_CONTEXT must not be edited; compose with existing components instead.",
+    "Do not introduce additional backend services or databases; keep changes within the existing React+TypeScript frontend unless explicitly required."
   ],
   "nonGoals": [
-    "Persisting the predefined item list or cart contents across sessions/devices.",
-    "Implementing checkout, payments, inventory management, or multi-user carts.",
-    "Adding third-party integrations or external databases."
+    "Persisting catalog changes (add/delete/out-of-stock) across browser refreshes or across devices/users.",
+    "Adding backend APIs, authentication changes, or Internet Identity requirements for catalog management.",
+    "Adding new non-calculator features unrelated to currency/catalog management."
   ],
   "imageRequirements": {
     "required": [],

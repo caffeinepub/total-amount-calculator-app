@@ -1,54 +1,89 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Predefined item catalog for quick add to calculator cart",
+  "title": "INR currency + Indian food catalog with runtime catalog management",
   "requirements": [
     {
-      "id": "REQ-5",
-      "summary": "Add a predefined item catalog section to the main calculator page to quickly add fixed-price items into line items.",
+      "id": "REQ-7",
+      "summary": "Switch all calculator currency rendering and fixed-discount labels from USD to INR (₹/INR).",
       "acceptanceCriteria": [
-        "A new UI section is visible on the main calculator page that displays a list of predefined items with their names and fixed unit prices.",
-        "Each catalog entry includes an explicit action (e.g., “Add”) that adds the item to the line items table.",
-        "When a catalog item is added, a new line item row is created with: label prefilled to the catalog item name, unitPrice prefilled to the catalog item price, and quantity set to a sensible default (e.g., 1).",
-        "Adding catalog items updates the subtotal and final total immediately using the existing calculation logic.",
-        "User-facing text for the new UI is in English."
+        "All monetary values rendered via the app’s currency formatter display in INR with the ₹ symbol.",
+        "The discount type toggle/tab and breakdown label for fixed discount no longer show '$' and instead show '₹' (or 'INR' where appropriate).",
+        "No USD currency formatting remains in the UI for totals, catalog prices, or breakdown amounts."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/calculator/catalog.ts",
-          "operation": "create",
-          "description": "Create a client-side predefined catalog data module exporting a list of items (name + fixed unit price) for the calculator UI (no persistence)."
-        },
-        {
-          "path": "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
-          "operation": "create",
-          "description": "Create a reusable catalog UI component that renders predefined items and exposes an onAdd action callback. Use shadcn-ui components (e.g., Card, Input, Button, Table) for consistent styling and behavior. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/features/calculator/format.ts",
+          "operation": "modify",
+          "description": "Update the shared currency formatter to use INR (₹) (e.g., Intl configured for INR/India locale) so all existing formatCurrency() usages render in rupees."
         },
         {
           "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
           "operation": "modify",
-          "description": "Wire the predefined catalog section into the main calculator page UI and implement the add-to-line-items behavior: clicking “Add” creates a new line item row with label and unitPrice prefilled from the catalog and quantity defaulted to 1, reusing existing state update and calculation logic. Use shadcn-ui components for the new section layout. Verify the component's usage instructions before implementing."
+          "description": "Replace any hard-coded USD symbols in discount UI (fixed discount tab trigger and breakdown label) with ₹/INR-appropriate labels, while continuing to use the shared formatCurrency() for amounts. Use existing shadcn-ui Tabs components for the toggle; verify the component's usage instructions before implementing."
         }
       ]
     },
     {
-      "id": "REQ-6",
-      "summary": "Add search/filter, currency-formatted prices, and responsive layout behavior for the predefined item catalog section.",
+      "id": "REQ-8",
+      "summary": "Replace the predefined catalog with a common list of Indian food items with INR prices and sensible categories.",
       "acceptanceCriteria": [
-        "The catalog UI supports quickly finding items (e.g., a search/filter input that filters by item name).",
-        "Catalog prices are displayed using the existing currency formatting (consistent with the rest of the app).",
-        "The catalog UI is responsive and does not break the existing layout on mobile and desktop (e.g., stacks appropriately in the current grid)."
+        "The predefined catalog no longer contains the existing non-food items (e.g., office supplies/electronics/services).",
+        "The catalog displays a common Indian food list (e.g., Idli, Dosa, Samosa, Biryani, Paneer Butter Masala, Chapati, Rice, Dal, etc.) grouped into appropriate categories.",
+        "Each catalog item has a unit price in INR and displays correctly using the INR currency formatter."
       ],
       "file_operations": [
         {
+          "path": "frontend/src/features/calculator/catalog.ts",
+          "operation": "modify",
+          "description": "Replace PREDEFINED_CATALOG contents with a curated set of common Indian food items (English names), realistic unitPrice values in INR, and appropriate category values (e.g., South Indian, North Indian, Snacks, Rice & Biryani, Curries, Beverages, Desserts). Ensure items continue to render through formatCurrency()."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Add runtime catalog management UI to create new items and delete existing items, updating results immediately without reload.",
+      "acceptanceCriteria": [
+        "The catalog UI includes a clear way to add a new catalog item with at least: name, unit price, and optional category.",
+        "The catalog UI includes a delete control for each catalog item to remove it from the catalog list.",
+        "Adding or deleting catalog items immediately updates the catalog list and search results without requiring a page reload."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+          "operation": "modify",
+          "description": "Move the catalog list into React state (initialized from PREDEFINED_CATALOG) and implement handlers to add and delete catalog items during runtime. Wire these handlers into the catalog UI by passing them as props so changes immediately update the catalog list and search results. Use existing shadcn-ui layout primitives already present on the page; verify the component's usage instructions before implementing."
+        },
+        {
           "path": "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
           "operation": "modify",
-          "description": "Add a client-side search/filter input that filters catalog entries by name; display item prices using the existing formatCurrency utility for consistent currency formatting; ensure the catalog list layout is responsive (e.g., scroll/stack appropriately) using existing Tailwind patterns and shadcn-ui components. Verify the component's usage instructions before implementing."
+          "description": "Extend the catalog panel UI to include an 'Add item' control (inputs for name, unit price, optional category + submit button) and a per-item delete control. Keep search/filter behavior working against the live items prop so updates appear instantly. Use existing shadcn-ui Input/Button/Card/ScrollArea components; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Add per-item out-of-stock status/toggle and block adding out-of-stock items to the cart.",
+      "acceptanceCriteria": [
+        "Each catalog item in the UI has an \"Out of stock\" toggle/status indicator.",
+        "When a catalog item is marked out of stock, the \"Add\" action is disabled (or otherwise blocked) and the UI clearly indicates it is out of stock.",
+        "Attempting to add an out-of-stock item does not add a new line item to the calculator."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/calculator/catalog.ts",
+          "operation": "modify",
+          "description": "Extend CatalogItem to include an outOfStock boolean flag, and set appropriate defaults for all predefined Indian food items (typically false)."
+        },
+        {
+          "path": "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "operation": "modify",
+          "description": "Add an out-of-stock indicator/toggle per catalog item and disable/visually demote the Add action when outOfStock is true. Ensure the UI clearly communicates the status (e.g., badge/label). Use shadcn-ui controls (e.g., Button/Badge and, if available in the project, a Switch/Checkbox) and verify the component's usage instructions before implementing."
         },
         {
           "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
           "operation": "modify",
-          "description": "Adjust the main calculator page layout to accommodate the catalog section responsively alongside existing line items and summary (e.g., ensure mobile stacking and desktop grid do not overflow or break). Use existing Tailwind utility classes and shadcn-ui composition. Verify the component's usage instructions before implementing."
+          "description": "Implement and wire a handler to toggle outOfStock in the live catalog state, and add a defensive guard in the add-to-line-items handler so out-of-stock items cannot be added even if triggered indirectly. Use the existing shadcn-ui catalog panel integration; verify the component's usage instructions before implementing."
         }
       ]
     }

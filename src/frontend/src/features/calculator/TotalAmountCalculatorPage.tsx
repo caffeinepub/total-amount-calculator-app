@@ -21,6 +21,9 @@ function TotalAmountCalculatorPage() {
     discountValue: 0,
   });
 
+  // Manage catalog items in state for runtime add/delete/toggle
+  const [catalogItems, setCatalogItems] = useState<CatalogItem[]>(PREDEFINED_CATALOG);
+
   const breakdown = calculateBreakdown(
     state.lineItems,
     state.taxRate,
@@ -36,6 +39,11 @@ function TotalAmountCalculatorPage() {
   };
 
   const addCatalogItem = (catalogItem: CatalogItem) => {
+    // Block adding out-of-stock items
+    if (catalogItem.outOfStock) {
+      return;
+    }
+    
     setState((prev) => ({
       ...prev,
       lineItems: [
@@ -83,6 +91,26 @@ function TotalAmountCalculatorPage() {
     });
   };
 
+  const handleAddNewCatalogItem = (newItem: Omit<CatalogItem, 'id'>) => {
+    const catalogItem: CatalogItem = {
+      ...newItem,
+      id: crypto.randomUUID(),
+    };
+    setCatalogItems((prev) => [...prev, catalogItem]);
+  };
+
+  const handleDeleteCatalogItem = (id: string) => {
+    setCatalogItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleToggleOutOfStock = (id: string) => {
+    setCatalogItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, outOfStock: !item.outOfStock } : item
+      )
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Header */}
@@ -112,7 +140,13 @@ function TotalAmountCalculatorPage() {
           {/* Catalog Section - Left Side on Desktop, Top on Mobile */}
           <div className="lg:col-span-4 xl:col-span-3">
             <div className="lg:sticky lg:top-24">
-              <PredefinedItemCatalog items={PREDEFINED_CATALOG} onAddItem={addCatalogItem} />
+              <PredefinedItemCatalog
+                items={catalogItems}
+                onAddItem={addCatalogItem}
+                onAddNewItem={handleAddNewCatalogItem}
+                onDeleteItem={handleDeleteCatalogItem}
+                onToggleOutOfStock={handleToggleOutOfStock}
+              />
             </div>
           </div>
 
@@ -244,7 +278,7 @@ function TotalAmountCalculatorPage() {
                         >
                           <TabsList className="grid w-full grid-cols-2">
                             <TabsTrigger value="percentage">%</TabsTrigger>
-                            <TabsTrigger value="fixed">$</TabsTrigger>
+                            <TabsTrigger value="fixed">₹</TabsTrigger>
                           </TabsList>
                           <TabsContent value="percentage" className="mt-2">
                             <Input
@@ -300,7 +334,7 @@ function TotalAmountCalculatorPage() {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">
-                          Discount ({state.discountType === 'percentage' ? `${state.discountValue}%` : '$'})
+                          Discount ({state.discountType === 'percentage' ? `${state.discountValue}%` : '₹'})
                         </span>
                         <span className="font-medium text-emerald-600 dark:text-emerald-400">
                           -{formatCurrency(breakdown.discountAmount)}

@@ -7,29 +7,50 @@ export interface CatalogItem {
   name: string;
   unitPrice: number;
   category?: string;
+  outOfStock?: boolean;
 }
 
 export const PREDEFINED_CATALOG: CatalogItem[] = [
-  // Office Supplies
-  { id: 'pen-blue', name: 'Blue Pen', unitPrice: 1.50, category: 'Office Supplies' },
-  { id: 'pen-black', name: 'Black Pen', unitPrice: 1.50, category: 'Office Supplies' },
-  { id: 'notebook-a4', name: 'A4 Notebook', unitPrice: 5.99, category: 'Office Supplies' },
-  { id: 'stapler', name: 'Stapler', unitPrice: 12.99, category: 'Office Supplies' },
-  { id: 'paper-ream', name: 'Paper Ream (500 sheets)', unitPrice: 8.50, category: 'Office Supplies' },
+  // South Indian
+  { id: 'idli', name: 'Idli (2 pcs)', unitPrice: 40, category: 'South Indian', outOfStock: false },
+  { id: 'dosa-plain', name: 'Plain Dosa', unitPrice: 50, category: 'South Indian', outOfStock: false },
+  { id: 'dosa-masala', name: 'Masala Dosa', unitPrice: 70, category: 'South Indian', outOfStock: false },
+  { id: 'vada', name: 'Medu Vada (2 pcs)', unitPrice: 45, category: 'South Indian', outOfStock: false },
+  { id: 'uttapam', name: 'Uttapam', unitPrice: 65, category: 'South Indian', outOfStock: false },
   
-  // Electronics
-  { id: 'usb-cable', name: 'USB-C Cable', unitPrice: 15.99, category: 'Electronics' },
-  { id: 'mouse-wireless', name: 'Wireless Mouse', unitPrice: 29.99, category: 'Electronics' },
-  { id: 'keyboard', name: 'Keyboard', unitPrice: 49.99, category: 'Electronics' },
-  { id: 'hdmi-cable', name: 'HDMI Cable', unitPrice: 12.99, category: 'Electronics' },
+  // North Indian
+  { id: 'chapati', name: 'Chapati (2 pcs)', unitPrice: 30, category: 'North Indian', outOfStock: false },
+  { id: 'naan', name: 'Butter Naan', unitPrice: 40, category: 'North Indian', outOfStock: false },
+  { id: 'paratha', name: 'Aloo Paratha', unitPrice: 60, category: 'North Indian', outOfStock: false },
+  { id: 'kulcha', name: 'Kulcha', unitPrice: 50, category: 'North Indian', outOfStock: false },
   
-  // Furniture
-  { id: 'desk-chair', name: 'Office Chair', unitPrice: 199.99, category: 'Furniture' },
-  { id: 'desk', name: 'Standing Desk', unitPrice: 399.99, category: 'Furniture' },
-  { id: 'lamp', name: 'Desk Lamp', unitPrice: 34.99, category: 'Furniture' },
+  // Rice & Biryani
+  { id: 'rice-plain', name: 'Plain Rice', unitPrice: 50, category: 'Rice & Biryani', outOfStock: false },
+  { id: 'biryani-veg', name: 'Veg Biryani', unitPrice: 150, category: 'Rice & Biryani', outOfStock: false },
+  { id: 'biryani-chicken', name: 'Chicken Biryani', unitPrice: 200, category: 'Rice & Biryani', outOfStock: false },
+  { id: 'biryani-mutton', name: 'Mutton Biryani', unitPrice: 250, category: 'Rice & Biryani', outOfStock: false },
+  { id: 'pulao', name: 'Veg Pulao', unitPrice: 120, category: 'Rice & Biryani', outOfStock: false },
   
-  // Services
-  { id: 'consulting-hour', name: 'Consulting (per hour)', unitPrice: 150.00, category: 'Services' },
-  { id: 'design-hour', name: 'Design Work (per hour)', unitPrice: 100.00, category: 'Services' },
-  { id: 'development-hour', name: 'Development (per hour)', unitPrice: 125.00, category: 'Services' },
+  // Curries
+  { id: 'dal-tadka', name: 'Dal Tadka', unitPrice: 100, category: 'Curries', outOfStock: false },
+  { id: 'dal-makhani', name: 'Dal Makhani', unitPrice: 130, category: 'Curries', outOfStock: false },
+  { id: 'paneer-butter-masala', name: 'Paneer Butter Masala', unitPrice: 180, category: 'Curries', outOfStock: false },
+  { id: 'palak-paneer', name: 'Palak Paneer', unitPrice: 170, category: 'Curries', outOfStock: false },
+  { id: 'chicken-curry', name: 'Chicken Curry', unitPrice: 200, category: 'Curries', outOfStock: false },
+  
+  // Snacks
+  { id: 'samosa', name: 'Samosa (2 pcs)', unitPrice: 30, category: 'Snacks', outOfStock: false },
+  { id: 'pakora', name: 'Pakora (6 pcs)', unitPrice: 50, category: 'Snacks', outOfStock: false },
+  { id: 'pav-bhaji', name: 'Pav Bhaji', unitPrice: 80, category: 'Snacks', outOfStock: false },
+  { id: 'chaat', name: 'Chaat', unitPrice: 60, category: 'Snacks', outOfStock: false },
+  
+  // Beverages
+  { id: 'chai', name: 'Masala Chai', unitPrice: 20, category: 'Beverages', outOfStock: false },
+  { id: 'lassi', name: 'Lassi', unitPrice: 40, category: 'Beverages', outOfStock: false },
+  { id: 'coffee', name: 'Filter Coffee', unitPrice: 30, category: 'Beverages', outOfStock: false },
+  
+  // Desserts
+  { id: 'gulab-jamun', name: 'Gulab Jamun (2 pcs)', unitPrice: 50, category: 'Desserts', outOfStock: false },
+  { id: 'rasgulla', name: 'Rasgulla (2 pcs)', unitPrice: 50, category: 'Desserts', outOfStock: false },
+  { id: 'kheer', name: 'Kheer', unitPrice: 60, category: 'Desserts', outOfStock: false },
 ];

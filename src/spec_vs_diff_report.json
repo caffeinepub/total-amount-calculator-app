@@ -1,35 +1,17 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T03:56:45.623Z",
-  "summary": "The diff adds a predefined catalog data file and a reusable catalog UI component with search/filtering and formatted prices. The main calculator page includes new state logic to add catalog items as line items, but the truncated diff does not provide direct evidence that the catalog component is actually rendered and wired to that handler on the page.",
-  "missing_requirements": [
-    {
-      "id": "REQ-5",
-      "requirement": "Show a new predefined item catalog section on the main calculator page, with each entry having an explicit action (e.g., “Add”) that adds the item to the line items table and updates totals immediately.",
-      "reason": "While `PredefinedItemCatalog` provides an Add button calling `onAddItem`, and `TotalAmountCalculatorPage` defines `addCatalogItem`, the provided truncated snippet of `TotalAmountCalculatorPage.tsx` does not show the catalog component being rendered with `PREDEFINED_CATALOG` and `onAddItem={addCatalogItem}`, so the end-to-end UI integration cannot be confirmed from the diff summary.",
-      "evidence": [
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-        "frontend/src/features/calculator/PredefinedItemCatalog.tsx"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "Catalog usability on the main page: support quickly finding items (search/filter), show prices using existing currency formatting, and remain responsive without breaking layout.",
-      "reason": "Search/filter and currency formatting are implemented within `PredefinedItemCatalog`, but the truncated page diff does not show the component being included in the responsive layout, so it’s not verifiable that these usability features are available to the user on the main calculator page.",
-      "evidence": [
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-        "frontend/src/features/calculator/PredefinedItemCatalog.tsx"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-16T04:07:42.932Z",
+  "summary": "All requested changes appear to be implemented: currency formatting switched to INR/₹, predefined catalog replaced with Indian food items, runtime catalog add/delete controls added, and per-item out-of-stock status implemented with prevention of adding out-of-stock items to the cart.",
+  "missing_requirements": [],
   "hallucinated_features": [],
-  "confidence": 0.62,
+  "confidence": 0.78,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
     "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
     "frontend/src/features/calculator/catalog.ts",
+    "frontend/src/features/calculator/format.ts",
     "project_state.json"
   ]
 }

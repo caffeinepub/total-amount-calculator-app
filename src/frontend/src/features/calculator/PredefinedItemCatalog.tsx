@@ -1,20 +1,36 @@
 import { useState, useMemo } from 'react';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Trash2, PackageX } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 import { CatalogItem } from './catalog';
 import { formatCurrency } from './format';
 
 interface PredefinedItemCatalogProps {
   items: CatalogItem[];
   onAddItem: (item: CatalogItem) => void;
+  onAddNewItem: (item: Omit<CatalogItem, 'id'>) => void;
+  onDeleteItem: (id: string) => void;
+  onToggleOutOfStock: (id: string) => void;
 }
 
-export function PredefinedItemCatalog({ items, onAddItem }: PredefinedItemCatalogProps) {
+export function PredefinedItemCatalog({
+  items,
+  onAddItem,
+  onAddNewItem,
+  onDeleteItem,
+  onToggleOutOfStock,
+}: PredefinedItemCatalogProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newItemName, setNewItemName] = useState('');
+  const [newItemPrice, setNewItemPrice] = useState('');
+  const [newItemCategory, setNewItemCategory] = useState('');
 
   // Filter items based on search query
   const filteredItems = useMemo(() => {
@@ -42,11 +58,32 @@ export function PredefinedItemCatalog({ items, onAddItem }: PredefinedItemCatalo
     return grouped;
   }, [filteredItems]);
 
+  const handleSubmitNewItem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newItemName.trim() || !newItemPrice) return;
+
+    const price = parseFloat(newItemPrice);
+    if (isNaN(price) || price < 0) return;
+
+    onAddNewItem({
+      name: newItemName.trim(),
+      unitPrice: price,
+      category: newItemCategory.trim() || 'Other',
+      outOfStock: false,
+    });
+
+    // Reset form
+    setNewItemName('');
+    setNewItemPrice('');
+    setNewItemCategory('');
+    setShowAddForm(false);
+  };
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Quick Add Items</CardTitle>
-        <CardDescription>Select predefined items to add to your calculation</CardDescription>
+        <CardDescription>Select items to add to your calculation</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Search Input */}
@@ -60,6 +97,79 @@ export function PredefinedItemCatalog({ items, onAddItem }: PredefinedItemCatalo
             className="pl-9"
           />
         </div>
+
+        {/* Add New Item Form */}
+        {showAddForm ? (
+          <form onSubmit={handleSubmitNewItem} className="space-y-3 p-3 border rounded-lg bg-accent/20">
+            <div className="space-y-2">
+              <Label htmlFor="item-name" className="text-xs">Item Name *</Label>
+              <Input
+                id="item-name"
+                type="text"
+                placeholder="e.g., Paneer Tikka"
+                value={newItemName}
+                onChange={(e) => setNewItemName(e.target.value)}
+                required
+                className="h-9"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="item-price" className="text-xs">Unit Price (₹) *</Label>
+              <Input
+                id="item-price"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={newItemPrice}
+                onChange={(e) => setNewItemPrice(e.target.value)}
+                required
+                className="h-9"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="item-category" className="text-xs">Category (optional)</Label>
+              <Input
+                id="item-category"
+                type="text"
+                placeholder="e.g., Starters"
+                value={newItemCategory}
+                onChange={(e) => setNewItemCategory(e.target.value)}
+                className="h-9"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button type="submit" size="sm" className="flex-1">
+                Add Item
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setNewItemName('');
+                  setNewItemPrice('');
+                  setNewItemCategory('');
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <Button
+            onClick={() => setShowAddForm(true)}
+            variant="outline"
+            className="w-full gap-2"
+            size="sm"
+          >
+            <Plus className="h-4 w-4" />
+            Add New Item
+          </Button>
+        )}
+
+        <Separator />
 
         {/* Items List */}
         <ScrollArea className="h-[400px] pr-4">
@@ -81,22 +191,61 @@ export function PredefinedItemCatalog({ items, onAddItem }: PredefinedItemCatalo
                     {categoryItems.map((item) => (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        className={`flex items-start justify-between gap-3 p-3 rounded-lg border bg-card transition-colors ${
+                          item.outOfStock
+                            ? 'opacity-60 bg-muted/50'
+                            : 'hover:bg-accent/50'
+                        }`}
                       >
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-sm truncate">{item.name}</p>
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <p className={`font-medium text-sm truncate ${item.outOfStock ? 'line-through' : ''}`}>
+                              {item.name}
+                            </p>
+                            {item.outOfStock && (
+                              <Badge variant="destructive" className="text-xs shrink-0">
+                                <PackageX className="h-3 w-3 mr-1" />
+                                Out of Stock
+                              </Badge>
+                            )}
+                          </div>
                           <p className="text-sm text-primary font-semibold">
                             {formatCurrency(item.unitPrice)}
                           </p>
+                          <div className="flex items-center gap-2 pt-1">
+                            <Switch
+                              id={`stock-${item.id}`}
+                              checked={item.outOfStock || false}
+                              onCheckedChange={() => onToggleOutOfStock(item.id)}
+                              className="scale-75"
+                            />
+                            <Label
+                              htmlFor={`stock-${item.id}`}
+                              className="text-xs text-muted-foreground cursor-pointer"
+                            >
+                              Out of stock
+                            </Label>
+                          </div>
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={() => onAddItem(item)}
-                          className="gap-1 shrink-0"
-                        >
-                          <Plus className="h-3 w-3" />
-                          Add
-                        </Button>
+                        <div className="flex flex-col gap-1 shrink-0">
+                          <Button
+                            size="sm"
+                            onClick={() => onAddItem(item)}
+                            disabled={item.outOfStock}
+                            className="gap-1 h-8"
+                          >
+                            <Plus className="h-3 w-3" />
+                            Add
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => onDeleteItem(item.id)}
+                            className="gap-1 h-8 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -1,18 +1,18 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T03:56:45.625Z",
+  "generatedAt": "2026-02-16T04:07:42.935Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 2,
+    "total": 4,
+    "implemented": 4,
     "items": [
       {
-        "id": "REQ-5",
-        "summary": "Add a predefined item catalog (a list of items with fixed unit prices) to the calculator UI so a user can quickly add an item into the current line items/cart without manually typing the name and unit price.",
+        "id": "REQ-10",
+        "summary": "Add an \"Out of stock\" status/toggle per catalog item and prevent out-of-stock items from being added to the line items cart.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/src/features/calculator/catalog.ts",
@@ -26,29 +26,53 @@
         ]
       },
       {
-        "id": "REQ-6",
-        "summary": "Provide basic catalog usability so the predefined list is practical to use when it grows beyond a few items.",
+        "id": "REQ-7",
+        "summary": "Change all currency formatting and currency-related UI labels in the calculator to Indian Rupees (₹/INR), including line totals, subtotal/tax/discount/final total, and the fixed-discount selector/labels.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/format.ts",
           "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
+          "frontend/src/features/calculator/format.ts",
           "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Remove the current predefined catalog items and replace them with a common list of Indian food items (English names) with reasonable default unit prices in INR and sensible categories.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/calculator/catalog.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/calculator/catalog.ts"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Add catalog management controls in the UI to allow users to add new catalog items and delete existing catalog items from the predefined catalog list during runtime.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+          "frontend/src/features/calculator/PredefinedItemCatalog.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+          "frontend/src/features/calculator/PredefinedItemCatalog.tsx"
         ]
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
-    "build-template/README.md",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/features/calculator/PredefinedItemCatalog.tsx",
     "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
     "frontend/src/features/calculator/catalog.ts",
+    "frontend/src/features/calculator/format.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

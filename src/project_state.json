@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 5,
-  "summary": "Project to build a total amount calculator app with line items, adjustments, usability features, and a visual theme; now also planning a predefined item list with fixed prices for quick add-to-cart.",
+  "projectStateVersion": 7,
+  "summary": "Project to build a total amount calculator app with line items, adjustments, usability features, and a visual theme; includes a predefined item catalog for quick add-to-cart, now customized for Indian Rupees and an Indian food catalog with catalog management and out-of-stock control.",
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
@@ -53,6 +53,38 @@
         "REQ-6"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-change-all-currency-formatting-and-currency-related-ui-labels-in-the-calculator-to-indian-rupees-inr-including-line-totals-subtotal-tax-discount-final-total-and-the-fixed-discount-selector-labels",
+      "title": "Change all currency formatting and currency-related UI labels in the calculator to Indian Rupees (₹/INR), including line totals, subtotal/tax/discount/final total, and the fixed-discount selector/labels.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-current-predefined-catalog-items-and-replace-them-with-a-common-list-of-indian-food-items-english-names-with-reasonable-default-unit-prices-in-inr-and-sensible-categories",
+      "title": "Remove the current predefined catalog items and replace them with a common list of Indian food items (English names) with reasonable default unit prices in INR and sensible categories.",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-catalog-management-controls-in-the-ui-to-allow-users-to-add-new-catalog-items-and-delete-existing-catalog-items-from-the-predefined-catalog-list-during-runtime",
+      "title": "Add catalog management controls in the UI to allow users to add new catalog items and delete existing catalog items from the predefined catalog list during runtime.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-out-of-stock-status-toggle-per-catalog-item-and-prevent-out-of-stock-items-from-being-added-to-the-line-items-cart",
+      "title": "Add an \"Out of stock\" status/toggle per catalog item and prevent out-of-stock items from being added to the line items cart.",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -65,6 +97,30 @@
     {
       "id": "AR-2",
       "summary": "Add a predefined item list/catalog with set prices so users can quickly add items to the cart/line items",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Change displayed/handled currency to Indian Rupees (₹) across the app (inputs, formatting, totals)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Replace the existing predefined catalog items with a common list of Indian food items",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Add UI controls to add and delete items from the predefined catalog",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Add an 'Out of stock' toggle/status per catalog item that prevents adding it to the cart/line items",
       "reqIds": [],
       "status": "pending"
     }
