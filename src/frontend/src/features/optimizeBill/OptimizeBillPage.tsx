@@ -17,6 +17,7 @@ export function OptimizeBillPage() {
   const [printLocationAddress, setPrintLocationAddress] = useState<string>(defaults.printLocationAddress || '');
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -46,15 +47,22 @@ export function OptimizeBillPage() {
     setUploadError(null);
   };
 
-  const handleSaveDefaults = () => {
-    saveDefaults({
-      receiptStyle,
-      paymentScanDataUrl,
-      printLocationAddress: printLocationAddress.trim() || undefined,
-    });
+  const handleSaveDefaults = async () => {
+    setIsSaving(true);
+    try {
+      await saveDefaults({
+        receiptStyle,
+        paymentScanDataUrl,
+        printLocationAddress: printLocationAddress.trim() || undefined,
+      });
 
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error saving defaults:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -173,9 +181,9 @@ export function OptimizeBillPage() {
               <span>Defaults saved successfully!</span>
             </div>
           )}
-          <Button onClick={handleSaveDefaults} className="gap-2">
+          <Button onClick={handleSaveDefaults} className="gap-2" disabled={isSaving}>
             <Save className="h-4 w-4" />
-            Save Defaults
+            {isSaving ? 'Saving...' : 'Save Defaults'}
           </Button>
         </div>
       </div>

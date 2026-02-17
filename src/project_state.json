@@ -1,79 +1,26 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Bill/receipt printing enhancements: add an \"Optimize Bill\" option, support uploading a payment scan, capture print location address, auto-generate a bill code for each bill, and persist a default bill format applied to all future prints until changed.",
+  "summary": "New project",
   "architectural_notes": [
-    "Persist a default bill format/template and apply it to all bill prints until updated.",
-    "Bills must include an auto-generated unique bill code.",
-    "\"Optimize Bill\" flow includes payment scan upload and print location address; name field removed."
+    "Auth hooks (e.g., useBranchAuth) must be used within a BranchAuthProvider that wraps the app (e.g., in App root)."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Login screen renders as a white page when useBranchAuth is called without BranchAuthProvider wrapping the app (crash before render)."
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-add-a-new-top-level-navigation-option-labeled-optimize-bill-alongside-the-existing-calculator-and-daily-totals-options-and-route-it-to-a-dedicated-optimize-bill-screen",
-      "title": "Add a new top-level navigation option labeled \"Optimize Bill\" alongside the existing \"Calculator\" and \"Daily Totals\" options, and route it to a dedicated Optimize Bill screen.",
+      "id": "feature-prevent-the-app-from-rendering-a-blank-white-page-by-ensuring-all-components-that-call-usebranchauth-are-wrapped-in-branchauthprovider-e-g-wrap-appcontent-inside-branchauthprovider-in-frontend-src-app-tsx",
+      "title": "Prevent the app from rendering a blank white page by ensuring all components that call useBranchAuth() are wrapped in BranchAuthProvider (e.g., wrap AppContent inside BranchAuthProvider in frontend/src/App.tsx).",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
-    },
-    {
-      "id": "feature-on-the-optimize-bill-screen-provide-inputs-to-a-upload-a-payment-scan-image-accept-common-image-formats-and-b-enter-the-print-location-address-as-a-text-field-do-not-include-any-name-field",
-      "title": "On the Optimize Bill screen, provide inputs to: (a) upload a payment scan image (accept common image formats) and (b) enter the print location address as a text field; do not include any name field.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-persist-the-optimize-bill-configuration-payment-scan-image-and-print-location-address-plus-any-bill-layout-format-choices-introduced-for-bill-look-as-the-default-bill-format-in-browser-localstorage-and-automatically-apply-it-to-every-newly-printed-bill-until-the-user-changes-it",
-      "title": "Persist the Optimize Bill configuration (payment scan image and print location address, plus any bill-layout/format choices introduced for \"bill look\") as the default bill format in browser localStorage, and automatically apply it to every newly printed bill until the user changes it.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-an-automatically-generated-bill-code-to-every-saved-bill-record-at-the-time-of-printing-and-ensure-it-is-displayed-on-the-printed-bill-receipt-ui",
-      "title": "Add an automatically generated bill code to every saved bill record at the time of printing, and ensure it is displayed on the printed bill/receipt UI.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-update-the-bill-saving-and-print-view-flow-so-that-the-saved-bill-record-includes-the-default-bill-format-snapshot-used-at-print-time-including-bill-code-payment-scan-image-if-set-and-print-location-address-if-set-and-the-print-tab-renders-those-saved-values-reliably-even-if-the-defaults-are-changed-later",
-      "title": "Update the bill saving and print-view flow so that the saved bill record includes the default bill format snapshot used at print time (including bill code, payment scan image if set, and print location address if set), and the print tab renders those saved values reliably even if the defaults are changed later.",
-      "reqIds": [
-        "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-coherent-bill-look-system-that-can-be-changed-from-the-optimize-bill-screen-and-affects-the-printed-receipt-layout-styling-e-g-at-least-2-selectable-receipt-styles-with-the-selected-style-persisted-as-part-of-the-default-bill-format-and-applied-on-prints-until-changed",
-      "title": "Implement a coherent \"bill look\" system that can be changed from the Optimize Bill screen and affects the printed receipt layout/styling (e.g., at least 2 selectable receipt styles), with the selected style persisted as part of the default bill format and applied on prints until changed.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
     }
   ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "Add a top-level \"Optimize Bill\" option to modify bill look, allowing user to upload a payment scan, enter print location address (no name field), and generate an automatic bill code for each bill.",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-2",
-      "summary": "Save the selected bill format as the default and apply it to every bill print until the user changes it.",
-      "reqIds": [],
-      "status": "pending"
-    }
-  ],
-  "projectName": "Varshini Billing",
+  "new_feature_requests": [],
+  "projectName": "Varshini Classic Cuisine",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

@@ -19,7 +19,7 @@ export function loadBillFormatDefaults(): BillFormatDefaults {
     
     const parsed = JSON.parse(stored);
     
-    // Validate and provide defaults
+    // Validate and provide defaults, preserving empty string as undefined
     return {
       receiptStyle: parsed.receiptStyle || DEFAULT_RECEIPT_STYLE,
       paymentScanDataUrl: parsed.paymentScanDataUrl || undefined,
@@ -35,7 +35,20 @@ export function loadBillFormatDefaults(): BillFormatDefaults {
 
 export function saveBillFormatDefaults(defaults: BillFormatDefaults): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
+    // Clean up the object before saving - remove undefined values
+    const toSave: BillFormatDefaults = {
+      receiptStyle: defaults.receiptStyle,
+    };
+    
+    if (defaults.paymentScanDataUrl) {
+      toSave.paymentScanDataUrl = defaults.paymentScanDataUrl;
+    }
+    
+    if (defaults.printLocationAddress) {
+      toSave.printLocationAddress = defaults.printLocationAddress;
+    }
+    
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
   } catch (error) {
     console.error('Error saving bill format defaults:', error);
     throw new Error('Failed to save bill format defaults');

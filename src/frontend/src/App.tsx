@@ -7,6 +7,12 @@ import { GuidanceNoticeBar } from './components/GuidanceNoticeBar';
 import { OptimizeBillPage } from './features/optimizeBill/OptimizeBillPage';
 import { useEffect, useState } from 'react';
 import { Button } from './components/ui/button';
+import LoginButton from './components/auth/LoginButton';
+import { useSyncBillPrintLocation } from './features/optimizeBill/useSyncBillPrintLocation';
+import { useInternetIdentity } from './hooks/useInternetIdentity';
+import { useBranchAuth, BranchAuthProvider } from './hooks/useBranchAuth';
+import { AuthGatePage } from './components/auth/AuthGatePage';
+import { BranchSessionControl } from './components/auth/BranchSessionControl';
 
 const queryClient = new QueryClient();
 
@@ -15,6 +21,11 @@ type ViewMode = 'calculator' | 'dailyTotals' | 'optimizeBill';
 function AppContent() {
   const [isPrintView, setIsPrintView] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>('calculator');
+  const { identity } = useInternetIdentity();
+  const { isAuthenticated: branchAuthenticated } = useBranchAuth();
+
+  // Sync bill print location from backend when authenticated
+  useSyncBillPrintLocation();
 
   useEffect(() => {
     // Check if this is a print view request
@@ -25,6 +36,14 @@ function AppContent() {
   // Render print view without header/footer/guidance
   if (isPrintView) {
     return <PrintViewPage />;
+  }
+
+  // Check overall authentication state
+  const isAuthenticated = !!identity || branchAuthenticated;
+
+  // Show login gate if not authenticated
+  if (!isAuthenticated) {
+    return <AuthGatePage />;
   }
 
   // Normal app view
@@ -47,8 +66,8 @@ function AppContent() {
               </div>
             </div>
             
-            {/* View Toggle Buttons */}
-            <div className="flex gap-2">
+            {/* View Toggle Buttons and Login */}
+            <div className="flex gap-2 items-center">
               <Button
                 variant={viewMode === 'calculator' ? 'default' : 'outline'}
                 onClick={() => setViewMode('calculator')}
@@ -73,6 +92,10 @@ function AppContent() {
                 <Settings className="h-4 w-4" />
                 Optimize Bill
               </Button>
+              <div className="ml-2 pl-2 border-l flex items-center gap-2">
+                <BranchSessionControl />
+                <LoginButton />
+              </div>
             </div>
           </div>
         </div>
@@ -114,7 +137,9 @@ function AppContent() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppContent />
+      <BranchAuthProvider>
+        <AppContent />
+      </BranchAuthProvider>
     </QueryClientProvider>
   );
 }

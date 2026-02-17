@@ -1,168 +1,22 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Optimize Bill defaults, receipt styles, payment scan + print location, and auto bill codes",
+  "title": "Fix blank white-screen crash by wrapping app in BranchAuthProvider",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add an \"Optimize Bill\" top-level navigation option and route it to a dedicated Optimize Bill screen.",
+      "summary": "Ensure all components that call useBranchAuth() are rendered within BranchAuthProvider to prevent runtime crash and blank screen.",
       "acceptanceCriteria": [
-        "App header shows a third option: \"Optimize Bill\".",
-        "Clicking \"Optimize Bill\" shows an Optimize Bill screen without affecting the existing Calculator and Daily Totals screens.",
-        "All user-facing text is in English."
+        "Loading the app no longer results in a blank white page.",
+        "When the user is not authenticated with either Internet Identity or branch credentials, the AuthGatePage renders successfully.",
+        "BranchSessionControl and any other components using useBranchAuth() render without throwing the error \"useBranchAuth must be used within BranchAuthProvider\".",
+        "Branch login (via BranchLoginForm) can authenticate and unlock the main app view."
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Add a third header toggle button labeled \"Optimize Bill\" alongside Calculator and Daily Totals, extend the viewMode union to include optimizeBill, and render the new OptimizeBillPage when selected. Use shadcn-ui Button for the nav toggle styling; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
-          "operation": "create",
-          "description": "Create the dedicated Optimize Bill screen component that will be rendered from App viewMode. Use shadcn-ui Card, Button, Input, and Label to match existing UI composition; verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "On Optimize Bill, add payment scan image upload and print location address input (no name field) with validation.",
-      "acceptanceCriteria": [
-        "Optimize Bill screen includes an image upload control for the payment scan.",
-        "Optimize Bill screen includes a single text field for print location address.",
-        "There is no \"name\" field on the Optimize Bill screen.",
-        "Invalid/non-image uploads are rejected with a clear error message."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
-          "operation": "modify",
-          "description": "Implement (1) an image upload control that accepts common image formats and shows a clear error for invalid files, using the existing readImageFileAsDataUrl helper to reject non-image uploads; (2) a single text field labeled for print location address; and ensure there is no name field anywhere on this screen. Use shadcn-ui Input/Label/Button for consistent form UI; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/calculator/utils/readImageFileAsDataUrl.ts",
-          "operation": "modify",
-          "description": "If needed for clarity and stricter validation, enhance error messages/types so the Optimize Bill screen can display a user-friendly English error when non-image files are uploaded or file reading fails."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Persist Optimize Bill defaults (payment scan, print location address, and receipt style) in localStorage and auto-apply them to new prints until changed.",
-      "acceptanceCriteria": [
-        "Changing settings in Optimize Bill and saving persists them in localStorage.",
-        "Refreshing the app retains the saved default bill format settings.",
-        "Printing a new bill uses the saved default bill format settings without requiring re-entry.",
-        "Updating the Optimize Bill settings overrides the previous default and subsequent prints use the updated default."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
-          "operation": "create",
-          "description": "Add localStorage utilities to load/save the default bill format settings (paymentScanDataUrl optional, printLocationAddress optional, and receiptStyle selection) with safe parsing and sensible defaults."
-        },
-        {
-          "path": "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
-          "operation": "create",
-          "description": "Create a small React hook (non-JSX .ts) to read defaults from optimizeBillStorage, expose current defaults, and provide a save/update function for Optimize Bill to persist changes."
-        },
-        {
-          "path": "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
-          "operation": "modify",
-          "description": "Wire the UI controls to the defaults hook and provide an explicit \"Save Defaults\" action that persists to localStorage. Ensure all user-facing text is English. Use shadcn-ui Button and form components; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-          "operation": "modify",
-          "description": "On print/save flow, load the saved Optimize Bill defaults from localStorage and include them as the default bill format used for this print (without requiring any additional user input in the calculator screen)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Automatically generate a unique bill code at print time, save it with the bill record, and display it in the printed receipt UI.",
-      "acceptanceCriteria": [
-        "Each newly saved bill has a non-empty bill code generated automatically (no manual input required).",
-        "Two bills printed at different times do not share the same bill code.",
-        "The bill code is shown on the printed receipt view (the dedicated print tab/page)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/calculator/billCode.ts",
-          "operation": "create",
-          "description": "Implement a bill code generator utility that produces a non-empty, human-readable code with strong uniqueness across time (e.g., timestamp-based plus random suffix)."
-        },
-        {
-          "path": "frontend/src/features/calculator/savedBills.ts",
-          "operation": "modify",
-          "description": "Extend SavedBillRecord to include a required billCode field and ensure saveBill persists it at creation time."
-        },
-        {
-          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-          "operation": "modify",
-          "description": "Generate the bill code automatically when the user prints a bill and pass it into saveBill so it is stored with the saved bill record (no manual input)."
-        },
-        {
-          "path": "frontend/src/features/print/PrintViewPage.tsx",
-          "operation": "modify",
-          "description": "Render the saved bill code prominently on the print view/receipt so it appears on the printed output."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Save a per-bill snapshot of the bill format used at print time (bill code, payment scan, print location address, receipt style) and render that snapshot in the print view even if defaults later change.",
-      "acceptanceCriteria": [
-        "When a bill is printed, the saved bill record contains the bill code and the bill format data used for that print.",
-        "If the user later changes the Optimize Bill defaults, previously saved bills still print with the original saved snapshot values.",
-        "The print view displays the payment scan and print location address when they were present at print time, and omits those sections when not present."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/calculator/savedBills.ts",
-          "operation": "modify",
-          "description": "Add a billFormatSnapshot field (or equivalent) on SavedBillRecord that stores receiptStyle plus optional paymentScanDataUrl and printLocationAddress, and ensure saveBill writes the snapshot for each bill at print time."
-        },
-        {
-          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-          "operation": "modify",
-          "description": "When saving a bill for printing, capture the current Optimize Bill defaults into a snapshot object stored within the bill record so that future renders rely on the saved snapshot rather than current defaults."
-        },
-        {
-          "path": "frontend/src/features/print/PrintViewPage.tsx",
-          "operation": "modify",
-          "description": "Update the receipt rendering to use only the saved bill’s snapshot fields for receipt style, payment scan, and print location address. Conditionally render the payment scan image and print location sections only when present, and omit them otherwise."
-        }
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "summary": "Provide a selectable receipt style system (min 2 styles) configurable in Optimize Bill, persisted as default, and applied to printed receipts.",
-      "acceptanceCriteria": [
-        "Optimize Bill screen provides a clear way to select a receipt style/format (minimum two choices).",
-        "The selected receipt style changes the printed receipt appearance in the print tab.",
-        "The selected receipt style persists in localStorage and is used for future prints until changed."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/features/optimizeBill/receiptStyles.ts",
-          "operation": "create",
-          "description": "Define the receipt style identifiers (at least two, e.g., \"Classic\" and \"Compact\") and any shared metadata needed by both Optimize Bill selection UI and the print renderer."
-        },
-        {
-          "path": "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
-          "operation": "modify",
-          "description": "Add a clear receipt style selector (minimum two choices) and persist the selected style as part of the default bill format. Use shadcn-ui form components (e.g., Tabs or other existing selection components already in the project) to present choices; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
-          "operation": "modify",
-          "description": "Persist the selected receipt style in localStorage as part of the default bill format settings, including safe fallback to a default style when unset or corrupted."
-        },
-        {
-          "path": "frontend/src/features/print/PrintViewPage.tsx",
-          "operation": "modify",
-          "description": "Apply the saved receipt style (from the bill’s snapshot) to alter layout/styling in the printed receipt output (e.g., typography, spacing, borders) so the difference between at least two styles is visually clear."
+          "description": "Import BranchAuthProvider from frontend/src/hooks/useBranchAuth.tsx and wrap AppContent (and thus AuthGatePage, BranchLoginForm, BranchSessionControl, and any other useBranchAuth consumers) inside BranchAuthProvider at the App component level so AppContent's useBranchAuth() call is always within the provider, preventing the blank-screen crash."
         }
       ]
     }

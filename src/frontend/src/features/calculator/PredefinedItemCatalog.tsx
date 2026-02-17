@@ -271,112 +271,58 @@ export function PredefinedItemCatalog({
                     return (
                       <div
                         key={item.id}
-                        className={`group flex items-center gap-3 rounded-lg border p-3 transition-colors ${
+                        className={`group rounded-lg border p-3 transition-colors ${
                           item.outOfStock
                             ? 'border-muted bg-muted/30'
                             : 'border-border bg-card hover:border-primary/50 hover:bg-accent/5'
                         }`}
                       >
-                        {/* Fixed-size thumbnail slot - always rendered */}
-                        <div className="flex-shrink-0 h-16 w-16 rounded-md border border-border overflow-hidden bg-muted flex items-center justify-center">
-                          {item.image ? (
-                            <img
-                              src={item.image}
-                              alt={item.name}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <ImageIcon className="h-6 w-6 text-muted-foreground" />
-                          )}
-                        </div>
-
-                        {/* Item Details */}
-                        <div className="flex-1 min-w-0 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <p
-                              className={`font-medium truncate ${
-                                item.outOfStock ? 'text-muted-foreground line-through' : ''
-                              }`}
-                            >
-                              {item.name}
-                            </p>
-                            {item.outOfStock && (
-                              <Badge variant="destructive" className="gap-1 text-xs flex-shrink-0">
-                                <PackageX className="h-3 w-3" />
-                                Out of Stock
-                              </Badge>
+                        {/* Main row with image and details */}
+                        <div className="flex items-start gap-3 mb-3">
+                          {/* Fixed-size thumbnail slot - always rendered */}
+                          <div className="flex-shrink-0 h-16 w-16 rounded-md border border-border overflow-hidden bg-muted flex items-center justify-center">
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <ImageIcon className="h-6 w-6 text-muted-foreground" />
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {formatCurrency(item.unitPrice)}
-                          </p>
-                        </div>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          {/* Image Actions - hidden file input with button triggers */}
-                          <div className="flex items-center gap-1">
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => handleItemImageChange(item.id, e)}
-                              className="hidden"
-                              id={`image-input-${item.id}`}
-                            />
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => document.getElementById(`image-input-${item.id}`)?.click()}
-                              className="h-8 w-8"
-                              title={item.image ? 'Change image' : 'Add image'}
-                            >
-                              <ImageIcon className="h-4 w-4" />
-                            </Button>
-                            {item.image && (
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={() => onRemoveItemImage(item.id)}
-                                className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                title="Remove image"
+                          {/* Item Details */}
+                          <div className="flex-1 min-w-0 space-y-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <p
+                                className={`font-medium ${
+                                  item.outOfStock ? 'text-muted-foreground line-through' : ''
+                                }`}
                               >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
+                                {item.name}
+                              </p>
+                              {item.outOfStock && (
+                                <Badge variant="destructive" className="gap-1 text-xs flex-shrink-0">
+                                  <PackageX className="h-3 w-3" />
+                                  Out of Stock
+                                </Badge>
+                              )}
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              {formatCurrency(item.unitPrice)}
+                            </p>
                           </div>
+                        </div>
 
-                          {/* Out of Stock Toggle */}
-                          <div className="flex items-center gap-1.5">
-                            <Switch
-                              id={`stock-${item.id}`}
-                              checked={item.outOfStock}
-                              onCheckedChange={() => onToggleOutOfStock(item.id)}
-                              className="scale-75"
-                            />
-                            <Label
-                              htmlFor={`stock-${item.id}`}
-                              className="cursor-pointer text-xs text-muted-foreground whitespace-nowrap"
-                            >
-                              Out of stock
-                            </Label>
-                          </div>
-
-                          {/* Delete Button */}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => onDeleteItem(item.id)}
-                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-
-                          {/* Add Button */}
+                        {/* Actions row - responsive layout */}
+                        <div className="flex flex-wrap items-center gap-2">
+                          {/* Add Button - Primary action, always visible */}
                           <Button
                             onClick={() => onAddItem(item)}
                             size="sm"
                             disabled={item.outOfStock}
-                            className="relative gap-1"
+                            className="relative gap-1 flex-shrink-0"
                           >
                             <Plus className="h-4 w-4" />
                             Add
@@ -389,6 +335,67 @@ export function PredefinedItemCatalog({
                               </Badge>
                             )}
                           </Button>
+
+                          {/* Secondary actions */}
+                          <div className="flex items-center gap-2 flex-wrap">
+                            {/* Image Actions - hidden file input with button triggers */}
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleItemImageChange(item.id, e)}
+                                className="hidden"
+                                id={`image-input-${item.id}`}
+                              />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => document.getElementById(`image-input-${item.id}`)?.click()}
+                                className="h-8 w-8"
+                                title={item.image ? 'Change image' : 'Add image'}
+                              >
+                                <ImageIcon className="h-4 w-4" />
+                              </Button>
+                              {item.image && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onRemoveItemImage(item.id)}
+                                  className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                  title="Remove image"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+
+                            {/* Out of Stock Toggle */}
+                            <div className="flex items-center gap-1.5">
+                              <Switch
+                                id={`stock-${item.id}`}
+                                checked={item.outOfStock}
+                                onCheckedChange={() => onToggleOutOfStock(item.id)}
+                                className="scale-75"
+                              />
+                              <Label
+                                htmlFor={`stock-${item.id}`}
+                                className="cursor-pointer text-xs text-muted-foreground whitespace-nowrap"
+                              >
+                                Out of stock
+                              </Label>
+                            </div>
+
+                            {/* Delete Button */}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => onDeleteItem(item.id)}
+                              className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                              title="Delete item"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     );

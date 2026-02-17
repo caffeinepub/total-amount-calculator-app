@@ -9,6 +9,7 @@ export interface None {
 export type Option<T> = Some<T> | None;
 export interface UserProfile {
     name: string;
+    billPrintLocation: string;
 }
 export enum UserRole {
     admin = "admin",

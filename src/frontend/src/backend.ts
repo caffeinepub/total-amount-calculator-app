@@ -91,6 +91,7 @@ export class ExternalBlob {
 }
 export interface UserProfile {
     name: string;
+    billPrintLocation: string;
 }
 export enum UserRole {
     admin = "admin",

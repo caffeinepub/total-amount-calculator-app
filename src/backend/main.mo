@@ -12,6 +12,7 @@ actor {
 
   public type UserProfile = {
     name : Text;
+    billPrintLocation : Text;
   };
 
   let userProfiles = Map.empty<Principal, UserProfile>();

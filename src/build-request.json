@@ -1,143 +1,39 @@
 {
   "kind": "build_request",
-  "title": "Add Optimize Bill option with saved default bill format, payment scan, print location address, and auto bill codes",
-  "projectName": "Varshini Billing",
-  "priority": "normal",
+  "title": "Fix white-screen crash by adding BranchAuthProvider wrapper",
+  "projectName": "Varshini Classic Cuisine",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add a new top-level navigation option labeled \"Optimize Bill\" alongside the existing \"Calculator\" and \"Daily Totals\" options, and route it to a dedicated Optimize Bill screen.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Add another option on the top as optimize bill."
-        ]
-      },
-      "acceptanceCriteria": [
-        "App header shows a third option: \"Optimize Bill\".",
-        "Clicking \"Optimize Bill\" shows an Optimize Bill screen without affecting the existing Calculator and Daily Totals screens.",
-        "All user-facing text is in English."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "On the Optimize Bill screen, provide inputs to: (a) upload a payment scan image (accept common image formats) and (b) enter the print location address as a text field; do not include any name field.",
+      "text": "Prevent the app from rendering a blank white page by ensuring all components that call useBranchAuth() are wrapped in BranchAuthProvider (e.g., wrap AppContent inside BranchAuthProvider in frontend/src/App.tsx).",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-2",
-          "msg-3",
-          "msg-6"
+          "msg-5"
         ],
         "quotes": [
-          "In that the user can paste the scanner of the payment and location of the print.",
-          "Yes.name and address. Automatically",
-          "Remove the name"
+          "It is just a white page",
+          "Yes"
         ]
       },
       "acceptanceCriteria": [
-        "Optimize Bill screen includes an image upload control for the payment scan.",
-        "Optimize Bill screen includes a single text field for print location address.",
-        "There is no \"name\" field on the Optimize Bill screen.",
-        "Invalid/non-image uploads are rejected with a clear error message."
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Persist the Optimize Bill configuration (payment scan image and print location address, plus any bill-layout/format choices introduced for \"bill look\") as the default bill format in browser localStorage, and automatically apply it to every newly printed bill until the user changes it.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-7"
-        ],
-        "quotes": [
-          "Save the bill format and use it in every bill print.\nThe same should be applied until it is changed"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Changing settings in Optimize Bill and saving persists them in localStorage.",
-        "Refreshing the app retains the saved default bill format settings.",
-        "Printing a new bill uses the saved default bill format settings without requiring re-entry.",
-        "Updating the Optimize Bill settings overrides the previous default and subsequent prints use the updated default."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Add an automatically generated bill code to every saved bill record at the time of printing, and ensure it is displayed on the printed bill/receipt UI.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2",
-          "msg-3"
-        ],
-        "quotes": [
-          "Every bill should have a bill code",
-          "Automatically"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each newly saved bill has a non-empty bill code generated automatically (no manual input required).",
-        "Two bills printed at different times do not share the same bill code.",
-        "The bill code is shown on the printed receipt view (the dedicated print tab/page)."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Update the bill saving and print-view flow so that the saved bill record includes the default bill format snapshot used at print time (including bill code, payment scan image if set, and print location address if set), and the print tab renders those saved values reliably even if the defaults are changed later.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2",
-          "msg-7"
-        ],
-        "quotes": [
-          "In that the user can paste the scanner of the payment and location of the print.",
-          "Save the bill format and use it in every bill print.\nThe same should be applied until it is changed"
-        ]
-      },
-      "acceptanceCriteria": [
-        "When a bill is printed, the saved bill record contains the bill code and the bill format data used for that print.",
-        "If the user later changes the Optimize Bill defaults, previously saved bills still print with the original saved snapshot values.",
-        "The print view displays the payment scan and print location address when they were present at print time, and omits those sections when not present."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Implement a coherent \"bill look\" system that can be changed from the Optimize Bill screen and affects the printed receipt layout/styling (e.g., at least 2 selectable receipt styles), with the selected style persisted as part of the default bill format and applied on prints until changed.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-1",
-          "msg-2",
-          "msg-7"
-        ],
-        "quotes": [
-          "I want to change the bill look",
-          "Add another option on the top as optimize bill.",
-          "Save the bill format and use it in every bill print.\nThe same should be applied until it is changed"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Optimize Bill screen provides a clear way to select a receipt style/format (minimum two choices).",
-        "The selected receipt style changes the printed receipt appearance in the print tab.",
-        "The selected receipt style persists in localStorage and is used for future prints until changed."
+        "Loading the app no longer results in a blank white page.",
+        "When the user is not authenticated with either Internet Identity or branch credentials, the AuthGatePage renders successfully.",
+        "BranchSessionControl and any other components using useBranchAuth() render without throwing the error \"useBranchAuth must be used within BranchAuthProvider\".",
+        "Branch login (via BranchLoginForm) can authenticate and unlock the main app view."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single Motoko actor (no additional backend services).",
-    "Do not edit files under frontend/src/components/ui (compose them instead).",
-    "Do not edit immutable hook files listed in SYSTEM_CONTEXT (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
-    "Use English for all user-facing text."
+    "Do not edit files under frontend/src/components/ui (Shadcn UI components are read-only).",
+    "Do not edit immutable frontend paths: frontend/src/main.tsx, frontend/src/hooks/useInternetIdentity.ts(x), frontend/src/hooks/useActor.ts."
   ],
   "nonGoals": [
-    "Add or change Internet Identity authentication behavior.",
-    "Add external databases or server-side persistence for bills/settings (use existing browser localStorage patterns).",
-    "Add real-time features (WebSockets/chat).",
-    "Add third-party integrations for scanning or OCR of uploaded payment scans."
+    "Changing the branch credential list or branch authentication logic.",
+    "Redesigning the login UI beyond what is necessary to fix the crash.",
+    "Backend changes or state migrations."
   ],
   "imageRequirements": {
     "required": [],

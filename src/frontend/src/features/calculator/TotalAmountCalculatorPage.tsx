@@ -151,9 +151,24 @@ function TotalAmountCalculatorPage() {
       const todayKey = getDayKey();
       updateDailySummary(todayKey, breakdown.finalTotal);
 
-      // Open print view in new tab
+      // Construct print URL
       const printUrl = `${window.location.origin}${window.location.pathname}?print=true&id=${billId}`;
-      window.open(printUrl, '_blank');
+      
+      // Attempt to open print view in new tab
+      try {
+        const newWindow = window.open(printUrl, '_blank');
+        
+        // Check if popup was blocked (newWindow is null or undefined)
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          // Popup blocked - fallback to same-tab navigation
+          console.log('Popup blocked, navigating to print view in current tab');
+          window.location.href = printUrl;
+        }
+      } catch (openError) {
+        // Error opening window - fallback to same-tab navigation
+        console.error('Error opening print window:', openError);
+        window.location.href = printUrl;
+      }
     } catch (error) {
       console.error('Error printing bill:', error);
       alert('Failed to save bill. Please try again.');
