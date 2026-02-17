@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef } from 'react';
-import { Search, Plus, Trash2, PackageX, Image as ImageIcon, X } from 'lucide-react';
+import { Search, Plus, Trash2, PackageX, Image as ImageIcon, X, Upload } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -165,42 +165,62 @@ export function PredefinedItemCatalog({
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="new-item-image">Item image (optional)</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="new-item-image"
+              <Label>Item image (optional)</Label>
+              <div className="flex items-start gap-3">
+                {/* Fixed-size thumbnail preview slot */}
+                <div className="flex-shrink-0 h-16 w-16 rounded-md border border-border overflow-hidden bg-muted flex items-center justify-center">
+                  {newItemImage ? (
+                    <img
+                      src={newItemImage}
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                  )}
+                </div>
+                
+                {/* Hidden file input */}
+                <input
                   ref={newItemImageInputRef}
                   type="file"
                   accept="image/*"
                   onChange={handleNewItemImageSelect}
-                  className="flex-1"
+                  className="hidden"
+                  id="new-item-image-input"
                 />
-                {newItemImage && (
+                
+                {/* Image action buttons */}
+                <div className="flex flex-col gap-2">
                   <Button
                     type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setNewItemImage(null);
-                      if (newItemImageInputRef.current) {
-                        newItemImageInputRef.current.value = '';
-                      }
-                    }}
-                    className="h-9 w-9"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => newItemImageInputRef.current?.click()}
+                    className="gap-2"
                   >
-                    <X className="h-4 w-4" />
+                    <Upload className="h-4 w-4" />
+                    {newItemImage ? 'Change Image' : 'Upload Image'}
                   </Button>
-                )}
-              </div>
-              {newItemImage && (
-                <div className="mt-2">
-                  <img
-                    src={newItemImage}
-                    alt="Preview"
-                    className="h-16 w-16 rounded-md object-cover border border-border"
-                  />
+                  {newItemImage && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setNewItemImage(null);
+                        if (newItemImageInputRef.current) {
+                          newItemImageInputRef.current.value = '';
+                        }
+                      }}
+                      className="gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      <X className="h-4 w-4" />
+                      Remove Image
+                    </Button>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
             <div className="flex gap-2">
               <Button onClick={handleAddNewItem} size="sm" className="flex-1">
@@ -257,16 +277,18 @@ export function PredefinedItemCatalog({
                             : 'border-border bg-card hover:border-primary/50 hover:bg-accent/5'
                         }`}
                       >
-                        {/* Item Image Thumbnail */}
-                        {item.image && (
-                          <div className="flex-shrink-0">
+                        {/* Fixed-size thumbnail slot - always rendered */}
+                        <div className="flex-shrink-0 h-16 w-16 rounded-md border border-border overflow-hidden bg-muted flex items-center justify-center">
+                          {item.image ? (
                             <img
                               src={item.image}
                               alt={item.name}
-                              className="h-12 w-12 rounded-md object-cover border border-border"
+                              className="h-full w-full object-cover"
                             />
-                          </div>
-                        )}
+                          ) : (
+                            <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                          )}
+                        </div>
 
                         {/* Item Details */}
                         <div className="flex-1 min-w-0 space-y-1">
@@ -292,7 +314,7 @@ export function PredefinedItemCatalog({
 
                         {/* Actions */}
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          {/* Image Actions */}
+                          {/* Image Actions - hidden file input with button triggers */}
                           <div className="flex items-center gap-1">
                             <input
                               type="file"

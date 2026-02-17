@@ -1,16 +1,83 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T02:30:19.482Z",
-  "summary": "Implemented localStorage-backed daily summary persistence and wired Daily Totals calculations to prefer persisted per-day totals (with fallback compute-and-persist). Added utilities to load/save/update/get daily summaries and updated the Daily Totals hook to read them; Calculator page appears updated to update summaries on print.",
-  "missing_requirements": [],
-  "hallucinated_features": [],
-  "confidence": 0.74,
+  "generatedAt": "2026-02-17T05:53:13.478Z",
+  "summary": "The diff implements the new Optimize Bill navigation and page, localStorage persistence for bill format defaults, and introduces bill code generation plus a bill-format snapshot on saved bill records. However, evidence is insufficient (in the provided truncated diffs) to confirm the printed receipt/print view actually renders the bill code, payment scan, print location address, and style-specific layout changes based on the saved snapshot.",
+  "missing_requirements": [
+    {
+      "id": "REQ-4",
+      "requirement": "Ensure the automatically generated bill code is displayed on the printed bill/receipt UI (print tab/page).",
+      "reason": "While billCode generation and storage fields are present, the provided PrintViewPage diff excerpt does not show any rendering of bill.billCode on the printed receipt UI.",
+      "evidence": [
+        "frontend/src/features/calculator/billCode.ts",
+        "frontend/src/features/calculator/savedBills.ts",
+        "frontend/src/features/print/PrintViewPage.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "Print view must render the saved snapshot values (bill code, payment scan image if set, print location address if set) reliably even if defaults change later, and omit sections when not present.",
+      "reason": "savedBills.ts introduces billFormatSnapshot, but the provided PrintViewPage snippet does not show rendering of paymentScanDataUrl or printLocationAddress (nor conditional omission).",
+      "evidence": [
+        "frontend/src/features/calculator/savedBills.ts",
+        "frontend/src/features/print/PrintViewPage.tsx (truncated)"
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "requirement": "Selected receipt style must change the printed receipt appearance in the print tab/page.",
+      "reason": "Receipt styles and selection UI are added, but the diff evidence does not show PrintViewPage (or print rendering) applying bill.billFormatSnapshot.receiptStyle to change layout/styling.",
+      "evidence": [
+        "frontend/src/features/optimizeBill/receiptStyles.ts",
+        "frontend/src/features/optimizeBill/OptimizeBillPage.tsx (truncated)",
+        "frontend/src/features/print/PrintViewPage.tsx (truncated)"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Added catalog item thumbnail/image management UI (upload/change/remove images per catalog item) and always-rendered thumbnail slots.",
+      "reason": "BuildRequest focuses on Optimize Bill defaults, print location address, payment scan, bill codes, and receipt styles; it does not request enhancing the item catalog with images.",
+      "evidence": [
+        "frontend-file-summaries.txt (PredefinedItemCatalog.tsx summary)",
+        "frontend-file-summaries.txt (catalog.ts summary mentions optional image field)"
+      ]
+    },
+    {
+      "description": "Introduced a new daily summary persistence system in Daily Totals ledger utilities and updated daily totals hook behavior around summaries.",
+      "reason": "BuildRequest does not ask for changes to Daily Totals persistence/aggregation beyond not affecting existing screens.",
+      "evidence": [
+        "frontend-file-summaries.txt (ledgerUtils.ts summary)",
+        "frontend-file-summaries.txt (useDailyTotal.ts summary)"
+      ]
+    },
+    {
+      "description": "Changed the browser tab/document title to \"Varshini Classic Cuisine\".",
+      "reason": "Not requested by any requirement; unrelated to Optimize Bill and printing requirements.",
+      "evidence": [
+        "frontend-file-summaries.txt (frontend/index.html summary)"
+      ]
+    },
+    {
+      "description": "Added a dedicated print completion screen with auto-close attempts and print event/media-query listeners.",
+      "reason": "Not requested; requirements only specify what must appear on the printed receipt and how defaults/snapshots behave.",
+      "evidence": [
+        "frontend/src/features/print/PrintViewPage.tsx (truncated)"
+      ]
+    }
+  ],
+  "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts",
-    "frontend/src/features/balanceSheet/ledgerUtils.ts",
+    "frontend/src/App.tsx",
     "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+    "frontend/src/features/calculator/billCode.ts",
+    "frontend/src/features/calculator/savedBills.ts",
+    "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
+    "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+    "frontend/src/features/optimizeBill/receiptStyles.ts",
+    "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
+    "frontend/src/features/print/PrintViewPage.tsx",
     "project_state.json"
   ]
 }

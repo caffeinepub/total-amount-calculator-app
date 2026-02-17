@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-persist-a-per-day-summary-record-daily-total-revenue-in-browser-storage-for-every-calendar-day-that-has-at-least-one-printed-bill-so-that-daily-totals-are-saved-and-remain-available-across-sessions",
-      "featureTitle": "Persist a per-day summary record (daily total revenue) in browser storage for every calendar day that has at least one printed bill, so that daily totals are saved and remain available across sessions.",
+      "featureId": "feature-add-a-new-top-level-navigation-option-labeled-optimize-bill-alongside-the-existing-calculator-and-daily-totals-options-and-route-it-to-a-dedicated-optimize-bill-screen",
+      "featureTitle": "Add a new top-level navigation option labeled \"Optimize Bill\" alongside the existing \"Calculator\" and \"Daily Totals\" options, and route it to a dedicated Optimize Bill screen.",
       "files": [
-        "frontend/src/features/balanceSheet/ledgerUtils.ts",
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+        "frontend/src/App.tsx",
+        "frontend/src/features/optimizeBill/OptimizeBillPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,16 +17,15 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-43"
+        "REQ-1"
       ],
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-the-daily-totals-page-to-read-and-display-the-saved-per-day-total-revenue-from-the-persisted-daily-summary-records-for-the-selected-day",
-      "featureTitle": "Update the Daily Totals page to read and display the saved per-day total revenue from the persisted daily-summary records for the selected day.",
+      "featureId": "feature-on-the-optimize-bill-screen-provide-inputs-to-a-upload-a-payment-scan-image-accept-common-image-formats-and-b-enter-the-print-location-address-as-a-text-field-do-not-include-any-name-field",
+      "featureTitle": "On the Optimize Bill screen, provide inputs to: (a) upload a payment scan image (accept common image formats) and (b) enter the print location address as a text field; do not include any name field.",
       "files": [
-        "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts",
-        "frontend/src/features/balanceSheet/ledgerUtils.ts"
+        "frontend/src/features/optimizeBill/OptimizeBillPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -37,7 +36,94 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-44"
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-persist-the-optimize-bill-configuration-payment-scan-image-and-print-location-address-plus-any-bill-layout-format-choices-introduced-for-bill-look-as-the-default-bill-format-in-browser-localstorage-and-automatically-apply-it-to-every-newly-printed-bill-until-the-user-changes-it",
+      "featureTitle": "Persist the Optimize Bill configuration (payment scan image and print location address, plus any bill-layout/format choices introduced for \"bill look\") as the default bill format in browser localStorage, and automatically apply it to every newly printed bill until the user changes it.",
+      "files": [
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+        "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
+        "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+        "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-automatically-generated-bill-code-to-every-saved-bill-record-at-the-time-of-printing-and-ensure-it-is-displayed-on-the-printed-bill-receipt-ui",
+      "featureTitle": "Add an automatically generated bill code to every saved bill record at the time of printing, and ensure it is displayed on the printed bill/receipt UI.",
+      "files": [
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+        "frontend/src/features/calculator/billCode.ts",
+        "frontend/src/features/calculator/savedBills.ts",
+        "frontend/src/features/print/PrintViewPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-bill-saving-and-print-view-flow-so-that-the-saved-bill-record-includes-the-default-bill-format-snapshot-used-at-print-time-including-bill-code-payment-scan-image-if-set-and-print-location-address-if-set-and-the-print-tab-renders-those-saved-values-reliably-even-if-the-defaults-are-changed-later",
+      "featureTitle": "Update the bill saving and print-view flow so that the saved bill record includes the default bill format snapshot used at print time (including bill code, payment scan image if set, and print location address if set), and the print tab renders those saved values reliably even if the defaults are changed later.",
+      "files": [
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+        "frontend/src/features/calculator/savedBills.ts",
+        "frontend/src/features/print/PrintViewPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-coherent-bill-look-system-that-can-be-changed-from-the-optimize-bill-screen-and-affects-the-printed-receipt-layout-styling-e-g-at-least-2-selectable-receipt-styles-with-the-selected-style-persisted-as-part-of-the-default-bill-format-and-applied-on-prints-until-changed",
+      "featureTitle": "Implement a coherent \"bill look\" system that can be changed from the Optimize Bill screen and affects the printed receipt layout/styling (e.g., at least 2 selectable receipt styles), with the selected style persisted as part of the default bill format and applied on prints until changed.",
+      "files": [
+        "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
+        "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+        "frontend/src/features/optimizeBill/receiptStyles.ts",
+        "frontend/src/features/print/PrintViewPage.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
       ],
       "confidence": "high"
     }

@@ -1,15 +1,16 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Calculator, TrendingUp } from 'lucide-react';
+import { Calculator, TrendingUp, Settings } from 'lucide-react';
 import TotalAmountCalculatorPage from './features/calculator/TotalAmountCalculatorPage';
 import { BalanceSheetView } from './features/balanceSheet/BalanceSheetView';
 import { PrintViewPage } from './features/print/PrintViewPage';
 import { GuidanceNoticeBar } from './components/GuidanceNoticeBar';
+import { OptimizeBillPage } from './features/optimizeBill/OptimizeBillPage';
 import { useEffect, useState } from 'react';
 import { Button } from './components/ui/button';
 
 const queryClient = new QueryClient();
 
-type ViewMode = 'calculator' | 'dailyTotals';
+type ViewMode = 'calculator' | 'dailyTotals' | 'optimizeBill';
 
 function AppContent() {
   const [isPrintView, setIsPrintView] = useState(false);
@@ -64,6 +65,14 @@ function AppContent() {
                 <TrendingUp className="h-4 w-4" />
                 Daily Totals
               </Button>
+              <Button
+                variant={viewMode === 'optimizeBill' ? 'default' : 'outline'}
+                onClick={() => setViewMode('optimizeBill')}
+                className="gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Optimize Bill
+              </Button>
             </div>
           </div>
         </div>
@@ -73,8 +82,10 @@ function AppContent() {
       <main className="container mx-auto px-4 py-8">
         {viewMode === 'calculator' ? (
           <TotalAmountCalculatorPage />
-        ) : (
+        ) : viewMode === 'dailyTotals' ? (
           <BalanceSheetView />
+        ) : (
+          <OptimizeBillPage />
         )}
       </main>
 

@@ -1,54 +1,143 @@
 {
   "kind": "build_request",
-  "title": "Persist daily totals for every day",
-  "projectName": "Varshini Classic Cuisine",
+  "title": "Add Optimize Bill option with saved default bill format, payment scan, print location address, and auto bill codes",
+  "projectName": "Varshini Billing",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-43",
-      "text": "Persist a per-day summary record (daily total revenue) in browser storage for every calendar day that has at least one printed bill, so that daily totals are saved and remain available across sessions.",
+      "id": "REQ-1",
+      "text": "Add a new top-level navigation option labeled \"Optimize Bill\" alongside the existing \"Calculator\" and \"Daily Totals\" options, and route it to a dedicated Optimize Bill screen.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-2"
         ],
         "quotes": [
-          "Make it  save the daily total of every day"
+          "Add another option on the top as optimize bill."
         ]
       },
       "acceptanceCriteria": [
-        "After the user clicks \"Print Bill\", the app writes/updates a stored daily-summary entry for the user’s local calendar day (YYYY-MM-DD).",
-        "The stored daily-summary entry includes at minimum the day key and the cumulative total revenue for that day (in number form suitable for INR formatting in the UI).",
-        "If multiple bills are printed on the same day, the stored daily total increases accordingly without overwriting previous days.",
-        "Daily totals persist after page refresh and browser restart (localStorage-based persistence is acceptable)."
+        "App header shows a third option: \"Optimize Bill\".",
+        "Clicking \"Optimize Bill\" shows an Optimize Bill screen without affecting the existing Calculator and Daily Totals screens.",
+        "All user-facing text is in English."
       ]
     },
     {
-      "id": "REQ-44",
-      "text": "Update the Daily Totals page to read and display the saved per-day total revenue from the persisted daily-summary records for the selected day.",
+      "id": "REQ-2",
+      "text": "On the Optimize Bill screen, provide inputs to: (a) upload a payment scan image (accept common image formats) and (b) enter the print location address as a text field; do not include any name field.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-2",
+          "msg-3",
+          "msg-6"
         ],
         "quotes": [
-          "Make it  save the daily total of every day"
+          "In that the user can paste the scanner of the payment and location of the print.",
+          "Yes.name and address. Automatically",
+          "Remove the name"
         ]
       },
       "acceptanceCriteria": [
-        "The Daily Totals page continues to list available days and lets the user select any saved day.",
-        "For a selected day, the displayed \"Total Revenue\" value is derived from the persisted daily-summary data for that day and formatted in INR.",
-        "If a day exists in the daily bill ledger but does not yet have a persisted daily-summary record (e.g., older data), the UI still shows a correct total by computing it from that day’s ledger entries and then persists the computed value for future loads."
+        "Optimize Bill screen includes an image upload control for the payment scan.",
+        "Optimize Bill screen includes a single text field for print location address.",
+        "There is no \"name\" field on the Optimize Bill screen.",
+        "Invalid/non-image uploads are rejected with a clear error message."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Persist the Optimize Bill configuration (payment scan image and print location address, plus any bill-layout/format choices introduced for \"bill look\") as the default bill format in browser localStorage, and automatically apply it to every newly printed bill until the user changes it.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-7"
+        ],
+        "quotes": [
+          "Save the bill format and use it in every bill print.\nThe same should be applied until it is changed"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Changing settings in Optimize Bill and saving persists them in localStorage.",
+        "Refreshing the app retains the saved default bill format settings.",
+        "Printing a new bill uses the saved default bill format settings without requiring re-entry.",
+        "Updating the Optimize Bill settings overrides the previous default and subsequent prints use the updated default."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Add an automatically generated bill code to every saved bill record at the time of printing, and ensure it is displayed on the printed bill/receipt UI.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-3"
+        ],
+        "quotes": [
+          "Every bill should have a bill code",
+          "Automatically"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Each newly saved bill has a non-empty bill code generated automatically (no manual input required).",
+        "Two bills printed at different times do not share the same bill code.",
+        "The bill code is shown on the printed receipt view (the dedicated print tab/page)."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Update the bill saving and print-view flow so that the saved bill record includes the default bill format snapshot used at print time (including bill code, payment scan image if set, and print location address if set), and the print tab renders those saved values reliably even if the defaults are changed later.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2",
+          "msg-7"
+        ],
+        "quotes": [
+          "In that the user can paste the scanner of the payment and location of the print.",
+          "Save the bill format and use it in every bill print.\nThe same should be applied until it is changed"
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a bill is printed, the saved bill record contains the bill code and the bill format data used for that print.",
+        "If the user later changes the Optimize Bill defaults, previously saved bills still print with the original saved snapshot values.",
+        "The print view displays the payment scan and print location address when they were present at print time, and omits those sections when not present."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Implement a coherent \"bill look\" system that can be changed from the Optimize Bill screen and affects the printed receipt layout/styling (e.g., at least 2 selectable receipt styles), with the selected style persisted as part of the default bill format and applied on prints until changed.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1",
+          "msg-2",
+          "msg-7"
+        ],
+        "quotes": [
+          "I want to change the bill look",
+          "Add another option on the top as optimize bill.",
+          "Save the bill format and use it in every bill print.\nThe same should be applied until it is changed"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Optimize Bill screen provides a clear way to select a receipt style/format (minimum two choices).",
+        "The selected receipt style changes the printed receipt appearance in the print tab.",
+        "The selected receipt style persists in localStorage and is used for future prints until changed."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/components/ui (Shadcn UI components are read-only).",
-    "Keep all persistence in browser storage; do not introduce new backend canister APIs for daily totals."
+    "Backend must remain a single Motoko actor (no additional backend services).",
+    "Do not edit files under frontend/src/components/ui (compose them instead).",
+    "Do not edit immutable hook files listed in SYSTEM_CONTEXT (frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx).",
+    "Use English for all user-facing text."
   ],
   "nonGoals": [
-    "Adding real-time syncing of daily totals between devices/browsers.",
-    "Introducing a server-side database or external storage for daily totals."
+    "Add or change Internet Identity authentication behavior.",
+    "Add external databases or server-side persistence for bills/settings (use existing browser localStorage patterns).",
+    "Add real-time features (WebSockets/chat).",
+    "Add third-party integrations for scanning or OCR of uploaded payment scans."
   ],
   "imageRequirements": {
     "required": [],

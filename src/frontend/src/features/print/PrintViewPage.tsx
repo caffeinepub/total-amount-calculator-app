@@ -129,34 +129,56 @@ export function PrintViewPage() {
     timeStyle: 'short',
   });
 
+  const isClassicStyle = bill.billFormatSnapshot.receiptStyle === 'classic';
+
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-white text-black">
+    <div className={`max-w-3xl mx-auto p-8 bg-white text-black ${isClassicStyle ? 'classic-receipt' : 'compact-receipt'}`}>
       {/* Header */}
-      <div className="text-center mb-8 border-b-2 border-black pb-4">
-        <h1 className="text-3xl font-bold mb-2">Varshini Classic Cuisine</h1>
-        <p className="text-sm">Bill Receipt</p>
-        <p className="text-xs mt-2">{printDate}</p>
+      <div className={`text-center mb-6 ${isClassicStyle ? 'border-b-2 border-black pb-4' : 'border-b border-gray-400 pb-3'}`}>
+        <h1 className={`font-bold mb-2 ${isClassicStyle ? 'text-3xl' : 'text-2xl'}`}>Varshini Classic Cuisine</h1>
+        <p className={`${isClassicStyle ? 'text-sm' : 'text-xs'}`}>Bill Receipt</p>
+        <p className={`mt-2 ${isClassicStyle ? 'text-xs' : 'text-xs text-gray-600'}`}>{printDate}</p>
+        <p className={`font-semibold mt-1 ${isClassicStyle ? 'text-sm' : 'text-xs'}`}>Bill Code: {bill.billCode}</p>
       </div>
 
+      {/* Payment Scan (if present) */}
+      {bill.billFormatSnapshot.paymentScanDataUrl && (
+        <div className={`mb-6 ${isClassicStyle ? '' : 'mb-4'}`}>
+          <img
+            src={bill.billFormatSnapshot.paymentScanDataUrl}
+            alt="Payment information"
+            className="w-full max-h-48 object-contain border border-gray-300 rounded"
+          />
+        </div>
+      )}
+
+      {/* Print Location Address (if present) */}
+      {bill.billFormatSnapshot.printLocationAddress && (
+        <div className={`mb-6 ${isClassicStyle ? 'p-3 border border-gray-400 rounded' : 'p-2 bg-gray-50 text-xs'}`}>
+          <p className={`font-semibold ${isClassicStyle ? 'text-sm mb-1' : 'text-xs mb-0.5'}`}>Print Location:</p>
+          <p className={`${isClassicStyle ? 'text-sm' : 'text-xs'}`}>{bill.billFormatSnapshot.printLocationAddress}</p>
+        </div>
+      )}
+
       {/* Line Items Table */}
-      <table className="w-full mb-6 border-collapse">
+      <table className={`w-full border-collapse ${isClassicStyle ? 'mb-6' : 'mb-4'}`}>
         <thead>
-          <tr className="border-b-2 border-black">
-            <th className="text-left py-2 px-2">Item</th>
-            <th className="text-center py-2 px-2">Qty</th>
-            <th className="text-right py-2 px-2">Unit Price</th>
-            <th className="text-right py-2 px-2">Total</th>
+          <tr className={`${isClassicStyle ? 'border-b-2 border-black' : 'border-b border-gray-400'}`}>
+            <th className={`text-left py-2 px-2 ${isClassicStyle ? '' : 'text-sm'}`}>Item</th>
+            <th className={`text-center py-2 px-2 ${isClassicStyle ? '' : 'text-sm'}`}>Qty</th>
+            <th className={`text-right py-2 px-2 ${isClassicStyle ? '' : 'text-sm'}`}>Unit Price</th>
+            <th className={`text-right py-2 px-2 ${isClassicStyle ? '' : 'text-sm'}`}>Total</th>
           </tr>
         </thead>
         <tbody>
           {bill.lineItems
             .filter((item) => item.label.trim() !== '' && item.quantity > 0)
             .map((item, index) => (
-              <tr key={index} className="border-b border-gray-300">
-                <td className="py-2 px-2">{item.label}</td>
-                <td className="text-center py-2 px-2">{item.quantity}</td>
-                <td className="text-right py-2 px-2">{formatCurrency(item.unitPrice)}</td>
-                <td className="text-right py-2 px-2 font-medium">
+              <tr key={index} className={`${isClassicStyle ? 'border-b border-gray-300' : 'border-b border-gray-200'}`}>
+                <td className={`py-2 px-2 ${isClassicStyle ? '' : 'text-sm'}`}>{item.label}</td>
+                <td className={`text-center py-2 px-2 ${isClassicStyle ? '' : 'text-sm'}`}>{item.quantity}</td>
+                <td className={`text-right py-2 px-2 ${isClassicStyle ? '' : 'text-sm'}`}>{formatCurrency(item.unitPrice)}</td>
+                <td className={`text-right py-2 px-2 font-medium ${isClassicStyle ? '' : 'text-sm'}`}>
                   {formatCurrency(calculateLineTotal(item.quantity, item.unitPrice))}
                 </td>
               </tr>
@@ -165,29 +187,29 @@ export function PrintViewPage() {
       </table>
 
       {/* Totals Breakdown */}
-      <div className="border-t-2 border-black pt-4">
-        <div className="flex justify-between mb-2">
+      <div className={`${isClassicStyle ? 'border-t-2 border-black pt-4' : 'border-t border-gray-400 pt-3'}`}>
+        <div className={`flex justify-between ${isClassicStyle ? 'mb-2' : 'mb-1.5 text-sm'}`}>
           <span>Subtotal:</span>
           <span className="font-medium">{formatCurrency(bill.breakdown.subtotal)}</span>
         </div>
-        <div className="flex justify-between mb-2">
+        <div className={`flex justify-between ${isClassicStyle ? 'mb-2' : 'mb-1.5 text-sm'}`}>
           <span>Tax ({bill.taxRate}%):</span>
           <span className="font-medium">+{formatCurrency(bill.breakdown.taxAmount)}</span>
         </div>
-        <div className="flex justify-between mb-2">
+        <div className={`flex justify-between ${isClassicStyle ? 'mb-2' : 'mb-1.5 text-sm'}`}>
           <span>
             Discount ({bill.discountType === 'percentage' ? `${bill.discountValue}%` : '₹'}):
           </span>
           <span className="font-medium">-{formatCurrency(bill.breakdown.discountAmount)}</span>
         </div>
-        <div className="flex justify-between text-xl font-bold border-t-2 border-black pt-4 mt-4">
+        <div className={`flex justify-between font-bold ${isClassicStyle ? 'text-xl border-t-2 border-black pt-4 mt-4' : 'text-lg border-t border-gray-400 pt-2 mt-2'}`}>
           <span>Final Total:</span>
           <span>{formatCurrency(bill.breakdown.finalTotal)}</span>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="text-center mt-8 pt-4 border-t border-gray-300">
+      <div className={`text-center ${isClassicStyle ? 'mt-8 pt-4 border-t border-gray-300' : 'mt-6 pt-3 border-t border-gray-200'}`}>
         <p className="text-xs">Thank you for dining with us!</p>
       </div>
     </div>

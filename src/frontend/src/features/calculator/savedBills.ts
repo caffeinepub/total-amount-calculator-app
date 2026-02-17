@@ -1,6 +1,15 @@
+import { ReceiptStyleId } from '../optimizeBill/receiptStyles';
+
+export interface BillFormatSnapshot {
+  receiptStyle: ReceiptStyleId;
+  paymentScanDataUrl?: string;
+  printLocationAddress?: string;
+}
+
 export interface SavedBillRecord {
   id: string;
   timestamp: number;
+  billCode: string;
   lineItems: Array<{
     label: string;
     quantity: number;
@@ -15,6 +24,7 @@ export interface SavedBillRecord {
     discountAmount: number;
     finalTotal: number;
   };
+  billFormatSnapshot: BillFormatSnapshot;
 }
 
 const STORAGE_KEY = 'varshini_saved_bills';

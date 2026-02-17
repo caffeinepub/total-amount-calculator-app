@@ -17,6 +17,8 @@ import { saveBill } from './savedBills';
 import { appendLedgerEntry, updateDailySummary, getDayKey } from '../balanceSheet/ledgerUtils';
 import { findMatchingLineItem } from './lineItemCatalogMatching';
 import { confirmDelete } from '@/utils/confirmDelete';
+import { generateBillCode } from './billCode';
+import { loadBillFormatDefaults } from '../optimizeBill/optimizeBillStorage';
 
 function TotalAmountCalculatorPage() {
   const [state, setState] = useState<CalculatorState>({
@@ -121,8 +123,15 @@ function TotalAmountCalculatorPage() {
 
   const handlePrintBill = () => {
     try {
-      // Save bill to localStorage
+      // Generate bill code
+      const billCode = generateBillCode();
+
+      // Load current bill format defaults
+      const billFormatDefaults = loadBillFormatDefaults();
+
+      // Save bill to localStorage with bill code and format snapshot
       const billId = saveBill({
+        billCode,
         lineItems: state.lineItems.map(({ label, quantity, unitPrice }) => ({
           label,
           quantity,
@@ -132,6 +141,7 @@ function TotalAmountCalculatorPage() {
         discountType: state.discountType,
         discountValue: state.discountValue,
         breakdown,
+        billFormatSnapshot: billFormatDefaults,
       });
 
       // Record in Daily Totals ledger
@@ -386,44 +396,42 @@ function TotalAmountCalculatorPage() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="text-muted-foreground">Subtotal:</span>
                       <span className="font-medium">{formatCurrency(breakdown.subtotal)}</span>
                     </div>
-                    {breakdown.taxAmount > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Tax ({state.taxRate}%)</span>
-                        <span className="font-medium">{formatCurrency(breakdown.taxAmount)}</span>
-                      </div>
-                    )}
-                    {breakdown.discountAmount > 0 && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          Discount
-                          {state.discountType === 'percentage' && ` (${state.discountValue}%)`}
-                        </span>
-                        <span className="font-medium text-destructive">
-                          -{formatCurrency(breakdown.discountAmount)}
-                        </span>
-                      </div>
-                    )}
-                    <Separator />
-                    <div className="flex justify-between">
-                      <span className="text-lg font-semibold">Total</span>
-                      <span className="text-2xl font-bold text-primary">
-                        {formatCurrency(breakdown.finalTotal)}
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Tax:</span>
+                      <span className="font-medium text-amber-600">
+                        +{formatCurrency(breakdown.taxAmount)}
                       </span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground">Discount:</span>
+                      <span className="font-medium text-green-600">
+                        -{formatCurrency(breakdown.discountAmount)}
+                      </span>
+                    </div>
+                    <Separator />
+                    <div className="flex justify-between text-lg font-bold">
+                      <span>Total:</span>
+                      <span className="text-primary">{formatCurrency(breakdown.finalTotal)}</span>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Action Buttons */}
-                <div className="space-y-3 no-print">
+                <div className="no-print space-y-3">
                   <Button onClick={handlePrintBill} className="w-full gap-2" size="lg">
                     <Printer className="h-5 w-5" />
                     Print Bill
                   </Button>
-                  <Button onClick={resetCalculator} variant="outline" className="w-full gap-2">
-                    <RotateCcw className="h-4 w-4" />
+                  <Button
+                    onClick={resetCalculator}
+                    variant="outline"
+                    className="w-full gap-2"
+                    size="lg"
+                  >
+                    <RotateCcw className="h-5 w-5" />
                     Reset
                   </Button>
                 </div>
@@ -433,7 +441,7 @@ function TotalAmountCalculatorPage() {
         </div>
       </div>
 
-      {/* Hidden Print Component */}
+      {/* Hidden PrintBill component for backward compatibility */}
       <div className="hidden">
         <PrintBill
           lineItems={state.lineItems}
