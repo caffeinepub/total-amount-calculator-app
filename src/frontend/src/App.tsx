@@ -3,6 +3,7 @@ import { Calculator, TrendingUp } from 'lucide-react';
 import TotalAmountCalculatorPage from './features/calculator/TotalAmountCalculatorPage';
 import { BalanceSheetView } from './features/balanceSheet/BalanceSheetView';
 import { PrintViewPage } from './features/print/PrintViewPage';
+import { GuidanceNoticeBar } from './components/GuidanceNoticeBar';
 import { useEffect, useState } from 'react';
 import { Button } from './components/ui/button';
 
@@ -20,7 +21,7 @@ function AppContent() {
     setIsPrintView(params.get('print') === 'true');
   }, []);
 
-  // Render print view without header/footer
+  // Render print view without header/footer/guidance
   if (isPrintView) {
     return <PrintViewPage />;
   }
@@ -28,6 +29,9 @@ function AppContent() {
   // Normal app view
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+      {/* Guidance Notice Bar */}
+      <GuidanceNoticeBar />
+
       {/* Header */}
       <header className="no-print border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">

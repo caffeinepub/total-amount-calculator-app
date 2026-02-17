@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Search, Plus, Trash2, PackageX } from 'lucide-react';
+import { useState, useMemo, useRef } from 'react';
+import { Search, Plus, Trash2, PackageX, Image as ImageIcon, X } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -9,18 +9,10 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { CatalogItem } from './catalog';
-import { LineItem } from './types';
 import { formatCurrency } from './format';
 import { getAddedCountForCatalogItem } from './lineItemCatalogMatching';
-
-interface PredefinedItemCatalogProps {
-  items: CatalogItem[];
-  lineItems: LineItem[];
-  onAddItem: (item: CatalogItem) => void;
-  onAddNewItem: (item: Omit<CatalogItem, 'id'>) => void;
-  onDeleteItem: (id: string) => void;
-  onToggleOutOfStock: (id: string) => void;
-}
+import { readImageFileAsDataUrl } from './utils/readImageFileAsDataUrl';
+import { PredefinedItemCatalogProps } from './PredefinedItemCatalog.types';
 
 export function PredefinedItemCatalog({
   items,
@@ -29,12 +21,16 @@ export function PredefinedItemCatalog({
   onAddNewItem,
   onDeleteItem,
   onToggleOutOfStock,
+  onUpdateItemImage,
+  onRemoveItemImage,
 }: PredefinedItemCatalogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [newItemName, setNewItemName] = useState('');
   const [newItemPrice, setNewItemPrice] = useState('');
   const [newItemCategory, setNewItemCategory] = useState('');
+  const [newItemImage, setNewItemImage] = useState<string | null>(null);
+  const newItemImageInputRef = useRef<HTMLInputElement>(null);
 
   // Filter items based on search query
   const filteredItems = useMemo(() => {
@@ -51,48 +47,79 @@ export function PredefinedItemCatalog({
 
   // Group items by category
   const itemsByCategory = useMemo(() => {
-    const grouped = new Map<string, CatalogItem[]>();
+    const grouped: Record<string, CatalogItem[]> = {};
     filteredItems.forEach((item) => {
-      const category = item.category || 'Other';
-      if (!grouped.has(category)) {
-        grouped.set(category, []);
+      const category = item.category || 'Uncategorized';
+      if (!grouped[category]) {
+        grouped[category] = [];
       }
-      grouped.get(category)!.push(item);
+      grouped[category].push(item);
     });
     return grouped;
   }, [filteredItems]);
 
-  const handleSubmitNewItem = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newItemName.trim() || !newItemPrice) return;
+  const handleNewItemImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
+    try {
+      const dataUrl = await readImageFileAsDataUrl(file);
+      setNewItemImage(dataUrl);
+    } catch (error) {
+      console.error('Error reading image:', error);
+      alert('Failed to read image. Please select a valid image file.');
+    }
+  };
+
+  const handleAddNewItem = () => {
     const price = parseFloat(newItemPrice);
-    if (isNaN(price) || price < 0) return;
+    if (!newItemName.trim() || isNaN(price) || price < 0) {
+      alert('Please enter a valid item name and price.');
+      return;
+    }
 
     onAddNewItem({
       name: newItemName.trim(),
       unitPrice: price,
-      category: newItemCategory.trim() || 'Other',
+      category: newItemCategory.trim() || 'Custom',
       outOfStock: false,
+      image: newItemImage || undefined,
     });
 
     // Reset form
     setNewItemName('');
     setNewItemPrice('');
     setNewItemCategory('');
+    setNewItemImage(null);
+    if (newItemImageInputRef.current) {
+      newItemImageInputRef.current.value = '';
+    }
     setShowAddForm(false);
+  };
+
+  const handleItemImageChange = async (itemId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const dataUrl = await readImageFileAsDataUrl(file);
+      onUpdateItemImage(itemId, dataUrl);
+    } catch (error) {
+      console.error('Error reading image:', error);
+      alert('Failed to read image. Please select a valid image file.');
+    }
   };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Quick Add Items</CardTitle>
-        <CardDescription>Select items to add to your calculation</CardDescription>
+        <CardDescription>Select items to add to your bill</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Search Input */}
+        {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="text"
             placeholder="Search items..."
@@ -104,63 +131,100 @@ export function PredefinedItemCatalog({
 
         {/* Add New Item Form */}
         {showAddForm ? (
-          <form onSubmit={handleSubmitNewItem} className="space-y-3 p-3 border rounded-lg bg-accent/20">
+          <div className="space-y-3 rounded-lg border border-primary/20 bg-primary/5 p-4">
             <div className="space-y-2">
-              <Label htmlFor="item-name" className="text-xs">Item Name *</Label>
+              <Label htmlFor="new-item-name">Item Name</Label>
               <Input
-                id="item-name"
+                id="new-item-name"
                 type="text"
-                placeholder="e.g., Paneer Tikka"
+                placeholder="e.g., Masala Chai"
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
-                required
-                className="h-9"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="item-price" className="text-xs">Unit Price (₹) *</Label>
+              <Label htmlFor="new-item-price">Price (₹)</Label>
               <Input
-                id="item-price"
+                id="new-item-price"
                 type="number"
                 min="0"
                 step="0.01"
                 placeholder="0.00"
                 value={newItemPrice}
                 onChange={(e) => setNewItemPrice(e.target.value)}
-                required
-                className="h-9"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="item-category" className="text-xs">Category (optional)</Label>
+              <Label htmlFor="new-item-category">Category (Optional)</Label>
               <Input
-                id="item-category"
+                id="new-item-category"
                 type="text"
-                placeholder="e.g., Starters"
+                placeholder="e.g., Beverages"
                 value={newItemCategory}
                 onChange={(e) => setNewItemCategory(e.target.value)}
-                className="h-9"
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-item-image">Item image (optional)</Label>
+              <div className="flex items-center gap-2">
+                <Input
+                  id="new-item-image"
+                  ref={newItemImageInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleNewItemImageSelect}
+                  className="flex-1"
+                />
+                {newItemImage && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setNewItemImage(null);
+                      if (newItemImageInputRef.current) {
+                        newItemImageInputRef.current.value = '';
+                      }
+                    }}
+                    className="h-9 w-9"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              {newItemImage && (
+                <div className="mt-2">
+                  <img
+                    src={newItemImage}
+                    alt="Preview"
+                    className="h-16 w-16 rounded-md object-cover border border-border"
+                  />
+                </div>
+              )}
+            </div>
             <div className="flex gap-2">
-              <Button type="submit" size="sm" className="flex-1">
-                Add Item
+              <Button onClick={handleAddNewItem} size="sm" className="flex-1">
+                Save Item
               </Button>
               <Button
-                type="button"
-                size="sm"
-                variant="outline"
                 onClick={() => {
                   setShowAddForm(false);
                   setNewItemName('');
                   setNewItemPrice('');
                   setNewItemCategory('');
+                  setNewItemImage(null);
+                  if (newItemImageInputRef.current) {
+                    newItemImageInputRef.current.value = '';
+                  }
                 }}
+                variant="outline"
+                size="sm"
+                className="flex-1"
               >
                 Cancel
               </Button>
             </div>
-          </form>
+          </div>
         ) : (
           <Button
             onClick={() => setShowAddForm(true)}
@@ -175,100 +239,142 @@ export function PredefinedItemCatalog({
 
         <Separator />
 
-        {/* Items List */}
-        <ScrollArea className="h-[400px] pr-4">
-          {filteredItems.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <p>No items found</p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {Array.from(itemsByCategory.entries()).map(([category, categoryItems]) => (
-                <div key={category} className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="secondary" className="text-xs">
-                      {category}
-                    </Badge>
-                    <div className="h-px flex-1 bg-border" />
-                  </div>
-                  <div className="space-y-2">
-                    {categoryItems.map((item) => {
-                      const addedCount = getAddedCountForCatalogItem(item.name, lineItems);
-                      
-                      return (
-                        <div
-                          key={item.id}
-                          className={`flex items-start justify-between gap-3 p-3 rounded-lg border bg-card transition-colors ${
-                            item.outOfStock
-                              ? 'opacity-60 bg-muted/50'
-                              : 'hover:bg-accent/50'
-                          }`}
-                        >
-                          <div className="flex-1 min-w-0 space-y-1">
-                            <div className="flex items-center gap-2">
-                              <p className={`font-medium text-sm truncate ${item.outOfStock ? 'line-through' : ''}`}>
-                                {item.name}
-                              </p>
-                              {item.outOfStock && (
-                                <Badge variant="destructive" className="text-xs shrink-0">
-                                  <PackageX className="h-3 w-3 mr-1" />
-                                  Out of Stock
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm text-primary font-semibold">
-                              {formatCurrency(item.unitPrice)}
+        {/* Catalog Items */}
+        <ScrollArea className="h-[500px] pr-4">
+          <div className="space-y-6">
+            {Object.entries(itemsByCategory).map(([category, categoryItems]) => (
+              <div key={category} className="space-y-2">
+                <h3 className="text-sm font-semibold text-muted-foreground">{category}</h3>
+                <div className="space-y-2">
+                  {categoryItems.map((item) => {
+                    const addedCount = getAddedCountForCatalogItem(item.name, lineItems);
+                    return (
+                      <div
+                        key={item.id}
+                        className={`group flex items-center gap-3 rounded-lg border p-3 transition-colors ${
+                          item.outOfStock
+                            ? 'border-muted bg-muted/30'
+                            : 'border-border bg-card hover:border-primary/50 hover:bg-accent/5'
+                        }`}
+                      >
+                        {/* Item Image Thumbnail */}
+                        {item.image && (
+                          <div className="flex-shrink-0">
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                              className="h-12 w-12 rounded-md object-cover border border-border"
+                            />
+                          </div>
+                        )}
+
+                        {/* Item Details */}
+                        <div className="flex-1 min-w-0 space-y-1">
+                          <div className="flex items-center gap-2">
+                            <p
+                              className={`font-medium truncate ${
+                                item.outOfStock ? 'text-muted-foreground line-through' : ''
+                              }`}
+                            >
+                              {item.name}
                             </p>
-                            <div className="flex items-center gap-2 pt-1">
-                              <Switch
-                                id={`stock-${item.id}`}
-                                checked={item.outOfStock || false}
-                                onCheckedChange={() => onToggleOutOfStock(item.id)}
-                                className="scale-75"
-                              />
-                              <Label
-                                htmlFor={`stock-${item.id}`}
-                                className="text-xs text-muted-foreground cursor-pointer"
-                              >
-                                Out of stock
-                              </Label>
-                            </div>
+                            {item.outOfStock && (
+                              <Badge variant="destructive" className="gap-1 text-xs flex-shrink-0">
+                                <PackageX className="h-3 w-3" />
+                                Out of Stock
+                              </Badge>
+                            )}
                           </div>
-                          <div className="flex flex-col gap-1 shrink-0">
-                            <Button
-                              size="sm"
-                              onClick={() => onAddItem(item)}
-                              disabled={item.outOfStock}
-                              className="gap-1 h-8 relative"
-                            >
-                              <Plus className="h-3 w-3" />
-                              Add
-                              {addedCount > 0 && (
-                                <Badge 
-                                  variant="secondary" 
-                                  className="ml-1 h-5 min-w-5 px-1.5 text-xs font-semibold"
-                                >
-                                  {addedCount}
-                                </Badge>
-                              )}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              onClick={() => onDeleteItem(item.id)}
-                              className="gap-1 h-8 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-3 w-3" />
-                            </Button>
-                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {formatCurrency(item.unitPrice)}
+                          </p>
                         </div>
-                      );
-                    })}
-                  </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {/* Image Actions */}
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleItemImageChange(item.id, e)}
+                              className="hidden"
+                              id={`image-input-${item.id}`}
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => document.getElementById(`image-input-${item.id}`)?.click()}
+                              className="h-8 w-8"
+                              title={item.image ? 'Change image' : 'Add image'}
+                            >
+                              <ImageIcon className="h-4 w-4" />
+                            </Button>
+                            {item.image && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => onRemoveItemImage(item.id)}
+                                className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                                title="Remove image"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+
+                          {/* Out of Stock Toggle */}
+                          <div className="flex items-center gap-1.5">
+                            <Switch
+                              id={`stock-${item.id}`}
+                              checked={item.outOfStock}
+                              onCheckedChange={() => onToggleOutOfStock(item.id)}
+                              className="scale-75"
+                            />
+                            <Label
+                              htmlFor={`stock-${item.id}`}
+                              className="cursor-pointer text-xs text-muted-foreground whitespace-nowrap"
+                            >
+                              Out of stock
+                            </Label>
+                          </div>
+
+                          {/* Delete Button */}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => onDeleteItem(item.id)}
+                            className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+
+                          {/* Add Button */}
+                          <Button
+                            onClick={() => onAddItem(item)}
+                            size="sm"
+                            disabled={item.outOfStock}
+                            className="relative gap-1"
+                          >
+                            <Plus className="h-4 w-4" />
+                            Add
+                            {addedCount > 0 && (
+                              <Badge
+                                variant="secondary"
+                                className="ml-1 h-5 min-w-5 px-1.5 text-xs"
+                              >
+                                {addedCount}
+                              </Badge>
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
         </ScrollArea>
       </CardContent>
     </Card>

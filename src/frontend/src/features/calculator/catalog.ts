@@ -8,6 +8,7 @@ export interface CatalogItem {
   unitPrice: number;
   category?: string;
   outOfStock?: boolean;
+  image?: string;
 }
 
 export const PREDEFINED_CATALOG: CatalogItem[] = [

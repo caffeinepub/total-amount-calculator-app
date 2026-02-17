@@ -1,12 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Prevent duplicate line items when adding the same catalog item multiple times by incrementing the existing line item quantity instead.
+**Goal:** Persist and display daily total revenue for each calendar day across sessions.
 
 **Planned changes:**
-- Update the Quick Add Items “Add” behavior to detect an existing matching line item by label (case-insensitive, trimmed) and increment its quantity by 1 rather than creating a new line item.
-- Keep current behavior when no match exists: create a new line item with quantity = 1 and unitPrice from the catalog item.
-- Ensure out-of-stock catalog items remain blocked from being added (no quantity increment and no new line item).
-- Keep the catalog’s per-item added-count badge accurate as quantities are incremented via repeated Add clicks.
+- On “Print Bill”, write/update a per-day (YYYY-MM-DD, local date) daily-summary record in browser storage that tracks cumulative total revenue for that day.
+- Ensure multiple bills printed on the same day increment that day’s stored total without affecting other days.
+- Update the Daily Totals page to read totals from persisted daily-summary records for the selected day and format the value in INR.
+- Add fallback behavior: if a selected day lacks a stored daily-summary record, compute the total from that day’s ledger entries, display it, and persist it for future loads.
 
-**User-visible outcome:** Clicking “Add” on a catalog item that’s already on the bill increases that line item’s quantity, avoiding duplicate rows, while out-of-stock items still cannot be added and the added-count badge stays correct.
+**User-visible outcome:** Daily totals are saved for every day with printed bills and remain available after refresh/browser restart; the Daily Totals page shows the correct persisted total for any saved day.

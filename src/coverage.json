@@ -1,26 +1,40 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T12:50:36.967Z",
+  "generatedAt": "2026-02-17T02:30:19.486Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 2,
+    "implemented": 2,
     "items": [
       {
-        "id": "REQ-35",
-        "summary": "When a user adds an item from the Quick Add Items catalog and that same item already exists in the current bill’s line items, do not create a new duplicate line item; instead, increment the existing matching line item’s quantity by 1.",
+        "id": "REQ-43",
+        "summary": "Persist a per-day summary record (daily total revenue) in browser storage for every calendar day that has at least one printed bill, so that daily totals are saved and remain available across sessions.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/calculator/lineItemCatalogMatching.ts",
+          "frontend/src/features/balanceSheet/ledgerUtils.ts",
           "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/calculator/lineItemCatalogMatching.ts",
+          "frontend/src/features/balanceSheet/ledgerUtils.ts",
           "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-44",
+        "summary": "Update the Daily Totals page to read and display the saved per-day total revenue from the persisted daily-summary records for the selected day.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/balanceSheet/ledgerUtils.ts",
+          "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts",
+          "frontend/src/features/balanceSheet/BalanceSheetView.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/balanceSheet/ledgerUtils.ts",
+          "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts"
         ]
       }
     ]
@@ -30,8 +44,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
+    "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts",
+    "frontend/src/features/balanceSheet/ledgerUtils.ts",
     "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-    "frontend/src/features/calculator/lineItemCatalogMatching.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

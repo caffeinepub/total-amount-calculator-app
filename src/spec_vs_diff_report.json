@@ -1,25 +1,16 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-16T12:50:36.963Z",
-  "summary": "REQ-35 is largely implemented: adding a catalog item now finds an existing matching line item by case-insensitive/trimmed label and increments its quantity instead of creating a duplicate; out-of-stock items are blocked; non-matching items still create a new line item with quantity=1 and the catalog unitPrice. However, the diff does not show an update to the catalog added-count badge logic to sum quantities after merges, so that acceptance criterion is not evidenced as implemented.",
-  "missing_requirements": [
-    {
-      "id": "REQ-35",
-      "requirement": "The catalog’s per-item added-count badge continues to reflect the correct total quantity for that item after repeated Add clicks (i.e., after merges, the badge should reflect summed quantity, not just number of matching line items).",
-      "reason": "The diff adds a helper to compute total quantity across matching line items (getAddedCountForCatalogItem), but there is no evidence that the catalog UI/badge actually uses it. The modified files list does not include the catalog UI component (e.g., PredefinedItemCatalog.tsx), so the existing badge logic may still count line items rather than quantities, which would be incorrect after merging duplicates.",
-      "evidence": [
-        "frontend/src/features/calculator/lineItemCatalogMatching.ts",
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
-      ]
-    }
-  ],
+  "generatedAt": "2026-02-17T02:30:19.482Z",
+  "summary": "Implemented localStorage-backed daily summary persistence and wired Daily Totals calculations to prefer persisted per-day totals (with fallback compute-and-persist). Added utilities to load/save/update/get daily summaries and updated the Daily Totals hook to read them; Calculator page appears updated to update summaries on print.",
+  "missing_requirements": [],
   "hallucinated_features": [],
-  "confidence": 0.72,
+  "confidence": 0.74,
   "changed_files": [
     "frontend-file-summaries.txt",
+    "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts",
+    "frontend/src/features/balanceSheet/ledgerUtils.ts",
     "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-    "frontend/src/features/calculator/lineItemCatalogMatching.ts",
     "project_state.json"
   ]
 }

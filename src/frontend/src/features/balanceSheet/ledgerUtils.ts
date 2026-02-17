@@ -6,6 +6,7 @@
 import { LineItem } from '../calculator/types';
 
 const LEDGER_STORAGE_KEY = 'varshini_daily_totals_ledger';
+const DAILY_SUMMARY_STORAGE_KEY = 'varshini_daily_summary';
 
 export interface LedgerEntry {
   billId: string;
@@ -20,6 +21,15 @@ export interface DayLedger {
 
 export interface Ledger {
   days: Record<string, DayLedger>;
+}
+
+export interface DailySummary {
+  dayKey: string;
+  totalRevenue: number;
+}
+
+export interface DailySummaryStore {
+  summaries: Record<string, DailySummary>;
 }
 
 /**
@@ -63,6 +73,77 @@ export function saveLedger(ledger: Ledger): void {
 }
 
 /**
+ * Load daily summaries from localStorage
+ */
+export function loadDailySummaries(): DailySummaryStore {
+  try {
+    const stored = localStorage.getItem(DAILY_SUMMARY_STORAGE_KEY);
+    if (!stored) {
+      return { summaries: {} };
+    }
+    const parsed = JSON.parse(stored);
+    return parsed && typeof parsed === 'object' && parsed.summaries ? parsed : { summaries: {} };
+  } catch (error) {
+    console.error('Error loading daily summaries:', error);
+    return { summaries: {} };
+  }
+}
+
+/**
+ * Save daily summaries to localStorage
+ */
+export function saveDailySummaries(store: DailySummaryStore): void {
+  try {
+    localStorage.setItem(DAILY_SUMMARY_STORAGE_KEY, JSON.stringify(store));
+  } catch (error) {
+    console.error('Error saving daily summaries:', error);
+  }
+}
+
+/**
+ * Get or compute daily summary for a specific day
+ * If summary doesn't exist, compute from ledger and persist
+ */
+export function getDailySummary(dayKey: string): DailySummary {
+  const store = loadDailySummaries();
+  
+  // Return existing summary if available
+  if (store.summaries[dayKey]) {
+    return store.summaries[dayKey];
+  }
+  
+  // Compute from ledger entries
+  const totalRevenue = calculateDayTotal(dayKey);
+  const summary: DailySummary = {
+    dayKey,
+    totalRevenue,
+  };
+  
+  // Persist computed summary
+  store.summaries[dayKey] = summary;
+  saveDailySummaries(store);
+  
+  return summary;
+}
+
+/**
+ * Update daily summary by incrementing the total revenue
+ */
+export function updateDailySummary(dayKey: string, additionalRevenue: number): void {
+  const store = loadDailySummaries();
+  
+  if (!store.summaries[dayKey]) {
+    store.summaries[dayKey] = {
+      dayKey,
+      totalRevenue: 0,
+    };
+  }
+  
+  store.summaries[dayKey].totalRevenue += additionalRevenue;
+  saveDailySummaries(store);
+}
+
+/**
  * Append a new entry to the ledger for today
  */
 export function appendLedgerEntry(billId: string, finalTotal: number): void {
@@ -103,7 +184,7 @@ export function getEntriesForDay(dayKey: string): LedgerEntry[] {
 }
 
 /**
- * Calculate total for a specific day
+ * Calculate total for a specific day from ledger entries
  */
 export function calculateDayTotal(dayKey: string): number {
   const entries = getEntriesForDay(dayKey);

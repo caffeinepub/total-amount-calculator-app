@@ -2,11 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-when-a-user-adds-an-item-from-the-quick-add-items-catalog-and-that-same-item-already-exists-in-the-current-bill-s-line-items-do-not-create-a-new-duplicate-line-item-instead-increment-the-existing-matching-line-item-s-quantity-by-1",
-      "featureTitle": "When a user adds an item from the Quick Add Items catalog and that same item already exists in the current bill’s line items, do not create a new duplicate line item; instead, increment the existing matching line item’s quantity by 1.",
+      "featureId": "feature-persist-a-per-day-summary-record-daily-total-revenue-in-browser-storage-for-every-calendar-day-that-has-at-least-one-printed-bill-so-that-daily-totals-are-saved-and-remain-available-across-sessions",
+      "featureTitle": "Persist a per-day summary record (daily total revenue) in browser storage for every calendar day that has at least one printed bill, so that daily totals are saved and remain available across sessions.",
       "files": [
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
-        "frontend/src/features/calculator/lineItemCatalogMatching.ts"
+        "frontend/src/features/balanceSheet/ledgerUtils.ts",
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,7 +17,27 @@
         "authorization@4.0.0"
       ],
       "testIds": [
-        "REQ-35"
+        "REQ-43"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-update-the-daily-totals-page-to-read-and-display-the-saved-per-day-total-revenue-from-the-persisted-daily-summary-records-for-the-selected-day",
+      "featureTitle": "Update the Daily Totals page to read and display the saved per-day total revenue from the persisted daily-summary records for the selected day.",
+      "files": [
+        "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts",
+        "frontend/src/features/balanceSheet/ledgerUtils.ts"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-44"
       ],
       "confidence": "high"
     }

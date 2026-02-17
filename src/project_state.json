@@ -1,13 +1,16 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 27,
+  "projectStateVersion": 37,
   "summary": "Project to build a total amount calculator app with line items, adjustments, usability features, and a visual theme; includes a predefined item catalog for quick add-to-cart, now customized for Indian Rupees and an Indian food catalog with catalog management and out-of-stock control; renamed to \"Varshini Classic Cuisine\" with a red-and-yellow theme requested; printing a bill should open a dedicated print view in a separate tab and automatically save the bill; additionally, add a separate Daily Totals page that automatically records each printed bill, persists totals across days, allows selecting any past day, and shows only (a) total money gained and (b) per-item quantities sold for the selected day.",
   "architectural_notes": [
     "Daily Totals data should be derived from bills saved on each Print Bill action and persisted per-day so users can view any past day.",
     "Daily Totals page requirements: day selector + display total money gained and per-item quantities sold only (no individual bill listing).",
     "Print-flow UX change requested: do not leave the printed bill/receipt visible in the separate print tab after printing (consider auto-close tab or clear/replace content post-print).",
     "Catalog quick-add UI should reflect current cart state by showing per-item added quantity (e.g., badge/count on the Add control).",
-    "Line items behavior: adding the same item again should merge into the existing line item by incrementing its quantity (instead of creating a duplicate line)."
+    "Line items behavior: adding the same item again should merge into the existing line item by incrementing its quantity (instead of creating a duplicate line).",
+    "Add a delete confirmation step (Yes/No) before removing an item (e.g., line item) to prevent accidental deletions.",
+    "Support per-catalog-item image data (upload/URL) in catalog management and display the image in the Quick Add Items list.",
+    "Daily Totals must be persisted for every day (store per-day totals and/or ensure past days’ totals are saved and accessible, not just computed transiently)."
   ],
   "known_issues": [],
   "isFixRequest": false,
@@ -283,6 +286,78 @@
         "REQ-35"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-when-the-user-clicks-a-delete-trash-button-anywhere-in-the-calculator-ui-show-a-confirmation-prompt-with-yes-no-choices-before-performing-the-deletion-this-must-apply-to-1-deleting-a-line-item-from-the-bill-table-and-2-deleting-an-item-from-the-quick-add-items-catalog-list",
+      "title": "When the user clicks a delete (trash) button anywhere in the calculator UI, show a confirmation prompt with Yes/No choices before performing the deletion. This must apply to (1) deleting a line item from the bill table and (2) deleting an item from the Quick Add Items catalog list.",
+      "reqIds": [
+        "REQ-36"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-quick-add-items-catalog-list-add-a-clear-always-visible-text-label-for-the-per-item-out-of-stock-toggle-switch-so-users-can-understand-what-the-switch-does-the-label-must-be-in-english-and-should-read-out-of-stock",
+      "title": "In the Quick Add Items catalog list, add a clear, always-visible text label for the per-item out-of-stock toggle switch so users can understand what the switch does. The label must be in English and should read \"Out of stock\".",
+      "reqIds": [
+        "REQ-37"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-always-visible-non-print-informational-banner-or-header-notice-in-the-normal-app-ui-explaining-that-builder-draft-links-can-expire-and-that-users-should-use-the-production-live-deployment-link-for-permanent-access",
+      "title": "Add an always-visible (non-print) informational banner or header notice in the normal app UI explaining that builder draft links can expire and that users should use the production/live deployment link for permanent access.",
+      "reqIds": [
+        "REQ-38"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-provide-a-simple-way-in-the-normal-app-ui-for-the-user-to-copy-the-current-app-url-as-shown-in-the-browser-to-the-clipboard-so-they-can-save-bookmark-the-permanent-production-link-after-deployment",
+      "title": "Provide a simple way in the normal app UI for the user to copy the current app URL (as shown in the browser) to the clipboard, so they can save/bookmark the permanent production link after deployment.",
+      "reqIds": [
+        "REQ-39"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-extend-the-calculator-catalog-item-data-model-to-support-an-optional-image-per-item",
+      "title": "Extend the calculator catalog item data model to support an optional image per item.",
+      "reqIds": [
+        "REQ-40"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-quick-add-items-catalog-management-ui-add-an-option-to-upload-attach-an-image-when-creating-a-new-catalog-item",
+      "title": "In the “Quick Add Items” catalog management UI, add an option to upload/attach an image when creating a new catalog item.",
+      "reqIds": [
+        "REQ-41"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-in-the-quick-add-items-catalog-list-display-an-attached-item-image-as-a-small-thumbnail-next-to-the-item-name-and-provide-controls-to-change-remove-the-image-for-existing-catalog-items",
+      "title": "In the “Quick Add Items” catalog list, display an attached item image as a small thumbnail next to the item name, and provide controls to change/remove the image for existing catalog items.",
+      "reqIds": [
+        "REQ-42"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-persist-a-per-day-summary-record-daily-total-revenue-in-browser-storage-for-every-calendar-day-that-has-at-least-one-printed-bill-so-that-daily-totals-are-saved-and-remain-available-across-sessions",
+      "title": "Persist a per-day summary record (daily total revenue) in browser storage for every calendar day that has at least one printed bill, so that daily totals are saved and remain available across sessions.",
+      "reqIds": [
+        "REQ-43"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-the-daily-totals-page-to-read-and-display-the-saved-per-day-total-revenue-from-the-persisted-daily-summary-records-for-the-selected-day",
+      "title": "Update the Daily Totals page to read and display the saved per-day total revenue from the persisted daily-summary records for the selected day.",
+      "reqIds": [
+        "REQ-44"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -375,6 +450,24 @@
     {
       "id": "AR-18",
       "summary": "When adding an item that already exists in the current line items, do not create a new duplicate line; instead, increase the existing line item's quantity",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-19",
+      "summary": "When the user clicks the Delete button (e.g., to remove a line item), show a confirmation prompt asking Yes/No before deleting",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-20",
+      "summary": "Decide and set the user-visible label text for the catalog item's out-of-stock toggle/button (\"Out of stock\" control)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-21",
+      "summary": "Add an option to attach/upload an image for each catalog/item (item image support in the item management UI and display in the catalog list)",
       "reqIds": [],
       "status": "pending"
     }

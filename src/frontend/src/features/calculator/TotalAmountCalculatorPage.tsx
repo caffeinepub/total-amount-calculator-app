@@ -14,8 +14,9 @@ import { PredefinedItemCatalog } from './PredefinedItemCatalog';
 import { PREDEFINED_CATALOG, CatalogItem } from './catalog';
 import { PrintBill } from './PrintBill';
 import { saveBill } from './savedBills';
-import { appendLedgerEntry } from '../balanceSheet/ledgerUtils';
+import { appendLedgerEntry, updateDailySummary, getDayKey } from '../balanceSheet/ledgerUtils';
 import { findMatchingLineItem } from './lineItemCatalogMatching';
+import { confirmDelete } from '@/utils/confirmDelete';
 
 function TotalAmountCalculatorPage() {
   const [state, setState] = useState<CalculatorState>({
@@ -81,6 +82,11 @@ function TotalAmountCalculatorPage() {
   };
 
   const removeLineItem = (id: string) => {
+    // Show confirmation dialog before deleting
+    if (!confirmDelete('item')) {
+      return;
+    }
+    
     setState((prev) => ({
       ...prev,
       lineItems: prev.lineItems.filter((item) => item.id !== id),
@@ -131,6 +137,10 @@ function TotalAmountCalculatorPage() {
       // Record in Daily Totals ledger
       appendLedgerEntry(billId, breakdown.finalTotal);
 
+      // Update persisted daily summary for today
+      const todayKey = getDayKey();
+      updateDailySummary(todayKey, breakdown.finalTotal);
+
       // Open print view in new tab
       const printUrl = `${window.location.origin}${window.location.pathname}?print=true&id=${billId}`;
       window.open(printUrl, '_blank');
@@ -149,6 +159,11 @@ function TotalAmountCalculatorPage() {
   };
 
   const handleDeleteCatalogItem = (id: string) => {
+    // Show confirmation dialog before deleting catalog item
+    if (!confirmDelete('catalog item')) {
+      return;
+    }
+    
     setCatalogItems((prev) => prev.filter((item) => item.id !== id));
   };
 
@@ -156,6 +171,22 @@ function TotalAmountCalculatorPage() {
     setCatalogItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, outOfStock: !item.outOfStock } : item
+      )
+    );
+  };
+
+  const handleUpdateItemImage = (id: string, imageDataUrl: string) => {
+    setCatalogItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, image: imageDataUrl } : item
+      )
+    );
+  };
+
+  const handleRemoveItemImage = (id: string) => {
+    setCatalogItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, image: undefined } : item
       )
     );
   };
@@ -173,6 +204,8 @@ function TotalAmountCalculatorPage() {
               onAddNewItem={handleAddNewCatalogItem}
               onDeleteItem={handleDeleteCatalogItem}
               onToggleOutOfStock={handleToggleOutOfStock}
+              onUpdateItemImage={handleUpdateItemImage}
+              onRemoveItemImage={handleRemoveItemImage}
             />
           </div>
         </div>
@@ -344,32 +377,38 @@ function TotalAmountCalculatorPage() {
                 </Card>
 
                 {/* Breakdown Card */}
-                <Card className="border-primary/20 bg-gradient-to-br from-card to-primary/5">
+                <Card>
                   <CardHeader>
-                    <CardTitle>Total Breakdown</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+                      <Calculator className="h-5 w-5" />
+                      Summary
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span className="text-muted-foreground">Subtotal</span>
                       <span className="font-medium">{formatCurrency(breakdown.subtotal)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Tax ({state.taxRate}%)</span>
-                      <span className="font-medium text-accent">
-                        +{formatCurrency(breakdown.taxAmount)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        Discount ({state.discountType === 'percentage' ? `${state.discountValue}%` : '₹'})
-                      </span>
-                      <span className="font-medium text-primary">
-                        -{formatCurrency(breakdown.discountAmount)}
-                      </span>
-                    </div>
+                    {breakdown.taxAmount > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Tax ({state.taxRate}%)</span>
+                        <span className="font-medium">{formatCurrency(breakdown.taxAmount)}</span>
+                      </div>
+                    )}
+                    {breakdown.discountAmount > 0 && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          Discount
+                          {state.discountType === 'percentage' && ` (${state.discountValue}%)`}
+                        </span>
+                        <span className="font-medium text-destructive">
+                          -{formatCurrency(breakdown.discountAmount)}
+                        </span>
+                      </div>
+                    )}
                     <Separator />
-                    <div className="flex justify-between items-center pt-2">
-                      <span className="text-lg font-semibold">Final Total</span>
+                    <div className="flex justify-between">
+                      <span className="text-lg font-semibold">Total</span>
                       <span className="text-2xl font-bold text-primary">
                         {formatCurrency(breakdown.finalTotal)}
                       </span>
@@ -378,21 +417,12 @@ function TotalAmountCalculatorPage() {
                 </Card>
 
                 {/* Action Buttons */}
-                <div className="space-y-2">
-                  <Button 
-                    onClick={handlePrintBill} 
-                    className="w-full gap-2" 
-                    size="lg"
-                  >
-                    <Printer className="h-4 w-4" />
+                <div className="space-y-3 no-print">
+                  <Button onClick={handlePrintBill} className="w-full gap-2" size="lg">
+                    <Printer className="h-5 w-5" />
                     Print Bill
                   </Button>
-                  <Button
-                    onClick={resetCalculator}
-                    variant="outline"
-                    className="w-full gap-2"
-                    size="lg"
-                  >
+                  <Button onClick={resetCalculator} variant="outline" className="w-full gap-2">
                     <RotateCcw className="h-4 w-4" />
                     Reset
                   </Button>
@@ -403,14 +433,16 @@ function TotalAmountCalculatorPage() {
         </div>
       </div>
 
-      {/* Print Bill Component (Hidden on Screen) - kept for backward compatibility */}
-      <PrintBill 
-        lineItems={state.lineItems} 
-        breakdown={breakdown}
-        taxRate={state.taxRate}
-        discountType={state.discountType}
-        discountValue={state.discountValue}
-      />
+      {/* Hidden Print Component */}
+      <div className="hidden">
+        <PrintBill
+          lineItems={state.lineItems}
+          breakdown={breakdown}
+          taxRate={state.taxRate}
+          discountType={state.discountType}
+          discountValue={state.discountValue}
+        />
+      </div>
     </div>
   );
 }

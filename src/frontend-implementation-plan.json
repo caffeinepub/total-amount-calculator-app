@@ -1,28 +1,53 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Merge duplicate Quick Add catalog items by incrementing existing line item quantity",
+  "title": "Persist per-day total revenue in browser storage",
   "requirements": [
     {
-      "id": "REQ-35",
-      "summary": "When adding a catalog item that already exists in the bill (label match case-insensitive + trimmed), increment quantity instead of creating a duplicate line item.",
+      "id": "REQ-43",
+      "summary": "Persist and update a per-day (YYYY-MM-DD) daily-summary total revenue record in localStorage whenever a bill is printed.",
       "acceptanceCriteria": [
-        "Given the current bill already contains a line item with label matching the selected catalog item name (case-insensitive, trimmed), clicking the catalog item’s Add button increases that existing line item’s quantity by 1.",
-        "When a matching line item is found and incremented, the total number of line items does not increase.",
-        "If no matching line item exists, clicking Add creates a new line item with quantity = 1 and unitPrice = the catalog item’s unitPrice (current behavior).",
-        "Out-of-stock catalog items remain blocked from being added (no new line item is created and no quantity is incremented).",
-        "The catalog’s per-item added-count badge continues to reflect the correct total quantity for that item after repeated Add clicks."
+        "After the user clicks \"Print Bill\", the app writes/updates a stored daily-summary entry for the user’s local calendar day (YYYY-MM-DD).",
+        "The stored daily-summary entry includes at minimum the day key and the cumulative total revenue for that day (in number form suitable for INR formatting in the UI).",
+        "If multiple bills are printed on the same day, the stored daily total increases accordingly without overwriting previous days.",
+        "Daily totals persist after page refresh and browser restart (localStorage-based persistence is acceptable)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/calculator/lineItemCatalogMatching.ts",
+          "path": "frontend/src/features/balanceSheet/ledgerUtils.ts",
           "operation": "modify",
-          "description": "Add a shared utility that finds a matching existing line item for a given catalog item name using the same normalization rules (case-insensitive, trimmed), so Quick Add can increment quantity without creating duplicates."
+          "description": "Add localStorage-backed daily-summary record utilities (separate from the existing per-bill ledger): define a daily-summary storage key, types for summary records, and functions to load/save summaries and to upsert/increment the current day’s total revenue using the local day key (YYYY-MM-DD)."
         },
         {
           "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
           "operation": "modify",
-          "description": "Update the Quick Add handler (addCatalogItem) to: (1) keep blocking out-of-stock items, (2) search for an existing matching line item by normalized label, (3) increment that line item’s quantity by 1 when found without changing the line item count, and (4) otherwise append a new line item with quantity=1 and unitPrice=catalogItem.unitPrice. Keep all other calculator/print/daily-totals behaviors unchanged."
+          "description": "On \"Print Bill\" success, after saving the bill and appending the ledger entry, also update the persisted daily-summary record for the user’s local calendar day by incrementing it by the bill’s final total (ensuring cumulative behavior across multiple bills)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-44",
+      "summary": "Update Daily Totals to display the persisted daily-summary total for the selected day, computing and persisting it from the ledger when missing.",
+      "acceptanceCriteria": [
+        "The Daily Totals page continues to list available days and lets the user select any saved day.",
+        "For a selected day, the displayed \"Total Revenue\" value is derived from the persisted daily-summary data for that day and formatted in INR.",
+        "If a day exists in the daily bill ledger but does not yet have a persisted daily-summary record (e.g., older data), the UI still shows a correct total by computing it from that day’s ledger entries and then persists the computed value for future loads."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/balanceSheet/ledgerUtils.ts",
+          "operation": "modify",
+          "description": "Expose a read helper for daily-summary totals by dayKey, and a helper that ensures a summary exists (if missing, compute from the existing ledger entries for that day and persist the computed total). Keep all persistence in browser storage (localStorage)."
+        },
+        {
+          "path": "frontend/src/features/balanceSheet/hooks/useDailyTotal.ts",
+          "operation": "modify",
+          "description": "Switch \"dayTotal\" derivation to read from persisted daily-summary records for the selected day; if no summary exists but the day is present in the ledger, compute the correct total from that day’s ledger entries and persist it for future loads. Also update the storage-change listener to reload when either the ledger key or daily-summary key changes."
+        },
+        {
+          "path": "frontend/src/features/balanceSheet/BalanceSheetView.tsx",
+          "operation": "modify",
+          "description": "Ensure the \"Total Revenue\" section continues to render the selected day’s total as provided by the updated useDailyTotal hook (persisted-summary-based), preserving INR formatting and existing day selection behavior."
         }
       ]
     }

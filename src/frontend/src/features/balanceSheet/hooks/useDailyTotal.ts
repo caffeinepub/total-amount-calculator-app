@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import {
   getAvailableDays,
-  calculateDayTotal,
   getEntriesForDay,
   aggregateItemQuantities,
+  getDailySummary,
 } from '../ledgerUtils';
 import { getBillById } from '../../calculator/savedBills';
 
@@ -30,7 +30,7 @@ export function useDailyTotal() {
 
     // Listen for storage changes (e.g., new bills printed)
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'varshini_daily_totals_ledger') {
+      if (e.key === 'varshini_daily_totals_ledger' || e.key === 'varshini_daily_summary') {
         loadDays();
       }
     };
@@ -39,10 +39,11 @@ export function useDailyTotal() {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [selectedDay]);
 
-  // Calculate total for selected day
+  // Get total for selected day from persisted daily summary
   const dayTotal = useMemo(() => {
     if (!selectedDay) return 0;
-    return calculateDayTotal(selectedDay);
+    const summary = getDailySummary(selectedDay);
+    return summary.totalRevenue;
   }, [selectedDay]);
 
   // Compute per-item quantities for selected day
