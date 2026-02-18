@@ -2,11 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-investigate-and-fix-the-white-screen-crash-that-occurs-when-the-application-loads-in-the-deployed-version",
-      "featureTitle": "Investigate and fix the white screen crash that occurs when the application loads in the deployed version",
+      "featureId": "feature-restore-the-previous-behavior-when-the-user-presses-the-print-print-bill-button-on-the-calculator-page-so-printing-happens-in-the-same-page-using-the-existing-in-page-printable-receipt-printbill-component-instead-of-navigating-opening-a-separate-print-view-tab-window",
+      "featureTitle": "Restore the previous behavior when the user presses the \"Print\" (Print Bill) button on the calculator page so printing happens in the same page using the existing in-page printable receipt (PrintBill component), instead of navigating/opening a separate print view tab/window.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/AppErrorBoundary.tsx"
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -22,11 +21,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-ensure-apperrorboundary-and-crashfallbackscreen-properly-catch-and-display-startup-failures",
-      "featureTitle": "Ensure AppErrorBoundary and CrashFallbackScreen properly catch and display startup failures",
+      "featureId": "feature-preserve-the-existing-bill-saving-and-daily-totals-side-effects-that-occur-when-printing-saving-the-bill-to-branch-scoped-localstorage-appending-a-ledger-entry-updating-the-daily-summary-and-attempting-a-non-blocking-backend-daily-total-save-while-changing-only-the-print-ui-flow-back-to-the-previous-behavior",
+      "featureTitle": "Preserve the existing bill-saving and daily totals side effects that occur when printing (saving the bill to branch-scoped localStorage, appending a ledger entry, updating the daily summary, and attempting a non-blocking backend daily total save), while changing only the print UI flow back to the previous behavior.",
       "files": [
-        "frontend/src/components/CrashFallbackScreen.tsx",
-        "frontend/src/hooks/useStartupFailureHandlers.ts"
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -38,45 +36,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-verify-that-all-environment-dependent-configurations-internet-identity-provider-url-backend-canister-ids-are-correctly-set-for-the-deployed-environment",
-      "featureTitle": "Verify that all environment-dependent configurations (Internet Identity provider URL, backend canister IDs) are correctly set for the deployed environment",
-      "files": [
-        "frontend/src/utils/iiProviderShim.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-defensive-null-checks-and-error-handling-in-app-tsx-router-initialization-to-prevent-crashes-from-malformed-routes-or-missing-providers",
-      "featureTitle": "Add defensive null checks and error handling in App.tsx router initialization to prevent crashes from malformed routes or missing providers",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/hooks/useBranchAuth.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
       ],
       "confidence": "high"
     }

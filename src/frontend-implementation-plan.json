@@ -1,103 +1,38 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix white screen crash issue",
+  "title": "Restore in-page Print Bill flow on calculator",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Investigate and fix the white screen crash that occurs when the application loads in the deployed version",
+      "summary": "Change calculator \"Print\" to print in-place using the existing PrintBill component instead of navigating/opening PrintViewPage.",
       "acceptanceCriteria": [
-        "Application loads without displaying a white screen",
-        "Error boundaries properly catch and display any runtime errors",
-        "Console logs show no critical JavaScript errors during startup",
-        "Application routes render correctly after deployment"
+        "Clicking the calculator page \"Print\" button does not open a new tab/window and does not navigate to a URL containing `?print=true`.",
+        "Clicking the calculator page \"Print\" button triggers the browser print dialog (via `window.print()`), and after closing the dialog the user remains on the calculator page with their current inputs intact.",
+        "The printed output uses the existing `PrintBill` receipt layout (from `frontend/src/features/calculator/PrintBill.tsx`) and is visible in the print preview/printed page.",
+        "`PrintBill` is rendered in a way that allows it to appear during printing (i.e., it is not wrapped inside a permanently hidden parent container that prevents it from being displayed in print media)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
           "operation": "modify",
-          "description": "Add defensive null checks around TanStack Router initialization, wrap router creation in try-catch blocks, and ensure QueryClientProvider and context providers are properly initialized before rendering routes. Add fallback UI if router setup fails. Verify any component usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/main.tsx",
-          "operation": "modify",
-          "description": "Add startup error handling around React root rendering to catch and log initialization failures. Ensure all required providers (QueryClientProvider, InternetIdentityProvider) are properly wrapped and initialized before app mounting."
-        },
-        {
-          "path": "frontend/src/components/AppErrorBoundary.tsx",
-          "operation": "modify",
-          "description": "Enhance error boundary to capture more detailed error information including stack traces and component stack. Ensure it catches errors during initial mount phase and passes comprehensive error details to CrashFallbackScreen."
+          "description": "Update the Print button handler to stop constructing/opening a `?print=true` URL and instead invoke `window.print()` after the existing in-page PrintBill is present in the DOM. Remove the outer permanently-hidden wrapper around `PrintBill` so it can be shown during print via existing print CSS, while keeping it hidden on-screen."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Ensure AppErrorBoundary and CrashFallbackScreen properly catch and display startup failures",
+      "summary": "Keep all existing print-triggered side effects (localStorage bill save, ledger entry append, daily summary update, and non-blocking backend save) while only changing the print UI flow.",
       "acceptanceCriteria": [
-        "Error boundary catches rendering errors during component mount",
-        "CrashFallbackScreen displays informative error messages",
-        "Reload button in CrashFallbackScreen functions correctly",
-        "useStartupFailureHandlers captures unhandled promise rejections"
+        "After clicking \"Print\", a new bill record is still saved in branch-scoped localStorage (as before).",
+        "After clicking \"Print\", daily totals ledger/summary updates still occur (as before).",
+        "If the backend daily total save fails, printing still proceeds and no additional blocking error is introduced beyond current behavior."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/CrashFallbackScreen.tsx",
+          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
           "operation": "modify",
-          "description": "Enhance error display to show more detailed error information including error type, message, and stack trace. Improve reload button functionality to clear any corrupted state from localStorage before reloading. Add debugging information for deployment troubleshooting."
-        },
-        {
-          "path": "frontend/src/hooks/useStartupFailureHandlers.ts",
-          "operation": "modify",
-          "description": "Strengthen capture of unhandled promise rejections and errors during startup. Add specific handlers for common deployment issues like missing canister IDs, network failures, and authentication errors. Log detailed error context for debugging."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Verify that all environment-dependent configurations (Internet Identity provider URL, backend canister IDs) are correctly set for the deployed environment",
-      "acceptanceCriteria": [
-        "iiProviderShim correctly resolves Internet Identity provider URL",
-        "Backend actor initialization succeeds with correct canister IDs",
-        "No configuration-related errors appear in browser console",
-        "Authentication flow works in deployed environment"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/utils/iiProviderShim.ts",
-          "operation": "modify",
-          "description": "Add validation and logging to ensure Internet Identity provider URL is correctly resolved from environment variables. Add fallback logic and clear error messages if configuration is missing or invalid. Log the resolved provider URL for debugging deployed environments."
-        },
-        {
-          "path": "frontend/src/hooks/useActor.ts",
-          "operation": "modify",
-          "description": "Add defensive checks around backend actor initialization, validate canister IDs are present before creating actor, and add detailed error logging if initialization fails. Handle cases where environment variables may be undefined in deployment. Verify the core-infrastructure component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useInternetIdentity.ts",
-          "operation": "modify",
-          "description": "Add error handling around AuthClient initialization to catch configuration errors. Validate that the Internet Identity provider URL is accessible before attempting login. Add detailed logging for authentication flow failures in deployed environments."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Add defensive null checks and error handling in App.tsx router initialization to prevent crashes from malformed routes or missing providers",
-      "acceptanceCriteria": [
-        "Router handles invalid routes gracefully without crashing",
-        "Missing context providers are detected and handled",
-        "TanStack Router initializes successfully in all deployment scenarios",
-        "Fallback UI displays if router setup fails"
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Add comprehensive null checks before accessing context values from useBranchAuth and useInternetIdentity. Wrap route rendering in error boundaries specific to routing failures. Add validation that all required providers are available before initializing routes. Display informative fallback UI if router initialization fails due to missing dependencies or configuration errors."
-        },
-        {
-          "path": "frontend/src/hooks/useBranchAuth.tsx",
-          "operation": "modify",
-          "description": "Add error handling for localStorage access failures and JSON parsing errors when hydrating branch authentication state. Ensure the hook gracefully handles corrupted or missing localStorage data without crashing. Add defensive checks before accessing localStorage in deployed environments."
+          "description": "Preserve the current bill-saving, ledger/summary update, and non-blocking backend daily total save logic inside `handlePrintBill`, changing only the final step to proceed with `window.print()` (no navigation/new window) regardless of backend save outcome."
         }
       ]
     }

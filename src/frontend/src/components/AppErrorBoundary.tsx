@@ -9,25 +9,20 @@ interface AppErrorBoundaryProps {
 interface AppErrorBoundaryState {
   hasError: boolean;
   error: Error | null;
-  errorInfo: React.ErrorInfo | null;
 }
 
 export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
   constructor(props: AppErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
+    this.state = { hasError: false, error: null };
   }
 
-  static getDerivedStateFromError(error: Error): Partial<AppErrorBoundaryState> {
+  static getDerivedStateFromError(error: Error): AppErrorBoundaryState {
     return { hasError: true, error };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('React Error Boundary caught an error:', error);
-    console.error('Component stack:', errorInfo.componentStack);
-    console.error('Error stack:', error.stack);
-    
-    this.setState({ errorInfo });
+    console.error('React Error Boundary caught an error:', error, errorInfo);
   }
 
   render() {
@@ -37,13 +32,8 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
     }
 
     // Show caught render error
-    if (this.state.hasError && this.state.error) {
-      return (
-        <CrashFallbackScreen 
-          error={this.state.error} 
-          componentStack={this.state.errorInfo?.componentStack ?? undefined}
-        />
-      );
+    if (this.state.hasError) {
+      return <CrashFallbackScreen error={this.state.error} />;
     }
 
     return this.props.children;

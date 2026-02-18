@@ -1,57 +1,132 @@
-import React from 'react';
-import { useBranchAuth } from './hooks/useBranchAuth';
+// Import II provider shim before any authentication hooks
+import './utils/iiProviderShim';
+
+import { Calculator, TrendingUp, Settings } from 'lucide-react';
 import TotalAmountCalculatorPage from './features/calculator/TotalAmountCalculatorPage';
 import { BalanceSheetView } from './features/balanceSheet/BalanceSheetView';
-import { OptimizeBillPage } from './features/optimizeBill/OptimizeBillPage';
 import { PrintViewPage } from './features/print/PrintViewPage';
+import { GuidanceNoticeBar } from './components/GuidanceNoticeBar';
+import { OptimizeBillPage } from './features/optimizeBill/OptimizeBillPage';
+import { useEffect, useState } from 'react';
+import { Button } from './components/ui/button';
+import LoginButton from './components/auth/LoginButton';
+import { useSyncBillPrintLocation } from './features/optimizeBill/useSyncBillPrintLocation';
+import { useInternetIdentity } from './hooks/useInternetIdentity';
+import { useBranchAuth, BranchAuthProvider } from './hooks/useBranchAuth';
 import { AuthGatePage } from './components/auth/AuthGatePage';
 import { BranchSessionControl } from './components/auth/BranchSessionControl';
-import { createRouter, createRoute, createRootRoute, RouterProvider, Outlet, Link } from '@tanstack/react-router';
+import { AppErrorBoundary } from './components/AppErrorBoundary';
+import { useStartupFailureHandlers } from './hooks/useStartupFailureHandlers';
 
-function Layout() {
+type ViewMode = 'calculator' | 'dailyTotals' | 'optimizeBill';
+
+function AppContent() {
+  const [isPrintView, setIsPrintView] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>('calculator');
+  const { identity } = useInternetIdentity();
+  const { isAuthenticated: branchAuthenticated } = useBranchAuth();
+
+  // Capture startup failures
+  const startupError = useStartupFailureHandlers();
+
+  // Sync bill print location from backend when authenticated
+  useSyncBillPrintLocation();
+
+  useEffect(() => {
+    // Check if this is a print view request
+    const params = new URLSearchParams(window.location.search);
+    setIsPrintView(params.get('print') === 'true');
+  }, []);
+
+  // Render print view without header/footer/guidance
+  if (isPrintView) {
+    return <PrintViewPage />;
+  }
+
+  // Gate the app: ONLY branch authentication unlocks the main UI
+  // Internet Identity alone does not unlock the app
+  if (!branchAuthenticated) {
+    return <AuthGatePage />;
+  }
+
+  // Normal app view (only shown when branch authenticated)
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <header className="border-b border-border bg-card print:hidden">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-primary">Varshini Classic Cuisine</h1>
-          <nav className="flex items-center gap-4">
-            <Link
-              to="/"
-              className="px-4 py-2 rounded-md hover:bg-accent transition-colors"
-              activeProps={{ className: 'bg-accent' }}
-            >
-              Calculator
-            </Link>
-            <Link
-              to="/balance-sheet"
-              className="px-4 py-2 rounded-md hover:bg-accent transition-colors"
-              activeProps={{ className: 'bg-accent' }}
-            >
-              Balance Sheet
-            </Link>
-            <Link
-              to="/optimize-bill"
-              className="px-4 py-2 rounded-md hover:bg-accent transition-colors"
-              activeProps={{ className: 'bg-accent' }}
-            >
-              Optimize Bill
-            </Link>
-            <BranchSessionControl />
-          </nav>
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+      {/* Guidance Notice Bar */}
+      <GuidanceNoticeBar />
+
+      {/* Header */}
+      <header className="no-print border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <Calculator className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">Varshini Classic Cuisine</h1>
+                <p className="text-sm text-muted-foreground">Restaurant Management System</p>
+              </div>
+            </div>
+            
+            {/* View Toggle Buttons and Login */}
+            <div className="flex gap-2 items-center">
+              <Button
+                variant={viewMode === 'calculator' ? 'default' : 'outline'}
+                onClick={() => setViewMode('calculator')}
+                className="gap-2"
+              >
+                <Calculator className="h-4 w-4" />
+                Calculator
+              </Button>
+              <Button
+                variant={viewMode === 'dailyTotals' ? 'default' : 'outline'}
+                onClick={() => setViewMode('dailyTotals')}
+                className="gap-2"
+              >
+                <TrendingUp className="h-4 w-4" />
+                Daily Totals
+              </Button>
+              <Button
+                variant={viewMode === 'optimizeBill' ? 'default' : 'outline'}
+                onClick={() => setViewMode('optimizeBill')}
+                className="gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Optimize Bill
+              </Button>
+              <div className="ml-2 pl-2 border-l flex items-center gap-2">
+                <BranchSessionControl />
+                <LoginButton />
+              </div>
+            </div>
+          </div>
         </div>
       </header>
-      <main className="flex-1">
-        <Outlet />
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        {viewMode === 'calculator' ? (
+          <TotalAmountCalculatorPage />
+        ) : viewMode === 'dailyTotals' ? (
+          <BalanceSheetView />
+        ) : (
+          <OptimizeBillPage />
+        )}
       </main>
-      <footer className="border-t border-border bg-card py-6 print:hidden">
+
+      {/* Footer */}
+      <footer className="no-print border-t mt-16 py-8 bg-card/30">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Varshini Classic Cuisine. Built with ❤️ using{' '}
+            © {new Date().getFullYear()} Built with ❤️ using{' '}
             <a
-              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
+              href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
+                typeof window !== 'undefined' ? window.location.hostname : 'varshini-classic-cuisine'
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-primary hover:underline"
+              className="underline hover:text-foreground transition-colors"
             >
               caffeine.ai
             </a>
@@ -62,82 +137,16 @@ function Layout() {
   );
 }
 
-const rootRoute = createRootRoute({
-  component: Layout,
-});
+function App() {
+  const startupError = useStartupFailureHandlers();
 
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/',
-  component: TotalAmountCalculatorPage,
-});
-
-const balanceSheetRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/balance-sheet',
-  component: BalanceSheetView,
-});
-
-const optimizeBillRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/optimize-bill',
-  component: OptimizeBillPage,
-});
-
-const printViewRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/print',
-  component: PrintViewPage,
-});
-
-const routeTree = rootRoute.addChildren([
-  indexRoute,
-  balanceSheetRoute,
-  optimizeBillRoute,
-  printViewRoute,
-]);
-
-let router: ReturnType<typeof createRouter> | null = null;
-
-try {
-  router = createRouter({ routeTree });
-} catch (error) {
-  console.error('Failed to create router:', error);
+  return (
+    <AppErrorBoundary externalError={startupError}>
+      <BranchAuthProvider>
+        <AppContent />
+      </BranchAuthProvider>
+    </AppErrorBoundary>
+  );
 }
 
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router;
-  }
-}
-
-function AppContent() {
-  const { isAuthenticated } = useBranchAuth();
-
-  if (!isAuthenticated) {
-    return <AuthGatePage />;
-  }
-
-  if (!router) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="max-w-md w-full text-center space-y-4">
-          <h2 className="text-2xl font-bold text-destructive">Router Initialization Failed</h2>
-          <p className="text-muted-foreground">The application router could not be initialized. Please check the console for details.</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Reload Application
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return <RouterProvider router={router} />;
-}
-
-export default function App() {
-  return <AppContent />;
-}
+export default App;

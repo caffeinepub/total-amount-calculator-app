@@ -1,25 +1,29 @@
-import React from 'react';
 import { useBranchAuth } from '../../hooks/useBranchAuth';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
 
 export function BranchSessionControl() {
-  const { branchUser, logout } = useBranchAuth();
+  const { branchUser, logout, isAuthenticated } = useBranchAuth();
 
-  if (!branchUser) return null;
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  const handleLogout = () => {
+    logout();
+    // Logout will trigger state change and return user to auth gate
+  };
 
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-sm text-muted-foreground">
-        Branch: <span className="font-medium text-foreground">{branchUser}</span>
-      </span>
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-accent/20 border">
+      <span className="text-sm font-medium">Branch: {branchUser}</span>
       <Button
-        variant="outline"
+        onClick={handleLogout}
+        variant="ghost"
         size="sm"
-        onClick={logout}
-        className="gap-2"
+        className="h-7 gap-1.5"
       >
-        <LogOut className="h-4 w-4" />
+        <LogOut className="h-3.5 w-3.5" />
         Logout
       </Button>
     </div>

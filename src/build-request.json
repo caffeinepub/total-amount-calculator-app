@@ -1,82 +1,55 @@
 {
   "kind": "build_request",
-  "title": "Fix white screen crash issue",
+  "title": "Restore previous Print Bill behavior",
+  "projectName": "Varshini Classic Cuisine",
   "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Investigate and fix the white screen crash that occurs when the application loads in the deployed version",
+      "text": "Restore the previous behavior when the user presses the \"Print\" (Print Bill) button on the calculator page so printing happens in the same page using the existing in-page printable receipt (PrintBill component), instead of navigating/opening a separate print view tab/window.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-recent"
+          "msg-4"
+        ],
+        "quotes": [
+          "when print bill is pressed i want it as it is before"
         ]
       },
       "acceptanceCriteria": [
-        "Application loads without displaying a white screen",
-        "Error boundaries properly catch and display any runtime errors",
-        "Console logs show no critical JavaScript errors during startup",
-        "Application routes render correctly after deployment"
+        "Clicking the calculator page \"Print\" button does not open a new tab/window and does not navigate to a URL containing `?print=true`.",
+        "Clicking the calculator page \"Print\" button triggers the browser print dialog (via `window.print()`), and after closing the dialog the user remains on the calculator page with their current inputs intact.",
+        "The printed output uses the existing `PrintBill` receipt layout (from `frontend/src/features/calculator/PrintBill.tsx`) and is visible in the print preview/printed page.",
+        "`PrintBill` is rendered in a way that allows it to appear during printing (i.e., it is not wrapped inside a permanently hidden parent container that prevents it from being displayed in print media)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Ensure AppErrorBoundary and CrashFallbackScreen properly catch and display startup failures",
+      "text": "Preserve the existing bill-saving and daily totals side effects that occur when printing (saving the bill to branch-scoped localStorage, appending a ledger entry, updating the daily summary, and attempting a non-blocking backend daily total save), while changing only the print UI flow back to the previous behavior.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-recent"
+          "msg-4"
+        ],
+        "quotes": [
+          "when print bill is pressed i want it as it is before"
         ]
       },
       "acceptanceCriteria": [
-        "Error boundary catches rendering errors during component mount",
-        "CrashFallbackScreen displays informative error messages",
-        "Reload button in CrashFallbackScreen functions correctly",
-        "useStartupFailureHandlers captures unhandled promise rejections"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "text": "Verify that all environment-dependent configurations (Internet Identity provider URL, backend canister IDs) are correctly set for the deployed environment",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-recent"
-        ]
-      },
-      "acceptanceCriteria": [
-        "iiProviderShim correctly resolves Internet Identity provider URL",
-        "Backend actor initialization succeeds with correct canister IDs",
-        "No configuration-related errors appear in browser console",
-        "Authentication flow works in deployed environment"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Add defensive null checks and error handling in App.tsx router initialization to prevent crashes from malformed routes or missing providers",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-recent"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Router handles invalid routes gracefully without crashing",
-        "Missing context providers are detected and handled",
-        "TanStack Router initializes successfully in all deployment scenarios",
-        "Fallback UI displays if router setup fails"
+        "After clicking \"Print\", a new bill record is still saved in branch-scoped localStorage (as before).",
+        "After clicking \"Print\", daily totals ledger/summary updates still occur (as before).",
+        "If the backend daily total save fails, printing still proceeds and no additional blocking error is introduced beyond current behavior."
       ]
     }
   ],
   "constraints": [
-    "Do not modify backend logic or schema",
-    "Preserve existing branch authentication flow",
-    "Maintain compatibility with existing localStorage data structures"
+    "Do not modify files under `frontend/src/components/ui` (read-only UI component sources).",
+    "Do not edit immutable hook files listed in SYSTEM_CONTEXT (compose them instead if needed)."
   ],
   "nonGoals": [
-    "Adding new features or functionality",
-    "Changing the visual design or styling",
-    "Modifying the backend canister code"
+    "Redesigning the receipt/print layout or changing receipt content beyond restoring the previous print flow.",
+    "Changing authentication behavior or branch access gating.",
+    "Adding new printing features (e.g., silent printing, printer selection)."
   ],
   "imageRequirements": {
     "required": [],
