@@ -1,20 +1,33 @@
 import { useState, useEffect } from 'react';
 import { BillFormatDefaults, loadBillFormatDefaults, saveBillFormatDefaults } from './optimizeBillStorage';
 import { useActor } from '@/hooks/useActor';
+import { useBranchAuth } from '@/hooks/useBranchAuth';
+import { enforceFixedPrintLocation } from './branchFixedPrintLocation';
 
 export function useOptimizeBillDefaults() {
-  const [defaults, setDefaults] = useState<BillFormatDefaults>(loadBillFormatDefaults());
+  const { branchUser } = useBranchAuth();
+  const [defaults, setDefaults] = useState<BillFormatDefaults>(loadBillFormatDefaults(branchUser || undefined));
   const { actor } = useActor();
 
   useEffect(() => {
-    // Load defaults on mount
-    setDefaults(loadBillFormatDefaults());
-  }, []);
+    // Load defaults on mount and when branch changes
+    if (branchUser) {
+      setDefaults(loadBillFormatDefaults(branchUser));
+    }
+  }, [branchUser]);
 
   const saveDefaults = async (newDefaults: BillFormatDefaults) => {
-    // Always save to localStorage first
-    saveBillFormatDefaults(newDefaults);
-    setDefaults(newDefaults);
+    // Enforce fixed address for fixed branches before saving
+    const finalAddress = enforceFixedPrintLocation(branchUser || undefined, newDefaults.printLocationAddress);
+    
+    const defaultsToSave: BillFormatDefaults = {
+      ...newDefaults,
+      printLocationAddress: finalAddress,
+    };
+    
+    // Always save to branch-scoped localStorage first
+    saveBillFormatDefaults(defaultsToSave, branchUser || undefined);
+    setDefaults(defaultsToSave);
 
     // If authenticated, also persist to backend
     if (actor) {
@@ -24,7 +37,7 @@ export function useOptimizeBillDefaults() {
         
         await actor.saveCallerUserProfile({
           name: existingProfile?.name || 'User',
-          billPrintLocation: newDefaults.printLocationAddress || '',
+          billPrintLocation: finalAddress || '',
         });
       } catch (error) {
         // Don't crash if backend save fails - localStorage is already updated

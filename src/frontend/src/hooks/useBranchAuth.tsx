@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { migrateLegacyDataToBranch } from '@/utils/branchScopedStorage';
 
 interface BranchAuthContextType {
   branchUser: string | null;
@@ -9,9 +10,11 @@ interface BranchAuthContextType {
 
 const BranchAuthContext = createContext<BranchAuthContextType | undefined>(undefined);
 
-// Hardcoded single credential
-const VALID_USERNAME = 'bachupally';
-const VALID_PASSWORD = 'branch1';
+// Hardcoded branch credentials
+const VALID_CREDENTIALS = [
+  { username: 'bachupally', password: 'branch1' },
+  { username: 'nezampat', password: 'branch2' },
+];
 
 const STORAGE_KEY = 'branchAuthUser';
 
@@ -22,7 +25,18 @@ export function BranchAuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-      setBranchUser(stored);
+      // Validate that stored value is a known branch username
+      const isValidBranch = VALID_CREDENTIALS.some(
+        cred => cred.username.toLowerCase() === stored.toLowerCase()
+      );
+      if (isValidBranch) {
+        setBranchUser(stored);
+        // Trigger migration on hydration
+        migrateLegacyDataToBranch(stored);
+      } else {
+        // Clear invalid stored value
+        localStorage.removeItem(STORAGE_KEY);
+      }
     }
   }, []);
 
@@ -31,10 +45,21 @@ export function BranchAuthProvider({ children }: { children: ReactNode }) {
     const normalizedUsername = username.trim().toLowerCase();
     const normalizedPassword = password.trim();
 
-    if (normalizedUsername === VALID_USERNAME.toLowerCase() && normalizedPassword === VALID_PASSWORD) {
-      // Store the canonical username
-      setBranchUser(VALID_USERNAME);
-      localStorage.setItem(STORAGE_KEY, VALID_USERNAME);
+    // Find matching credential
+    const matchedCredential = VALID_CREDENTIALS.find(
+      cred =>
+        cred.username.toLowerCase() === normalizedUsername &&
+        cred.password === normalizedPassword
+    );
+
+    if (matchedCredential) {
+      // Store the canonical username (preserve original casing)
+      setBranchUser(matchedCredential.username);
+      localStorage.setItem(STORAGE_KEY, matchedCredential.username);
+      
+      // Trigger migration on successful login
+      migrateLegacyDataToBranch(matchedCredential.username);
+      
       return true;
     }
     return false;

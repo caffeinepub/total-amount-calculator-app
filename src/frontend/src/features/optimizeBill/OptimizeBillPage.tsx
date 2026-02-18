@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, X, Save, CheckCircle2 } from 'lucide-react';
+import { Upload, X, Save, CheckCircle2, Lock } from 'lucide-react';
 import { useOptimizeBillDefaults } from './useOptimizeBillDefaults';
 import { RECEIPT_STYLES, ReceiptStyleId } from './receiptStyles';
 import { readImageFileAsDataUrl } from '../calculator/utils/readImageFileAsDataUrl';
+import { useBranchAuth } from '@/hooks/useBranchAuth';
+import { isFixedBranchUser, getFixedPrintLocationForBranchUser } from './branchFixedPrintLocation';
 
 export function OptimizeBillPage() {
+  const { branchUser } = useBranchAuth();
   const { defaults, saveDefaults } = useOptimizeBillDefaults();
   
   const [receiptStyle, setReceiptStyle] = useState<ReceiptStyleId>(defaults.receiptStyle);
@@ -18,6 +21,23 @@ export function OptimizeBillPage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Check if current branch has a fixed address
+  const isFixedBranch = isFixedBranchUser(branchUser);
+  const fixedAddress = getFixedPrintLocationForBranchUser(branchUser);
+
+  // Re-initialize state when branch changes or defaults change
+  useEffect(() => {
+    setReceiptStyle(defaults.receiptStyle);
+    setPaymentScanDataUrl(defaults.paymentScanDataUrl);
+    
+    // For fixed branches, always use the fixed address
+    if (fixedAddress) {
+      setPrintLocationAddress(fixedAddress);
+    } else {
+      setPrintLocationAddress(defaults.printLocationAddress || '');
+    }
+  }, [defaults, branchUser, fixedAddress]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -157,18 +177,33 @@ export function OptimizeBillPage() {
         <Card>
           <CardHeader>
             <CardTitle>Print Location Address</CardTitle>
-            <CardDescription>Enter the address where bills are printed (optional)</CardDescription>
+            <CardDescription>
+              {isFixedBranch 
+                ? 'The address is fixed for your branch and cannot be changed'
+                : 'Enter the address where bills are printed (optional)'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <Label htmlFor="print-location">Address</Label>
+              <Label htmlFor="print-location" className="flex items-center gap-2">
+                Address
+                {isFixedBranch && <Lock className="h-3 w-3 text-muted-foreground" />}
+              </Label>
               <Input
                 id="print-location"
                 type="text"
                 placeholder="Enter print location address"
                 value={printLocationAddress}
                 onChange={(e) => setPrintLocationAddress(e.target.value)}
+                disabled={isFixedBranch}
+                className={isFixedBranch ? 'bg-muted cursor-not-allowed' : ''}
               />
+              {isFixedBranch && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Lock className="h-3 w-3" />
+                  This address is automatically set for the {branchUser} branch
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>

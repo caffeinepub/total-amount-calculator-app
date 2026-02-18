@@ -1,36 +1,40 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "App requires a gated login (hardcoded credentials) and has a reported issue with the login button behavior.",
-  "architectural_notes": [
-    "Gate all app/website content behind an authentication check; only allow access after successful login with the specified credentials."
-  ],
-  "known_issues": [
-    "Login button is not working properly (user-reported)."
-  ],
-  "isFixRequest": true,
+  "summary": "New project",
+  "architectural_notes": [],
+  "known_issues": [],
+  "isFixRequest": false,
   "existing_features": [
     {
-      "id": "feature-change-the-branch-login-credentials-to-a-single-hardcoded-username-bachupally-and-password-branch1-and-ensure-the-login-check-works-reliably-e-g-trim-whitespace-around-inputs-and-compare-case-insensitively-for-the-username",
-      "title": "Change the branch login credentials to a single hardcoded username `bachupally` and password `branch1`, and ensure the login check works reliably (e.g., trim whitespace around inputs and compare case-insensitively for the username).",
+      "id": "feature-when-the-authenticated-branch-username-is-exactly-bachupally-force-the-bill-print-location-address-value-to-be-exactly-bachupally-across-the-app-regardless-of-any-existing-localstorage-or-backend-profile-value",
+      "title": "When the authenticated branch username is exactly \"bachupally\", force the bill print location address value to be exactly \"bachupally\" across the app, regardless of any existing localStorage or backend profile value.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-gate-the-app-so-the-main-website-app-ui-cannot-be-accessed-until-the-hardcoded-branch-credentials-are-entered-and-the-user-is-authenticated-via-branch-login-do-not-allow-internet-identity-login-to-bypass-this-gate",
-      "title": "Gate the app so the main website/app UI cannot be accessed until the hardcoded branch credentials are entered and the user is authenticated via branch login (do not allow Internet Identity login to bypass this gate).",
+      "id": "feature-when-the-authenticated-branch-username-is-exactly-nezampat-force-the-bill-print-location-address-value-to-be-exactly-nezampat-across-the-app-regardless-of-any-existing-localstorage-or-backend-profile-value",
+      "title": "When the authenticated branch username is exactly \"nezampat\", force the bill print location address value to be exactly \"nezampat\" across the app, regardless of any existing localStorage or backend profile value.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-fix-the-reported-issue-where-the-login-button-is-not-working-properly-by-ensuring-the-branch-login-submit-action-consistently-triggers-authentication-and-provides-clear-feedback-on-success-failure",
-      "title": "Fix the reported issue where the login button is not working properly by ensuring the Branch Login submit action consistently triggers authentication and provides clear feedback on success/failure.",
+      "id": "feature-update-the-optimize-bill-ui-so-that-the-print-location-address-input-is-not-editable-for-branch-users-bachupally-and-nezampat-and-clearly-indicates-it-is-fixed-for-that-branch-user-facing-text-must-be-in-english",
+      "title": "Update the Optimize Bill UI so that the Print Location Address input is not editable for branch users \"bachupally\" and \"nezampat\" and clearly indicates it is fixed for that branch (user-facing text must be in English).",
       "reqIds": [
         "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-sync-and-persistence-logic-cannot-overwrite-the-fixed-branch-address-a-backend-to-local-sync-must-not-replace-the-fixed-address-for-bachupally-nezampat-and-b-saving-defaults-must-always-write-the-fixed-value-for-these-branches-to-both-localstorage-and-when-available-the-backend-user-profile-billprintlocation",
+      "title": "Ensure sync and persistence logic cannot overwrite the fixed branch address: (a) backend-to-local sync must not replace the fixed address for \"bachupally\"/\"nezampat\", and (b) saving defaults must always write the fixed value for these branches to both localStorage and (when available) the backend user profile billPrintLocation.",
+      "reqIds": [
+        "REQ-4"
       ],
       "version": 1
     }
@@ -38,12 +42,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Require login with hardcoded username 'bachupally' and password 'branch1' before allowing access to the website",
+      "summary": "For user accounts 'bachupally' and 'nezampat', keep the address field fixed/constant to 'bachupally' and 'nezampat' respectively.",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "projectName": "Varshini Classic Cuisine",
+  "projectName": "Daily Totals Ledger",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

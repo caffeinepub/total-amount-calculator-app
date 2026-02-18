@@ -1,73 +1,91 @@
 {
   "kind": "build_request",
-  "title": "Enforce hardcoded branch login and fix login button behavior",
-  "projectName": "Varshini Classic Cuisine",
-  "priority": "high",
+  "title": "Lock print location address for specific branch usernames",
+  "projectName": "Daily Totals Ledger",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Change the branch login credentials to a single hardcoded username `bachupally` and password `branch1`, and ensure the login check works reliably (e.g., trim whitespace around inputs and compare case-insensitively for the username).",
+      "text": "When the authenticated branch username is exactly \"bachupally\", force the bill print location address value to be exactly \"bachupally\" across the app, regardless of any existing localStorage or backend profile value.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-4"
         ],
         "quotes": [
-          "code the username as bachupally and the password as branch1"
+          "for username bachupally keep the address constent as bachupally and for nezampat as nezampat"
         ]
       },
       "acceptanceCriteria": [
-        "Entering username `bachupally` and password `branch1` successfully authenticates the user.",
-        "Any other username/password combination fails with an error message.",
-        "Leading/trailing spaces in either field do not prevent a valid login when the intended credentials are entered.",
-        "Username matching is not blocked by capitalization differences (e.g., `Bachupally` still works), but password must match exactly `branch1` (aside from trimming)."
+        "After logging in as branch user \"bachupally\", the Optimize Bill > Print Location Address field value is \"bachupally\".",
+        "If localStorage or backend has any other value for the print location address, it is overridden to \"bachupally\" for branch user \"bachupally\".",
+        "Saving defaults while logged in as \"bachupally\" persists \"bachupally\" as the print location address (and does not persist any other value)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Gate the app so the main website/app UI cannot be accessed until the hardcoded branch credentials are entered and the user is authenticated via branch login (do not allow Internet Identity login to bypass this gate).",
+      "text": "When the authenticated branch username is exactly \"nezampat\", force the bill print location address value to be exactly \"nezampat\" across the app, regardless of any existing localStorage or backend profile value.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-4"
         ],
         "quotes": [
-          "the website should not open until they are entered and loged in"
+          "for username bachupally keep the address constent as bachupally and for nezampat as nezampat"
         ]
       },
       "acceptanceCriteria": [
-        "When not authenticated via branch login, the app always shows the authentication gate and does not render the main header/pages.",
-        "Internet Identity authentication alone does not unlock the app.",
-        "After successful branch login, the app transitions from the gate page into the main app without requiring a refresh.",
-        "Logging out returns the user to the authentication gate and re-locks access to the app."
+        "After logging in as branch user \"nezampat\", the Optimize Bill > Print Location Address field value is \"nezampat\".",
+        "If localStorage or backend has any other value for the print location address, it is overridden to \"nezampat\" for branch user \"nezampat\".",
+        "Saving defaults while logged in as \"nezampat\" persists \"nezampat\" as the print location address (and does not persist any other value)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Fix the reported issue where the login button is not working properly by ensuring the Branch Login submit action consistently triggers authentication and provides clear feedback on success/failure.",
+      "text": "Update the Optimize Bill UI so that the Print Location Address input is not editable for branch users \"bachupally\" and \"nezampat\" and clearly indicates it is fixed for that branch (user-facing text must be in English).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-1"
+          "msg-4"
         ],
         "quotes": [
-          "i also saw an issue that the log in button is not working properly"
+          "for username bachupally keep the address constent as bachupally and for nezampat as nezampat"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the Branch Login button attempts login exactly once per click.",
-        "Pressing Enter in the username or password field submits the form and attempts login.",
-        "On invalid credentials, an English error message is shown and the app remains gated.",
-        "On valid credentials, any previous error state is cleared and the app unlocks immediately."
+        "When logged in as \"bachupally\" or \"nezampat\", the Print Location Address input is disabled or read-only and cannot be changed by typing.",
+        "When logged in as any other branch user (if any are added later), the Print Location Address input remains editable as before.",
+        "Any helper/description text added to indicate the field is fixed is in English."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Ensure sync and persistence logic cannot overwrite the fixed branch address: (a) backend-to-local sync must not replace the fixed address for \"bachupally\"/\"nezampat\", and (b) saving defaults must always write the fixed value for these branches to both localStorage and (when available) the backend user profile billPrintLocation.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-4"
+        ],
+        "quotes": [
+          "for username bachupally keep the address constent as bachupally and for nezampat as nezampat"
+        ]
+      },
+      "acceptanceCriteria": [
+        "For \"bachupally\"/\"nezampat\", useSyncBillPrintLocation does not change the local printLocationAddress away from the branch-fixed value even if the backend user profile contains a different value.",
+        "For \"bachupally\"/\"nezampat\", useOptimizeBillDefaults.saveDefaults persists the branch-fixed print location address to localStorage even if the UI state contains a different value.",
+        "For \"bachupally\"/\"nezampat\", if backend saving occurs, the saved UserProfile.billPrintLocation equals the fixed branch value."
       ]
     }
   ],
   "constraints": [
-    "Do not edit files under frontend/src/components/ui or any other paths listed as immutable in SYSTEM_CONTEXT."
+    "Do not edit any files under frontend/src/components/ui (read-only UI components).",
+    "Do not modify the immutable hook files listed in SYSTEM_CONTEXT (compose around them instead).",
+    "Backend must remain a single-actor Motoko canister; only introduce migration changes if state schema changes are required (not expected for this request)."
   ],
   "nonGoals": [
-    "Implementing secure multi-user authentication, role-based access control, or backend-backed credential storage.",
-    "Adding third-party authentication providers beyond what already exists."
+    "Adding new branch usernames/passwords or changing existing branch credentials.",
+    "Implementing third-party authentication or changing authentication flows.",
+    "Changing daily totals persistence behavior."
   ],
   "imageRequirements": {
     "required": [],

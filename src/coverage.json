@@ -1,54 +1,71 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T05:09:05.540Z",
+  "generatedAt": "2026-02-18T06:07:58.392Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 3,
-    "implemented": 3,
+    "total": 4,
+    "implemented": 4,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Change the branch login credentials to a single hardcoded username `bachupally` and password `branch1`, and ensure the login check works reliably (e.g., trim whitespace around inputs and compare case-insensitively for the username).",
+        "summary": "When the authenticated branch username is exactly \"bachupally\", force the bill print location address value to be exactly \"bachupally\" across the app, regardless of any existing localStorage or backend profile value.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/hooks/useBranchAuth.tsx",
-          "frontend/src/components/auth/BranchLoginForm.tsx"
+          "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
+          "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+          "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts"
         ],
         "matchedFiles": [
-          "frontend/src/hooks/useBranchAuth.tsx",
-          "frontend/src/components/auth/BranchLoginForm.tsx"
+          "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
+          "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+          "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Gate the app so the main website/app UI cannot be accessed until the hardcoded branch credentials are entered and the user is authenticated via branch login (do not allow Internet Identity login to bypass this gate).",
+        "summary": "When the authenticated branch username is exactly \"nezampat\", force the bill print location address value to be exactly \"nezampat\" across the app, regardless of any existing localStorage or backend profile value.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/auth/AuthGatePage.tsx",
-          "frontend/src/components/auth/BranchSessionControl.tsx"
+          "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
+          "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+          "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx",
-          "frontend/src/components/auth/AuthGatePage.tsx",
-          "frontend/src/components/auth/BranchSessionControl.tsx"
+          "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
+          "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+          "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Fix the reported issue where the login button is not working properly by ensuring the Branch Login submit action consistently triggers authentication and provides clear feedback on success/failure.",
+        "summary": "Update the Optimize Bill UI so that the Print Location Address input is not editable for branch users \"bachupally\" and \"nezampat\" and clearly indicates it is fixed for that branch (user-facing text must be in English).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/components/auth/BranchLoginForm.tsx",
-          "frontend/src/hooks/useBranchAuth.tsx"
+          "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
+          "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts"
         ],
         "matchedFiles": [
-          "frontend/src/components/auth/BranchLoginForm.tsx",
-          "frontend/src/hooks/useBranchAuth.tsx"
+          "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
+          "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Ensure sync and persistence logic cannot overwrite the fixed branch address: (a) backend-to-local sync must not replace the fixed address for \"bachupally\"/\"nezampat\", and (b) saving defaults must always write the fixed value for these branches to both localStorage and (when available) the backend user profile billPrintLocation.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/features/optimizeBill/useSyncBillPrintLocation.ts",
+          "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
+          "frontend/src/features/optimizeBill/optimizeBillStorage.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/features/optimizeBill/useSyncBillPrintLocation.ts",
+          "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
+          "frontend/src/features/optimizeBill/optimizeBillStorage.ts"
         ]
       }
     ]
@@ -58,11 +75,11 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/App.tsx",
-    "frontend/src/components/auth/AuthGatePage.tsx",
-    "frontend/src/components/auth/BranchLoginForm.tsx",
-    "frontend/src/components/auth/BranchSessionControl.tsx",
-    "frontend/src/hooks/useBranchAuth.tsx",
+    "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
+    "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
+    "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+    "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
+    "frontend/src/features/optimizeBill/useSyncBillPrintLocation.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

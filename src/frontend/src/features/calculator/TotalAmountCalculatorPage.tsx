@@ -19,8 +19,14 @@ import { findMatchingLineItem } from './lineItemCatalogMatching';
 import { confirmDelete } from '@/utils/confirmDelete';
 import { generateBillCode } from './billCode';
 import { loadBillFormatDefaults } from '../optimizeBill/optimizeBillStorage';
+import { useBranchAuth } from '@/hooks/useBranchAuth';
+import { useSaveDailyTotal } from '@/hooks/useQueries';
+import { aggregateItemQuantities } from '../balanceSheet/ledgerUtils';
 
 function TotalAmountCalculatorPage() {
+  const { branchUser } = useBranchAuth();
+  const saveDailyTotalMutation = useSaveDailyTotal();
+  
   const [state, setState] = useState<CalculatorState>({
     lineItems: [{ id: crypto.randomUUID(), label: '', quantity: 0, unitPrice: 0 }],
     taxRate: 0,
@@ -121,15 +127,20 @@ function TotalAmountCalculatorPage() {
     });
   };
 
-  const handlePrintBill = () => {
+  const handlePrintBill = async () => {
+    if (!branchUser) {
+      alert('Please log in to print bills.');
+      return;
+    }
+
     try {
       // Generate bill code
       const billCode = generateBillCode();
 
-      // Load current bill format defaults
-      const billFormatDefaults = loadBillFormatDefaults();
+      // Load current branch-scoped bill format defaults
+      const billFormatDefaults = loadBillFormatDefaults(branchUser);
 
-      // Save bill to localStorage with bill code and format snapshot
+      // Save bill to branch-scoped localStorage with bill code and format snapshot
       const billId = saveBill({
         billCode,
         lineItems: state.lineItems.map(({ label, quantity, unitPrice }) => ({
@@ -142,17 +153,38 @@ function TotalAmountCalculatorPage() {
         discountValue: state.discountValue,
         breakdown,
         billFormatSnapshot: billFormatDefaults,
-      });
+      }, branchUser);
 
-      // Record in Daily Totals ledger
-      appendLedgerEntry(billId, breakdown.finalTotal);
+      // Record in branch-scoped Daily Totals ledger
+      appendLedgerEntry(billId, breakdown.finalTotal, branchUser);
 
-      // Update persisted daily summary for today
+      // Update persisted daily summary for today in branch-scoped storage
       const todayKey = getDayKey();
-      updateDailySummary(todayKey, breakdown.finalTotal);
+      updateDailySummary(todayKey, breakdown.finalTotal, branchUser);
 
-      // Construct print URL
-      const printUrl = `${window.location.origin}${window.location.pathname}?print=true&id=${billId}`;
+      // Save to backend (non-blocking)
+      try {
+        // Compute per-item quantities from line items
+        const itemQuantities = aggregateItemQuantities([{ lineItems: state.lineItems }]);
+        const productQuantities: Array<[string, bigint]> = Object.entries(itemQuantities).map(
+          ([label, qty]) => [label, BigInt(qty)]
+        );
+
+        // Convert total revenue to bigint (multiply by 100 to preserve 2 decimal places)
+        const totalRevenueBigInt = BigInt(Math.round(breakdown.finalTotal * 100));
+
+        await saveDailyTotalMutation.mutateAsync({
+          date: todayKey,
+          totalRevenue: totalRevenueBigInt,
+          productQuantities,
+        });
+      } catch (backendError) {
+        // Log error but don't interrupt the print flow
+        console.error('Failed to save daily total to backend:', backendError);
+      }
+
+      // Construct print URL with branch parameter
+      const printUrl = `${window.location.origin}${window.location.pathname}?print=true&id=${billId}&branch=${encodeURIComponent(branchUser)}`;
       
       // Attempt to open print view in new tab
       try {

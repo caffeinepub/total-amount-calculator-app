@@ -1,62 +1,131 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
   getAvailableDays,
-  getEntriesForDay,
-  aggregateItemQuantities,
   getDailySummary,
+  aggregateItemQuantities,
 } from '../ledgerUtils';
-import { getBillById } from '../../calculator/savedBills';
+import { getAllBills } from '../../calculator/savedBills';
+import { useBranchAuth } from '@/hooks/useBranchAuth';
+import { useGetBalanceSheet } from '@/hooks/useQueries';
 
-/**
- * Hook for managing Daily Totals state and computations
- */
 export function useDailyTotal() {
-  const [availableDays, setAvailableDays] = useState<string[]>([]);
+  const { branchUser } = useBranchAuth();
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
+  const [availableDays, setAvailableDays] = useState<string[]>([]);
+  const [dayTotal, setDayTotal] = useState<number>(0);
+  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({});
 
-  // Load available days on mount and when storage changes
+  // Fetch backend balance sheet
+  const { data: backendBalanceSheet, isLoading: backendLoading, isError: backendError } = useGetBalanceSheet();
+
+  // Load available days and selected day
   useEffect(() => {
-    const loadDays = () => {
-      const days = getAvailableDays();
-      setAvailableDays(days);
-      
-      // Auto-select most recent day if none selected
-      if (days.length > 0 && !selectedDay) {
-        setSelectedDay(days[0]);
+    if (!branchUser) {
+      setAvailableDays([]);
+      setSelectedDay(null);
+      return;
+    }
+
+    let days: string[] = [];
+
+    // Prefer backend data if available
+    if (backendBalanceSheet && backendBalanceSheet.length > 0 && !backendError) {
+      days = backendBalanceSheet.map(([date]) => date).sort().reverse();
+    } else {
+      // Fallback to localStorage
+      days = getAvailableDays(branchUser);
+    }
+
+    setAvailableDays(days);
+
+    // Auto-select the most recent day if none selected
+    if (days.length > 0 && !selectedDay) {
+      setSelectedDay(days[0]);
+    } else if (days.length === 0) {
+      setSelectedDay(null);
+    }
+  }, [branchUser, backendBalanceSheet, backendError, selectedDay]);
+
+  // Load day total and item quantities for selected day
+  useEffect(() => {
+    if (!branchUser || !selectedDay) {
+      setDayTotal(0);
+      setItemQuantities({});
+      return;
+    }
+
+    // Try to get data from backend first
+    if (backendBalanceSheet && !backendError) {
+      const backendEntry = backendBalanceSheet.find(([date]) => date === selectedDay);
+      if (backendEntry) {
+        const [, dailyTotalView] = backendEntry;
+        
+        // Convert bigint to number (divide by 100 to restore 2 decimal places)
+        const totalRevenue = Number(dailyTotalView.totalRevenue) / 100;
+        
+        // Convert productQuantities array to Record
+        const quantities: Record<string, number> = {};
+        for (const [label, qty] of dailyTotalView.productQuantities) {
+          quantities[label] = Number(qty);
+        }
+        
+        setDayTotal(totalRevenue);
+        setItemQuantities(quantities);
+        return;
       }
-    };
+    }
 
-    loadDays();
+    // Fallback to localStorage
+    const summary = getDailySummary(selectedDay, branchUser);
+    setDayTotal(summary.totalRevenue);
 
-    // Listen for storage changes (e.g., new bills printed)
+    // Load item quantities from saved bills
+    const allBills = getAllBills(branchUser);
+    const billsForDay = allBills.filter((bill) => {
+      const billDate = new Date(bill.timestamp);
+      const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, '0')}-${String(billDate.getDate()).padStart(2, '0')}`;
+      return billDayKey === selectedDay;
+    });
+
+    const quantities = aggregateItemQuantities(billsForDay);
+    setItemQuantities(quantities);
+  }, [branchUser, selectedDay, backendBalanceSheet, backendError]);
+
+  // Listen for storage changes in branch-scoped keys
+  useEffect(() => {
+    if (!branchUser) return;
+
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'varshini_daily_totals_ledger' || e.key === 'varshini_daily_summary') {
-        loadDays();
+      // Check if the changed key is related to current branch
+      if (
+        e.key?.includes(`dailyLedger_${branchUser}`) ||
+        e.key?.includes(`dailySummary_${branchUser}`)
+      ) {
+        // Reload available days
+        const days = getAvailableDays(branchUser);
+        setAvailableDays(days);
+
+        // Reload selected day data if it exists
+        if (selectedDay) {
+          const summary = getDailySummary(selectedDay, branchUser);
+          setDayTotal(summary.totalRevenue);
+
+          const allBills = getAllBills(branchUser);
+          const billsForDay = allBills.filter((bill) => {
+            const billDate = new Date(bill.timestamp);
+            const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, '0')}-${String(billDate.getDate()).padStart(2, '0')}`;
+            return billDayKey === selectedDay;
+          });
+
+          const quantities = aggregateItemQuantities(billsForDay);
+          setItemQuantities(quantities);
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [selectedDay]);
-
-  // Get total for selected day from persisted daily summary
-  const dayTotal = useMemo(() => {
-    if (!selectedDay) return 0;
-    const summary = getDailySummary(selectedDay);
-    return summary.totalRevenue;
-  }, [selectedDay]);
-
-  // Compute per-item quantities for selected day
-  const itemQuantities = useMemo(() => {
-    if (!selectedDay) return {};
-
-    const entries = getEntriesForDay(selectedDay);
-    const bills = entries
-      .map((entry) => getBillById(entry.billId))
-      .filter((bill): bill is NonNullable<typeof bill> => bill !== null);
-
-    return aggregateItemQuantities(bills);
-  }, [selectedDay]);
+  }, [branchUser, selectedDay]);
 
   return {
     availableDays,
@@ -64,5 +133,6 @@ export function useDailyTotal() {
     setSelectedDay,
     dayTotal,
     itemQuantities,
+    isLoading: backendLoading,
   };
 }

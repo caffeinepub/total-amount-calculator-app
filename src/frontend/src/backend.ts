@@ -89,6 +89,11 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface DailyTotalView {
+    date: string;
+    productQuantities: Array<[string, bigint]>;
+    totalRevenue: bigint;
+}
 export interface UserProfile {
     name: string;
     billPrintLocation: string;
@@ -101,13 +106,16 @@ export enum UserRole {
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    getBalanceSheet(): Promise<Array<[string, DailyTotalView]>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
+    getDailyTotal(date: string): Promise<DailyTotalView | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    saveDailyTotal(date: string, totalRevenue: bigint, productQuantities: Array<[string, bigint]>): Promise<void>;
 }
-import type { UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
+import type { DailyTotalView as _DailyTotalView, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
@@ -138,6 +146,20 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async getBalanceSheet(): Promise<Array<[string, DailyTotalView]>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBalanceSheet();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBalanceSheet();
+            return result;
+        }
+    }
     async getCallerUserProfile(): Promise<UserProfile | null> {
         if (this.processError) {
             try {
@@ -164,6 +186,20 @@ export class Backend implements backendInterface {
         } else {
             const result = await this.actor.getCallerUserRole();
             return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getDailyTotal(arg0: string): Promise<DailyTotalView | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getDailyTotal(arg0);
+                return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getDailyTotal(arg0);
+            return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
         }
     }
     async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
@@ -208,11 +244,28 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async saveDailyTotal(arg0: string, arg1: bigint, arg2: Array<[string, bigint]>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveDailyTotal(arg0, arg1, arg2);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveDailyTotal(arg0, arg1, arg2);
+            return result;
+        }
+    }
 }
 function from_candid_UserRole_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
     return from_candid_variant_n5(_uploadFile, _downloadFile, value);
 }
 function from_candid_opt_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_DailyTotalView]): DailyTotalView | null {
     return value.length === 0 ? null : value[0];
 }
 function from_candid_variant_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {

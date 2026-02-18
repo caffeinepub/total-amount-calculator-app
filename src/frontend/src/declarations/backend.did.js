@@ -13,6 +13,11 @@ export const UserRole = IDL.Variant({
   'user' : IDL.Null,
   'guest' : IDL.Null,
 });
+export const DailyTotalView = IDL.Record({
+  'date' : IDL.Text,
+  'productQuantities' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat)),
+  'totalRevenue' : IDL.Nat64,
+});
 export const UserProfile = IDL.Record({
   'name' : IDL.Text,
   'billPrintLocation' : IDL.Text,
@@ -21,8 +26,14 @@ export const UserProfile = IDL.Record({
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'getBalanceSheet' : IDL.Func(
+      [],
+      [IDL.Vec(IDL.Tuple(IDL.Text, DailyTotalView))],
+      ['query'],
+    ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getDailyTotal' : IDL.Func([IDL.Text], [IDL.Opt(DailyTotalView)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -30,6 +41,11 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'saveDailyTotal' : IDL.Func(
+      [IDL.Text, IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
+      [],
+      [],
+    ),
 });
 
 export const idlInitArgs = [];
@@ -40,6 +56,11 @@ export const idlFactory = ({ IDL }) => {
     'user' : IDL.Null,
     'guest' : IDL.Null,
   });
+  const DailyTotalView = IDL.Record({
+    'date' : IDL.Text,
+    'productQuantities' : IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat)),
+    'totalRevenue' : IDL.Nat64,
+  });
   const UserProfile = IDL.Record({
     'name' : IDL.Text,
     'billPrintLocation' : IDL.Text,
@@ -48,8 +69,18 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'getBalanceSheet' : IDL.Func(
+        [],
+        [IDL.Vec(IDL.Tuple(IDL.Text, DailyTotalView))],
+        ['query'],
+      ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getDailyTotal' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(DailyTotalView)],
+        ['query'],
+      ),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -57,6 +88,11 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'saveDailyTotal' : IDL.Func(
+        [IDL.Text, IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
+        [],
+        [],
+      ),
   });
 };
 

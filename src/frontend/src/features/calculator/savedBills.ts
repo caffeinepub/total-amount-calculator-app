@@ -1,4 +1,5 @@
 import { ReceiptStyleId } from '../optimizeBill/receiptStyles';
+import { getSavedBillsKey, getActiveBranch } from '@/utils/branchScopedStorage';
 
 export interface BillFormatSnapshot {
   receiptStyle: ReceiptStyleId;
@@ -27,9 +28,7 @@ export interface SavedBillRecord {
   billFormatSnapshot: BillFormatSnapshot;
 }
 
-const STORAGE_KEY = 'varshini_saved_bills';
-
-export function saveBill(bill: Omit<SavedBillRecord, 'id' | 'timestamp'>): string {
+export function saveBill(bill: Omit<SavedBillRecord, 'id' | 'timestamp'>, branch?: string): string {
   const billId = crypto.randomUUID();
   const timestamp = Date.now();
   
@@ -40,14 +39,17 @@ export function saveBill(bill: Omit<SavedBillRecord, 'id' | 'timestamp'>): strin
   };
 
   try {
+    // Get branch-scoped storage key
+    const storageKey = getSavedBillsKey(branch);
+    
     // Get existing bills
-    const existingBills = getAllBills();
+    const existingBills = getAllBills(branch);
     
     // Add new bill
     existingBills.push(savedBill);
     
     // Save back to localStorage
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(existingBills));
+    localStorage.setItem(storageKey, JSON.stringify(existingBills));
     
     return billId;
   } catch (error) {
@@ -56,9 +58,9 @@ export function saveBill(bill: Omit<SavedBillRecord, 'id' | 'timestamp'>): strin
   }
 }
 
-export function getBillById(billId: string): SavedBillRecord | null {
+export function getBillById(billId: string, branch?: string): SavedBillRecord | null {
   try {
-    const bills = getAllBills();
+    const bills = getAllBills(branch);
     return bills.find(bill => bill.id === billId) || null;
   } catch (error) {
     console.error('Error loading bill:', error);
@@ -66,9 +68,10 @@ export function getBillById(billId: string): SavedBillRecord | null {
   }
 }
 
-export function getAllBills(): SavedBillRecord[] {
+export function getAllBills(branch?: string): SavedBillRecord[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const storageKey = getSavedBillsKey(branch);
+    const stored = localStorage.getItem(storageKey);
     if (!stored) return [];
     return JSON.parse(stored);
   } catch (error) {
@@ -77,9 +80,10 @@ export function getAllBills(): SavedBillRecord[] {
   }
 }
 
-export function clearAllBills(): void {
+export function clearAllBills(branch?: string): void {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    const storageKey = getSavedBillsKey(branch);
+    localStorage.removeItem(storageKey);
   } catch (error) {
     console.error('Error clearing bills:', error);
   }
