@@ -1,104 +1,103 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Branch-fixed bill print location (bachupally/nezampat)",
+  "title": "Fix white screen crash issue",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Force print location address to \"bachupally\" for authenticated branch user bachupally across the app, overriding any stored values.",
+      "summary": "Investigate and fix the white screen crash that occurs when the application loads in the deployed version",
       "acceptanceCriteria": [
-        "After logging in as branch user \"bachupally\", the Optimize Bill > Print Location Address field value is \"bachupally\".",
-        "If localStorage or backend has any other value for the print location address, it is overridden to \"bachupally\" for branch user \"bachupally\".",
-        "Saving defaults while logged in as \"bachupally\" persists \"bachupally\" as the print location address (and does not persist any other value)."
+        "Application loads without displaying a white screen",
+        "Error boundaries properly catch and display any runtime errors",
+        "Console logs show no critical JavaScript errors during startup",
+        "Application routes render correctly after deployment"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
-          "operation": "create",
-          "description": "Add a small shared utility that maps fixed branch usernames to their enforced bill print location address (e.g., bachupally -> bachupally) and exposes helper functions to detect and apply the fixed value. Verify the component's usage instructions before implementing."
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Add defensive null checks around TanStack Router initialization, wrap router creation in try-catch blocks, and ensure QueryClientProvider and context providers are properly initialized before rendering routes. Add fallback UI if router setup fails. Verify any component usage instructions before implementing."
         },
         {
-          "path": "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+          "path": "frontend/src/main.tsx",
           "operation": "modify",
-          "description": "Enforce the fixed address for branch user \"bachupally\" at the storage layer by (1) overriding loadBillFormatDefaults(branch) to return printLocationAddress=\"bachupally\" for that branch regardless of stored value, and (2) overriding saveBillFormatDefaults(defaults, branch) to always write printLocationAddress=\"bachupally\" for that branch even if a different value is passed in."
+          "description": "Add startup error handling around React root rendering to catch and log initialization failures. Ensure all required providers (QueryClientProvider, InternetIdentityProvider) are properly wrapped and initialized before app mounting."
         },
         {
-          "path": "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
+          "path": "frontend/src/components/AppErrorBoundary.tsx",
           "operation": "modify",
-          "description": "Ensure saveDefaults always persists the enforced \"bachupally\" print location for the bachupally branch when saving to localStorage and when optionally saving to the backend profile (billPrintLocation), even if the caller passes a different value."
+          "description": "Enhance error boundary to capture more detailed error information including stack traces and component stack. Ensure it catches errors during initial mount phase and passes comprehensive error details to CrashFallbackScreen."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Force print location address to \"nezampat\" for authenticated branch user nezampat across the app, overriding any stored values.",
+      "summary": "Ensure AppErrorBoundary and CrashFallbackScreen properly catch and display startup failures",
       "acceptanceCriteria": [
-        "After logging in as branch user \"nezampat\", the Optimize Bill > Print Location Address field value is \"nezampat\".",
-        "If localStorage or backend has any other value for the print location address, it is overridden to \"nezampat\" for branch user \"nezampat\".",
-        "Saving defaults while logged in as \"nezampat\" persists \"nezampat\" as the print location address (and does not persist any other value)."
+        "Error boundary catches rendering errors during component mount",
+        "CrashFallbackScreen displays informative error messages",
+        "Reload button in CrashFallbackScreen functions correctly",
+        "useStartupFailureHandlers captures unhandled promise rejections"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
+          "path": "frontend/src/components/CrashFallbackScreen.tsx",
           "operation": "modify",
-          "description": "Extend the fixed-branch mapping utility to include nezampat -> nezampat and expose a single source of truth for both fixed branches. Verify the component's usage instructions before implementing."
+          "description": "Enhance error display to show more detailed error information including error type, message, and stack trace. Improve reload button functionality to clear any corrupted state from localStorage before reloading. Add debugging information for deployment troubleshooting."
         },
         {
-          "path": "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
+          "path": "frontend/src/hooks/useStartupFailureHandlers.ts",
           "operation": "modify",
-          "description": "Enforce the fixed address for branch user \"nezampat\" at the storage layer by (1) overriding loadBillFormatDefaults(branch) to return printLocationAddress=\"nezampat\" for that branch regardless of stored value, and (2) overriding saveBillFormatDefaults(defaults, branch) to always write printLocationAddress=\"nezampat\" for that branch even if a different value is passed in."
-        },
-        {
-          "path": "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
-          "operation": "modify",
-          "description": "Ensure saveDefaults always persists the enforced \"nezampat\" print location for the nezampat branch when saving to localStorage and when optionally saving to the backend profile (billPrintLocation), even if the caller passes a different value."
+          "description": "Strengthen capture of unhandled promise rejections and errors during startup. Add specific handlers for common deployment issues like missing canister IDs, network failures, and authentication errors. Log detailed error context for debugging."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Make Print Location Address non-editable for bachupally/nezampat and show an English indication that the value is fixed for the branch.",
+      "summary": "Verify that all environment-dependent configurations (Internet Identity provider URL, backend canister IDs) are correctly set for the deployed environment",
       "acceptanceCriteria": [
-        "When logged in as \"bachupally\" or \"nezampat\", the Print Location Address input is disabled or read-only and cannot be changed by typing.",
-        "When logged in as any other branch user (if any are added later), the Print Location Address input remains editable as before.",
-        "Any helper/description text added to indicate the field is fixed is in English."
+        "iiProviderShim correctly resolves Internet Identity provider URL",
+        "Backend actor initialization succeeds with correct canister IDs",
+        "No configuration-related errors appear in browser console",
+        "Authentication flow works in deployed environment"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
+          "path": "frontend/src/utils/iiProviderShim.ts",
           "operation": "modify",
-          "description": "Use the branch-fixed mapping utility to: (1) set the Print Location Address input value from the fixed branch value when applicable, (2) render the input as disabled/read-only for bachupally/nezampat, and (3) add clear English helper text indicating the address is fixed for that branch. Verify the component's usage instructions before implementing."
+          "description": "Add validation and logging to ensure Internet Identity provider URL is correctly resolved from environment variables. Add fallback logic and clear error messages if configuration is missing or invalid. Log the resolved provider URL for debugging deployed environments."
         },
         {
-          "path": "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
+          "path": "frontend/src/hooks/useActor.ts",
           "operation": "modify",
-          "description": "Provide UI-friendly helpers (e.g., isFixedBranchUser, getFixedPrintLocationForBranchUser) so OptimizeBillPage can disable the input and display the correct fixed value without duplicating logic. Verify the component's usage instructions before implementing."
+          "description": "Add defensive checks around backend actor initialization, validate canister IDs are present before creating actor, and add detailed error logging if initialization fails. Handle cases where environment variables may be undefined in deployment. Verify the core-infrastructure component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useInternetIdentity.ts",
+          "operation": "modify",
+          "description": "Add error handling around AuthClient initialization to catch configuration errors. Validate that the Internet Identity provider URL is accessible before attempting login. Add detailed logging for authentication flow failures in deployed environments."
         }
       ]
     },
     {
       "id": "REQ-4",
-      "summary": "Prevent sync/persistence logic from overwriting fixed branch addresses; always persist the fixed value to localStorage and backend profile when saving defaults.",
+      "summary": "Add defensive null checks and error handling in App.tsx router initialization to prevent crashes from malformed routes or missing providers",
       "acceptanceCriteria": [
-        "For \"bachupally\"/\"nezampat\", useSyncBillPrintLocation does not change the local printLocationAddress away from the branch-fixed value even if the backend user profile contains a different value.",
-        "For \"bachupally\"/\"nezampat\", useOptimizeBillDefaults.saveDefaults persists the branch-fixed print location address to localStorage even if the UI state contains a different value.",
-        "For \"bachupally\"/\"nezampat\", if backend saving occurs, the saved UserProfile.billPrintLocation equals the fixed branch value."
+        "Router handles invalid routes gracefully without crashing",
+        "Missing context providers are detected and handled",
+        "TanStack Router initializes successfully in all deployment scenarios",
+        "Fallback UI displays if router setup fails"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/optimizeBill/useSyncBillPrintLocation.ts",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Guard the backend-to-local sync so that when the branch user is bachupally or nezampat, the sync does not apply backend billPrintLocation values that differ from the enforced branch-fixed value (and ideally no-ops early for those branches)."
+          "description": "Add comprehensive null checks before accessing context values from useBranchAuth and useInternetIdentity. Wrap route rendering in error boundaries specific to routing failures. Add validation that all required providers are available before initializing routes. Display informative fallback UI if router initialization fails due to missing dependencies or configuration errors."
         },
         {
-          "path": "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
+          "path": "frontend/src/hooks/useBranchAuth.tsx",
           "operation": "modify",
-          "description": "When saving defaults for bachupally/nezampat, force the printLocationAddress used for local save, state update, and optional backend profile save to the branch-fixed value (ensuring backend UserProfile.billPrintLocation matches the fixed value)."
-        },
-        {
-          "path": "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
-          "operation": "modify",
-          "description": "Make fixed-branch enforcement tamper-resistant by ensuring both load and save paths cannot return/persist a non-fixed printLocationAddress for bachupally/nezampat, preventing accidental overwrites from any caller (including sync logic)."
+          "description": "Add error handling for localStorage access failures and JSON parsing errors when hydrating branch authentication state. Ensure the hook gracefully handles corrupted or missing localStorage data without crashing. Add defensive checks before accessing localStorage in deployed environments."
         }
       ]
     }

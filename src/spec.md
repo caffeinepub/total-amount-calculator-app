@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Restore the calculator page “Print” (Print Bill) button to print in-place using the existing `PrintBill` receipt, without opening/navigating to a separate print view.
+**Goal:** Fix the white screen crash issue that occurs when the application loads in the deployed version.
 
 **Planned changes:**
-- Update the calculator page Print button flow to render the existing `PrintBill` component in-page for print media and trigger printing via `window.print()` (no new tab/window and no `?print=true` navigation).
-- Ensure `PrintBill` is not placed inside a container that prevents it from appearing in print preview/print output.
-- Keep the current “on print” side effects intact (bill save to branch-scoped localStorage, ledger entry append, daily summary updates, and non-blocking backend daily total save attempt), changing only the print UI flow.
+- Investigate and resolve the white screen crash on application load in deployed environment
+- Ensure error boundaries (AppErrorBoundary and CrashFallbackScreen) properly catch and display startup failures
+- Verify environment-dependent configurations (Internet Identity provider URL, backend canister IDs) are correctly set for deployment
+- Add defensive null checks and error handling in App.tsx router initialization to prevent crashes from malformed routes or missing providers
 
-**User-visible outcome:** Pressing “Print” on the calculator prints the receipt using the existing `PrintBill` layout in the same page (with inputs preserved), and existing bill/daily-total updates still occur as before.
+**User-visible outcome:** The application loads successfully in the deployed environment without displaying a white screen, and any errors are properly caught and displayed with helpful messages.

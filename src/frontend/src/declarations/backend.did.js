@@ -26,14 +26,19 @@ export const UserProfile = IDL.Record({
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'clearAllDailyTotals' : IDL.Func([], [], []),
   'getBalanceSheet' : IDL.Func(
-      [],
+      [IDL.Text],
       [IDL.Vec(IDL.Tuple(IDL.Text, DailyTotalView))],
       ['query'],
     ),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
-  'getDailyTotal' : IDL.Func([IDL.Text], [IDL.Opt(DailyTotalView)], ['query']),
+  'getDailyTotal' : IDL.Func(
+      [IDL.Text, IDL.Text],
+      [IDL.Opt(DailyTotalView)],
+      ['query'],
+    ),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -42,7 +47,7 @@ export const idlService = IDL.Service({
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
   'saveDailyTotal' : IDL.Func(
-      [IDL.Text, IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
+      [IDL.Text, IDL.Text, IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
       [],
       [],
     ),
@@ -69,15 +74,16 @@ export const idlFactory = ({ IDL }) => {
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'clearAllDailyTotals' : IDL.Func([], [], []),
     'getBalanceSheet' : IDL.Func(
-        [],
+        [IDL.Text],
         [IDL.Vec(IDL.Tuple(IDL.Text, DailyTotalView))],
         ['query'],
       ),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getDailyTotal' : IDL.Func(
-        [IDL.Text],
+        [IDL.Text, IDL.Text],
         [IDL.Opt(DailyTotalView)],
         ['query'],
       ),
@@ -89,7 +95,7 @@ export const idlFactory = ({ IDL }) => {
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
     'saveDailyTotal' : IDL.Func(
-        [IDL.Text, IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
+        [IDL.Text, IDL.Text, IDL.Nat64, IDL.Vec(IDL.Tuple(IDL.Text, IDL.Nat))],
         [],
         [],
       ),

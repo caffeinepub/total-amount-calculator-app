@@ -7,6 +7,7 @@ import {
 import { getAllBills } from '../../calculator/savedBills';
 import { useBranchAuth } from '@/hooks/useBranchAuth';
 import { useGetBalanceSheet } from '@/hooks/useQueries';
+import { isDailyTotalsKeyForBranch } from '@/utils/branchScopedStorage';
 
 export function useDailyTotal() {
   const { branchUser } = useBranchAuth();
@@ -15,8 +16,16 @@ export function useDailyTotal() {
   const [dayTotal, setDayTotal] = useState<number>(0);
   const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({});
 
-  // Fetch backend balance sheet
-  const { data: backendBalanceSheet, isLoading: backendLoading, isError: backendError } = useGetBalanceSheet();
+  // Fetch backend balance sheet with branch parameter
+  const { data: backendBalanceSheet, isLoading: backendLoading, isError: backendError } = useGetBalanceSheet(branchUser || '');
+
+  // Reset state when branch changes
+  useEffect(() => {
+    setSelectedDay(null);
+    setAvailableDays([]);
+    setDayTotal(0);
+    setItemQuantities({});
+  }, [branchUser]);
 
   // Load available days and selected day
   useEffect(() => {
@@ -96,30 +105,29 @@ export function useDailyTotal() {
     if (!branchUser) return;
 
     const handleStorageChange = (e: StorageEvent) => {
-      // Check if the changed key is related to current branch
-      if (
-        e.key?.includes(`dailyLedger_${branchUser}`) ||
-        e.key?.includes(`dailySummary_${branchUser}`)
-      ) {
-        // Reload available days
-        const days = getAvailableDays(branchUser);
-        setAvailableDays(days);
+      // Only respond to daily totals changes for the current branch
+      if (!isDailyTotalsKeyForBranch(e.key, branchUser)) {
+        return;
+      }
 
-        // Reload selected day data if it exists
-        if (selectedDay) {
-          const summary = getDailySummary(selectedDay, branchUser);
-          setDayTotal(summary.totalRevenue);
+      // Reload available days
+      const days = getAvailableDays(branchUser);
+      setAvailableDays(days);
 
-          const allBills = getAllBills(branchUser);
-          const billsForDay = allBills.filter((bill) => {
-            const billDate = new Date(bill.timestamp);
-            const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, '0')}-${String(billDate.getDate()).padStart(2, '0')}`;
-            return billDayKey === selectedDay;
-          });
+      // Reload selected day data if it exists
+      if (selectedDay) {
+        const summary = getDailySummary(selectedDay, branchUser);
+        setDayTotal(summary.totalRevenue);
 
-          const quantities = aggregateItemQuantities(billsForDay);
-          setItemQuantities(quantities);
-        }
+        const allBills = getAllBills(branchUser);
+        const billsForDay = allBills.filter((bill) => {
+          const billDate = new Date(bill.timestamp);
+          const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, '0')}-${String(billDate.getDate()).padStart(2, '0')}`;
+          return billDayKey === selectedDay;
+        });
+
+        const quantities = aggregateItemQuantities(billsForDay);
+        setItemQuantities(quantities);
       }
     };
 

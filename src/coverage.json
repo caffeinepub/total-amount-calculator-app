@@ -1,35 +1,66 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T09:48:00.513Z",
+  "generatedAt": "2026-02-18T16:06:56.930Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 2,
-    "implemented": 2,
+    "total": 4,
+    "implemented": 4,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Restore the previous behavior when the user presses the \"Print\" (Print Bill) button on the calculator page so printing happens in the same page using the existing in-page printable receipt (PrintBill component), instead of navigating/opening a separate print view tab/window.",
+        "summary": "Investigate and fix the white screen crash that occurs when the application loads in the deployed version",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/main.tsx",
+          "frontend/src/components/AppErrorBoundary.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+          "frontend/src/App.tsx",
+          "frontend/src/components/AppErrorBoundary.tsx"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Preserve the existing bill-saving and daily totals side effects that occur when printing (saving the bill to branch-scoped localStorage, appending a ledger entry, updating the daily summary, and attempting a non-blocking backend daily total save), while changing only the print UI flow back to the previous behavior.",
+        "summary": "Ensure AppErrorBoundary and CrashFallbackScreen properly catch and display startup failures",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+          "frontend/src/components/CrashFallbackScreen.tsx",
+          "frontend/src/hooks/useStartupFailureHandlers.ts"
         ],
         "matchedFiles": [
-          "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
+          "frontend/src/components/CrashFallbackScreen.tsx",
+          "frontend/src/hooks/useStartupFailureHandlers.ts"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Verify that all environment-dependent configurations (Internet Identity provider URL, backend canister IDs) are correctly set for the deployed environment",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/utils/iiProviderShim.ts",
+          "frontend/src/hooks/useActor.ts",
+          "frontend/src/hooks/useInternetIdentity.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/utils/iiProviderShim.ts"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Add defensive null checks and error handling in App.tsx router initialization to prevent crashes from malformed routes or missing providers",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/useBranchAuth.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/useBranchAuth.tsx"
         ]
       }
     ]
@@ -39,7 +70,13 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+    "frontend/src/App.tsx",
+    "frontend/src/components/AppErrorBoundary.tsx",
+    "frontend/src/components/CrashFallbackScreen.tsx",
+    "frontend/src/features/print/PrintViewPage.tsx",
+    "frontend/src/hooks/useBranchAuth.tsx",
+    "frontend/src/hooks/useStartupFailureHandlers.ts",
+    "frontend/src/utils/iiProviderShim.ts",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

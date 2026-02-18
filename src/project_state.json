@@ -1,53 +1,48 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "Debugging and fixing white screen crash issue",
   "architectural_notes": [],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "White screen crash occurring in deployed version"
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-when-the-authenticated-branch-username-is-exactly-bachupally-force-the-bill-print-location-address-value-to-be-exactly-bachupally-across-the-app-regardless-of-any-existing-localstorage-or-backend-profile-value",
-      "title": "When the authenticated branch username is exactly \"bachupally\", force the bill print location address value to be exactly \"bachupally\" across the app, regardless of any existing localStorage or backend profile value.",
+      "id": "feature-investigate-and-fix-the-white-screen-crash-that-occurs-when-the-application-loads-in-the-deployed-version",
+      "title": "Investigate and fix the white screen crash that occurs when the application loads in the deployed version",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-when-the-authenticated-branch-username-is-exactly-nezampat-force-the-bill-print-location-address-value-to-be-exactly-nezampat-across-the-app-regardless-of-any-existing-localstorage-or-backend-profile-value",
-      "title": "When the authenticated branch username is exactly \"nezampat\", force the bill print location address value to be exactly \"nezampat\" across the app, regardless of any existing localStorage or backend profile value.",
+      "id": "feature-ensure-apperrorboundary-and-crashfallbackscreen-properly-catch-and-display-startup-failures",
+      "title": "Ensure AppErrorBoundary and CrashFallbackScreen properly catch and display startup failures",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-update-the-optimize-bill-ui-so-that-the-print-location-address-input-is-not-editable-for-branch-users-bachupally-and-nezampat-and-clearly-indicates-it-is-fixed-for-that-branch-user-facing-text-must-be-in-english",
-      "title": "Update the Optimize Bill UI so that the Print Location Address input is not editable for branch users \"bachupally\" and \"nezampat\" and clearly indicates it is fixed for that branch (user-facing text must be in English).",
+      "id": "feature-verify-that-all-environment-dependent-configurations-internet-identity-provider-url-backend-canister-ids-are-correctly-set-for-the-deployed-environment",
+      "title": "Verify that all environment-dependent configurations (Internet Identity provider URL, backend canister IDs) are correctly set for the deployed environment",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-ensure-sync-and-persistence-logic-cannot-overwrite-the-fixed-branch-address-a-backend-to-local-sync-must-not-replace-the-fixed-address-for-bachupally-nezampat-and-b-saving-defaults-must-always-write-the-fixed-value-for-these-branches-to-both-localstorage-and-when-available-the-backend-user-profile-billprintlocation",
-      "title": "Ensure sync and persistence logic cannot overwrite the fixed branch address: (a) backend-to-local sync must not replace the fixed address for \"bachupally\"/\"nezampat\", and (b) saving defaults must always write the fixed value for these branches to both localStorage and (when available) the backend user profile billPrintLocation.",
+      "id": "feature-add-defensive-null-checks-and-error-handling-in-app-tsx-router-initialization-to-prevent-crashes-from-malformed-routes-or-missing-providers",
+      "title": "Add defensive null checks and error handling in App.tsx router initialization to prevent crashes from malformed routes or missing providers",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     }
   ],
-  "new_feature_requests": [
-    {
-      "id": "AR-1",
-      "summary": "For user accounts 'bachupally' and 'nezampat', keep the address field fixed/constant to 'bachupally' and 'nezampat' respectively.",
-      "reqIds": [],
-      "status": "pending"
-    }
-  ],
-  "projectName": "Daily Totals Ledger",
+  "new_feature_requests": [],
+  "projectName": "Fix white screen crash issue",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

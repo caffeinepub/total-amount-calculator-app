@@ -23,51 +23,76 @@ export function BranchAuthProvider({ children }: { children: ReactNode }) {
 
   // Hydrate from localStorage on mount
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      // Validate that stored value is a known branch username
-      const isValidBranch = VALID_CREDENTIALS.some(
-        cred => cred.username.toLowerCase() === stored.toLowerCase()
-      );
-      if (isValidBranch) {
-        setBranchUser(stored);
-        // Trigger migration on hydration
-        migrateLegacyDataToBranch(stored);
-      } else {
-        // Clear invalid stored value
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (stored) {
+        // Validate that stored value is a known branch username
+        const isValidBranch = VALID_CREDENTIALS.some(
+          cred => cred.username.toLowerCase() === stored.toLowerCase()
+        );
+        if (isValidBranch) {
+          console.log('Hydrating branch user from localStorage:', stored);
+          setBranchUser(stored);
+          // Trigger migration on hydration
+          migrateLegacyDataToBranch(stored);
+        } else {
+          // Clear invalid stored value
+          console.warn('Invalid branch user in localStorage, clearing:', stored);
+          localStorage.removeItem(STORAGE_KEY);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to hydrate branch auth from localStorage:', error);
+      // Clear potentially corrupted data
+      try {
         localStorage.removeItem(STORAGE_KEY);
+      } catch (e) {
+        console.error('Failed to clear corrupted localStorage:', e);
       }
     }
   }, []);
 
   const login = (username: string, password: string): boolean => {
-    // Normalize inputs: trim both, compare username case-insensitively, password exactly
-    const normalizedUsername = username.trim().toLowerCase();
-    const normalizedPassword = password.trim();
+    try {
+      // Normalize inputs: trim both, compare username case-insensitively, password exactly
+      const normalizedUsername = username.trim().toLowerCase();
+      const normalizedPassword = password.trim();
 
-    // Find matching credential
-    const matchedCredential = VALID_CREDENTIALS.find(
-      cred =>
-        cred.username.toLowerCase() === normalizedUsername &&
-        cred.password === normalizedPassword
-    );
+      // Find matching credential
+      const matchedCredential = VALID_CREDENTIALS.find(
+        cred =>
+          cred.username.toLowerCase() === normalizedUsername &&
+          cred.password === normalizedPassword
+      );
 
-    if (matchedCredential) {
-      // Store the canonical username (preserve original casing)
-      setBranchUser(matchedCredential.username);
-      localStorage.setItem(STORAGE_KEY, matchedCredential.username);
+      if (matchedCredential) {
+        // Store the canonical username (preserve original casing)
+        console.log('Branch login successful:', matchedCredential.username);
+        setBranchUser(matchedCredential.username);
+        localStorage.setItem(STORAGE_KEY, matchedCredential.username);
+        
+        // Trigger migration on successful login
+        migrateLegacyDataToBranch(matchedCredential.username);
+        
+        return true;
+      }
       
-      // Trigger migration on successful login
-      migrateLegacyDataToBranch(matchedCredential.username);
-      
-      return true;
+      console.warn('Branch login failed: invalid credentials');
+      return false;
+    } catch (error) {
+      console.error('Branch login error:', error);
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
-    setBranchUser(null);
-    localStorage.removeItem(STORAGE_KEY);
+    try {
+      console.log('Branch logout');
+      setBranchUser(null);
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+      console.error('Branch logout error:', error);
+    }
   };
 
   const isAuthenticated = branchUser !== null;

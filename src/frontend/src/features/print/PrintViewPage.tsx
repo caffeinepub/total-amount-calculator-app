@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import { getBillById, SavedBillRecord } from '../calculator/savedBills';
 import { formatCurrency } from '../calculator/format';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,6 @@ import { RECEIPT_STYLES } from '../optimizeBill/receiptStyles';
 import { getActiveBranch } from '@/utils/branchScopedStorage';
 
 export function PrintViewPage() {
-  const navigate = useNavigate();
   const [bill, setBill] = useState<SavedBillRecord | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [printAttempted, setPrintAttempted] = useState(false);
@@ -68,7 +66,7 @@ export function PrintViewPage() {
   };
 
   const handleBackToCalculator = () => {
-    navigate({ to: '/' });
+    window.location.href = '/';
   };
 
   if (error) {

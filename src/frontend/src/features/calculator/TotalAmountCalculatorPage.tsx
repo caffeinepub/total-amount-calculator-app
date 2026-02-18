@@ -25,7 +25,7 @@ import { aggregateItemQuantities } from '../balanceSheet/ledgerUtils';
 
 function TotalAmountCalculatorPage() {
   const { branchUser } = useBranchAuth();
-  const saveDailyTotalMutation = useSaveDailyTotal(branchUser || '');
+  const saveDailyTotalMutation = useSaveDailyTotal();
   
   const [state, setState] = useState<CalculatorState>({
     lineItems: [{ id: crypto.randomUUID(), label: '', quantity: 0, unitPrice: 0 }],
@@ -174,6 +174,7 @@ function TotalAmountCalculatorPage() {
         const totalRevenueBigInt = BigInt(Math.round(breakdown.finalTotal * 100));
 
         await saveDailyTotalMutation.mutateAsync({
+          branch: branchUser,
           date: todayKey,
           totalRevenue: totalRevenueBigInt,
           productQuantities,
