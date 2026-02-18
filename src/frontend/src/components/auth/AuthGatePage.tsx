@@ -22,9 +22,9 @@ export function AuthGatePage() {
         <div className="bg-card rounded-lg border p-6 space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <h2 className="text-lg font-semibold">Branch Login</h2>
+              <h2 className="text-lg font-semibold">Branch Login Required</h2>
               <p className="text-sm text-muted-foreground">
-                Login with your branch credentials
+                Enter your branch credentials to access the application
               </p>
             </div>
             <BranchLoginForm />
@@ -35,7 +35,7 @@ export function AuthGatePage() {
               <Separator />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or</span>
+              <span className="bg-card px-2 text-muted-foreground">Optional</span>
             </div>
           </div>
 
@@ -43,7 +43,7 @@ export function AuthGatePage() {
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">Internet Identity</h2>
               <p className="text-sm text-muted-foreground">
-                Login with your Internet Identity
+                Optionally connect with Internet Identity for additional features
               </p>
             </div>
             <div className="flex justify-center">

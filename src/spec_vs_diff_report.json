@@ -1,29 +1,28 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T07:04:22.513Z",
-  "summary": "REQ-1 appears implemented by introducing/using BranchAuthProvider at the app root so that AppContent (and components like BranchSessionControl) can safely call/use useBranchAuth() without crashing into a white screen. Some additional non-requested project metadata/documentation updates were also made.",
-  "missing_requirements": [],
-  "hallucinated_features": [
+  "generatedAt": "2026-02-18T05:09:05.537Z",
+  "summary": "Diff implements hardcoded branch credentials with input normalization, adds an auth gate page, and gates App rendering based on branch auth state. However, the diff evidence is truncated and does not clearly show that BranchAuthProvider is actually mounted around the app, which is required for the gate/login state to function end-to-end.",
+  "missing_requirements": [
     {
-      "description": "Updated internal project tracking metadata (project_state.json) to add a new_feature_request entry (AR-1) and related notes/status.",
-      "reason": "The BuildRequest only asks for an app crash fix via BranchAuthProvider wrapping; it does not request changes to project tracking/metadata files.",
+      "id": "REQ-2",
+      "requirement": "Gate the app so the main website/app UI cannot be accessed until the hardcoded branch credentials are entered and the user is authenticated via branch login (do not allow Internet Identity login to bypass this gate).",
+      "reason": "Although AppContent checks useBranchAuth().isAuthenticated and returns <AuthGatePage /> when false, the diff excerpt does not show BranchAuthProvider being mounted around AppContent (or at the app root in main.tsx). Without the provider, useBranchAuth will throw at runtime and the gating/login flow cannot work reliably.",
       "evidence": [
-        "project_state.json"
-      ]
-    },
-    {
-      "description": "Modified frontend-file-summaries.txt with broad descriptions of many features/files unrelated to the requested BranchAuthProvider wrapper fix.",
-      "reason": "The BuildRequest does not request updating documentation/summaries; additionally, the summaries reference changes across many files that are not part of the provided diff’s modified-file list.",
-      "evidence": [
-        "frontend-file-summaries.txt"
+        "frontend/src/App.tsx (truncated)",
+        "frontend/src/hooks/useBranchAuth.tsx"
       ]
     }
   ],
-  "confidence": 0.64,
+  "hallucinated_features": [],
+  "confidence": 0.62,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/src/App.tsx",
+    "frontend/src/components/auth/AuthGatePage.tsx",
+    "frontend/src/components/auth/BranchLoginForm.tsx",
+    "frontend/src/components/auth/BranchSessionControl.tsx",
+    "frontend/src/hooks/useBranchAuth.tsx",
     "project_state.json"
   ]
 }

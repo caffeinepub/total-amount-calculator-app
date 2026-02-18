@@ -1,24 +1,54 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-17T07:04:22.516Z",
+  "generatedAt": "2026-02-18T05:09:05.540Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Prevent the app from rendering a blank white page by ensuring all components that call useBranchAuth() are wrapped in BranchAuthProvider (e.g., wrap AppContent inside BranchAuthProvider in frontend/src/App.tsx).",
+        "summary": "Change the branch login credentials to a single hardcoded username `bachupally` and password `branch1`, and ensure the login check works reliably (e.g., trim whitespace around inputs and compare case-insensitively for the username).",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/App.tsx"
+          "frontend/src/hooks/useBranchAuth.tsx",
+          "frontend/src/components/auth/BranchLoginForm.tsx"
         ],
         "matchedFiles": [
-          "frontend/src/App.tsx"
+          "frontend/src/hooks/useBranchAuth.tsx",
+          "frontend/src/components/auth/BranchLoginForm.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Gate the app so the main website/app UI cannot be accessed until the hardcoded branch credentials are entered and the user is authenticated via branch login (do not allow Internet Identity login to bypass this gate).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/auth/AuthGatePage.tsx",
+          "frontend/src/components/auth/BranchSessionControl.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/App.tsx",
+          "frontend/src/components/auth/AuthGatePage.tsx",
+          "frontend/src/components/auth/BranchSessionControl.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Fix the reported issue where the login button is not working properly by ensuring the Branch Login submit action consistently triggers authentication and provides clear feedback on success/failure.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/auth/BranchLoginForm.tsx",
+          "frontend/src/hooks/useBranchAuth.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/auth/BranchLoginForm.tsx",
+          "frontend/src/hooks/useBranchAuth.tsx"
         ]
       }
     ]
@@ -29,6 +59,10 @@
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
     "frontend/src/App.tsx",
+    "frontend/src/components/auth/AuthGatePage.tsx",
+    "frontend/src/components/auth/BranchLoginForm.tsx",
+    "frontend/src/components/auth/BranchSessionControl.tsx",
+    "frontend/src/hooks/useBranchAuth.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

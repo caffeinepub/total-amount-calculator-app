@@ -2,10 +2,11 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-prevent-the-app-from-rendering-a-blank-white-page-by-ensuring-all-components-that-call-usebranchauth-are-wrapped-in-branchauthprovider-e-g-wrap-appcontent-inside-branchauthprovider-in-frontend-src-app-tsx",
-      "featureTitle": "Prevent the app from rendering a blank white page by ensuring all components that call useBranchAuth() are wrapped in BranchAuthProvider (e.g., wrap AppContent inside BranchAuthProvider in frontend/src/App.tsx).",
+      "featureId": "feature-change-the-branch-login-credentials-to-a-single-hardcoded-username-bachupally-and-password-branch1-and-ensure-the-login-check-works-reliably-e-g-trim-whitespace-around-inputs-and-compare-case-insensitively-for-the-username",
+      "featureTitle": "Change the branch login credentials to a single hardcoded username `bachupally` and password `branch1`, and ensure the login check works reliably (e.g., trim whitespace around inputs and compare case-insensitively for the username).",
       "files": [
-        "frontend/src/App.tsx"
+        "frontend/src/components/auth/BranchLoginForm.tsx",
+        "frontend/src/hooks/useBranchAuth.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -17,6 +18,47 @@
       ],
       "testIds": [
         "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-gate-the-app-so-the-main-website-app-ui-cannot-be-accessed-until-the-hardcoded-branch-credentials-are-entered-and-the-user-is-authenticated-via-branch-login-do-not-allow-internet-identity-login-to-bypass-this-gate",
+      "featureTitle": "Gate the app so the main website/app UI cannot be accessed until the hardcoded branch credentials are entered and the user is authenticated via branch login (do not allow Internet Identity login to bypass this gate).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/AuthGatePage.tsx",
+        "frontend/src/components/auth/BranchSessionControl.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-fix-the-reported-issue-where-the-login-button-is-not-working-properly-by-ensuring-the-branch-login-submit-action-consistently-triggers-authentication-and-provides-clear-feedback-on-success-failure",
+      "featureTitle": "Fix the reported issue where the login button is not working properly by ensuring the Branch Login submit action consistently triggers authentication and provides clear feedback on success/failure.",
+      "files": [
+        "frontend/src/components/auth/BranchLoginForm.tsx",
+        "frontend/src/hooks/useBranchAuth.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
       ],
       "confidence": "high"
     }

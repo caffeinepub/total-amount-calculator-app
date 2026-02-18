@@ -1,25 +1,48 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "New project",
+  "summary": "App requires a gated login (hardcoded credentials) and has a reported issue with the login button behavior.",
   "architectural_notes": [
-    "Auth hooks (e.g., useBranchAuth) must be used within a BranchAuthProvider that wraps the app (e.g., in App root)."
+    "Gate all app/website content behind an authentication check; only allow access after successful login with the specified credentials."
   ],
   "known_issues": [
-    "Login screen renders as a white page when useBranchAuth is called without BranchAuthProvider wrapping the app (crash before render)."
+    "Login button is not working properly (user-reported)."
   ],
   "isFixRequest": true,
   "existing_features": [
     {
-      "id": "feature-prevent-the-app-from-rendering-a-blank-white-page-by-ensuring-all-components-that-call-usebranchauth-are-wrapped-in-branchauthprovider-e-g-wrap-appcontent-inside-branchauthprovider-in-frontend-src-app-tsx",
-      "title": "Prevent the app from rendering a blank white page by ensuring all components that call useBranchAuth() are wrapped in BranchAuthProvider (e.g., wrap AppContent inside BranchAuthProvider in frontend/src/App.tsx).",
+      "id": "feature-change-the-branch-login-credentials-to-a-single-hardcoded-username-bachupally-and-password-branch1-and-ensure-the-login-check-works-reliably-e-g-trim-whitespace-around-inputs-and-compare-case-insensitively-for-the-username",
+      "title": "Change the branch login credentials to a single hardcoded username `bachupally` and password `branch1`, and ensure the login check works reliably (e.g., trim whitespace around inputs and compare case-insensitively for the username).",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-gate-the-app-so-the-main-website-app-ui-cannot-be-accessed-until-the-hardcoded-branch-credentials-are-entered-and-the-user-is-authenticated-via-branch-login-do-not-allow-internet-identity-login-to-bypass-this-gate",
+      "title": "Gate the app so the main website/app UI cannot be accessed until the hardcoded branch credentials are entered and the user is authenticated via branch login (do not allow Internet Identity login to bypass this gate).",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-reported-issue-where-the-login-button-is-not-working-properly-by-ensuring-the-branch-login-submit-action-consistently-triggers-authentication-and-provides-clear-feedback-on-success-failure",
+      "title": "Fix the reported issue where the login button is not working properly by ensuring the Branch Login submit action consistently triggers authentication and provides clear feedback on success/failure.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
     }
   ],
-  "new_feature_requests": [],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Require login with hardcoded username 'bachupally' and password 'branch1' before allowing access to the website",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
   "projectName": "Varshini Classic Cuisine",
   "clarification_mode": "instant",
   "clarification_rounds": 0

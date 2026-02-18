@@ -1,3 +1,6 @@
+// Import II provider shim before any authentication hooks
+import './utils/iiProviderShim';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Calculator, TrendingUp, Settings } from 'lucide-react';
 import TotalAmountCalculatorPage from './features/calculator/TotalAmountCalculatorPage';
@@ -38,15 +41,13 @@ function AppContent() {
     return <PrintViewPage />;
   }
 
-  // Check overall authentication state
-  const isAuthenticated = !!identity || branchAuthenticated;
-
-  // Show login gate if not authenticated
-  if (!isAuthenticated) {
+  // Gate the app: ONLY branch authentication unlocks the main UI
+  // Internet Identity alone does not unlock the app
+  if (!branchAuthenticated) {
     return <AuthGatePage />;
   }
 
-  // Normal app view
+  // Normal app view (only shown when branch authenticated)
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       {/* Guidance Notice Bar */}

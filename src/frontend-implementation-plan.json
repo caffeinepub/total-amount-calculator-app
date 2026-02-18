@@ -1,22 +1,76 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix blank white-screen crash by wrapping app in BranchAuthProvider",
+  "title": "Hardcoded branch login gate and reliable Branch Login submit behavior",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Ensure all components that call useBranchAuth() are rendered within BranchAuthProvider to prevent runtime crash and blank screen.",
+      "summary": "Hardcode branch credentials to username `bachupally` and password `branch1` with reliable input normalization for login checks.",
       "acceptanceCriteria": [
-        "Loading the app no longer results in a blank white page.",
-        "When the user is not authenticated with either Internet Identity or branch credentials, the AuthGatePage renders successfully.",
-        "BranchSessionControl and any other components using useBranchAuth() render without throwing the error \"useBranchAuth must be used within BranchAuthProvider\".",
-        "Branch login (via BranchLoginForm) can authenticate and unlock the main app view."
+        "Entering username `bachupally` and password `branch1` successfully authenticates the user.",
+        "Any other username/password combination fails with an error message.",
+        "Leading/trailing spaces in either field do not prevent a valid login when the intended credentials are entered.",
+        "Username matching is not blocked by capitalization differences (e.g., `Bachupally` still works), but password must match exactly `branch1` (aside from trimming)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useBranchAuth.tsx",
+          "operation": "modify",
+          "description": "Replace the multi-credential array with a single hardcoded credential (username `bachupally`, password `branch1`) and update the login() check to trim both inputs, compare username case-insensitively, and compare password exactly after trimming."
+        },
+        {
+          "path": "frontend/src/components/auth/BranchLoginForm.tsx",
+          "operation": "modify",
+          "description": "Ensure the form passes normalized values to branch login (trim username/password before calling login) and clears any previous error state on successful authentication."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Gate the application so only branch login authentication unlocks the main UI, regardless of Internet Identity authentication state.",
+      "acceptanceCriteria": [
+        "When not authenticated via branch login, the app always shows the authentication gate and does not render the main header/pages.",
+        "Internet Identity authentication alone does not unlock the app.",
+        "After successful branch login, the app transitions from the gate page into the main app without requiring a refresh.",
+        "Logging out returns the user to the authentication gate and re-locks access to the app."
       ],
       "file_operations": [
         {
           "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Import BranchAuthProvider from frontend/src/hooks/useBranchAuth.tsx and wrap AppContent (and thus AuthGatePage, BranchLoginForm, BranchSessionControl, and any other useBranchAuth consumers) inside BranchAuthProvider at the App component level so AppContent's useBranchAuth() call is always within the provider, preventing the blank-screen crash."
+          "description": "Change the gating condition so the main app UI renders only when branchAuthenticated is true; do not treat Internet Identity identity presence as sufficient to unlock the app."
+        },
+        {
+          "path": "frontend/src/components/auth/AuthGatePage.tsx",
+          "operation": "modify",
+          "description": "Adjust the Internet Identity section copy (and/or UI placement) to clarify that Internet Identity does not unlock the app by itself and branch login is still required to access the main UI."
+        },
+        {
+          "path": "frontend/src/components/auth/BranchSessionControl.tsx",
+          "operation": "modify",
+          "description": "Confirm logout behavior fully re-locks the app by relying on branch auth state changes (and adjust any UI text if needed to reflect that this logout returns to the gate)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Make the Branch Login button and submit flow consistently trigger exactly one authentication attempt per user action, including Enter key submit, with clear success/failure feedback.",
+      "acceptanceCriteria": [
+        "Clicking the Branch Login button attempts login exactly once per click.",
+        "Pressing Enter in the username or password field submits the form and attempts login.",
+        "On invalid credentials, an English error message is shown and the app remains gated.",
+        "On valid credentials, any previous error state is cleared and the app unlocks immediately."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/auth/BranchLoginForm.tsx",
+          "operation": "modify",
+          "description": "Harden the submit flow to avoid double-triggering (e.g., add a local submitting guard / disable the submit Button during processing), ensure Enter key submits via the form onSubmit, keep the invalid-credentials error message in English, and clear error state immediately on success so the gate unlocks without refresh."
+        },
+        {
+          "path": "frontend/src/hooks/useBranchAuth.tsx",
+          "operation": "modify",
+          "description": "Ensure login() is a deterministic, side-effect-safe single call that returns true/false based only on normalized input comparison, so the form can reliably display success/failure."
         }
       ]
     }
