@@ -23,12 +23,13 @@ export enum UserRole {
 }
 export interface backendInterface {
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    getBalanceSheet(): Promise<Array<[string, DailyTotalView]>>;
+    clearAllDailyTotals(): Promise<void>;
+    getBalanceSheet(branch: string): Promise<Array<[string, DailyTotalView]>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
-    getDailyTotal(date: string): Promise<DailyTotalView | null>;
+    getDailyTotal(branch: string, date: string): Promise<DailyTotalView | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    saveDailyTotal(date: string, totalRevenue: bigint, productQuantities: Array<[string, bigint]>): Promise<void>;
+    saveDailyTotal(branch: string, date: string, totalRevenue: bigint, productQuantities: Array<[string, bigint]>): Promise<void>;
 }

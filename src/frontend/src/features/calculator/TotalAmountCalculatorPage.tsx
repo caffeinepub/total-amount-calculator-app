@@ -25,7 +25,7 @@ import { aggregateItemQuantities } from '../balanceSheet/ledgerUtils';
 
 function TotalAmountCalculatorPage() {
   const { branchUser } = useBranchAuth();
-  const saveDailyTotalMutation = useSaveDailyTotal();
+  const saveDailyTotalMutation = useSaveDailyTotal(branchUser || '');
   
   const [state, setState] = useState<CalculatorState>({
     lineItems: [{ id: crypto.randomUUID(), label: '', quantity: 0, unitPrice: 0 }],
@@ -162,7 +162,7 @@ function TotalAmountCalculatorPage() {
       const todayKey = getDayKey();
       updateDailySummary(todayKey, breakdown.finalTotal, branchUser);
 
-      // Save to backend (non-blocking)
+      // Save to backend (non-blocking) with branch parameter
       try {
         // Compute per-item quantities from line items
         const itemQuantities = aggregateItemQuantities([{ lineItems: state.lineItems }]);
@@ -183,24 +183,8 @@ function TotalAmountCalculatorPage() {
         console.error('Failed to save daily total to backend:', backendError);
       }
 
-      // Construct print URL with branch parameter
-      const printUrl = `${window.location.origin}${window.location.pathname}?print=true&id=${billId}&branch=${encodeURIComponent(branchUser)}`;
-      
-      // Attempt to open print view in new tab
-      try {
-        const newWindow = window.open(printUrl, '_blank');
-        
-        // Check if popup was blocked (newWindow is null or undefined)
-        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-          // Popup blocked - fallback to same-tab navigation
-          console.log('Popup blocked, navigating to print view in current tab');
-          window.location.href = printUrl;
-        }
-      } catch (openError) {
-        // Error opening window - fallback to same-tab navigation
-        console.error('Error opening print window:', openError);
-        window.location.href = printUrl;
-      }
+      // Trigger browser print dialog
+      window.print();
     } catch (error) {
       console.error('Error printing bill:', error);
       alert('Failed to save bill. Please try again.');
@@ -298,7 +282,6 @@ function TotalAmountCalculatorPage() {
                                 placeholder="Item name"
                                 value={item.label}
                                 onChange={(e) => updateLineItem(item.id, 'label', e.target.value)}
-                                className="h-9"
                               />
                             </TableCell>
                             <TableCell>
@@ -309,7 +292,6 @@ function TotalAmountCalculatorPage() {
                                 placeholder="0"
                                 value={item.quantity || ''}
                                 onChange={(e) => updateLineItem(item.id, 'quantity', e.target.value)}
-                                className="h-9"
                               />
                             </TableCell>
                             <TableCell>
@@ -320,7 +302,6 @@ function TotalAmountCalculatorPage() {
                                 placeholder="0.00"
                                 value={item.unitPrice || ''}
                                 onChange={(e) => updateLineItem(item.id, 'unitPrice', e.target.value)}
-                                className="h-9"
                               />
                             </TableCell>
                             <TableCell className="text-right font-medium">
@@ -342,8 +323,8 @@ function TotalAmountCalculatorPage() {
                       </TableBody>
                     </Table>
                   </div>
-                  <Button onClick={addLineItem} variant="outline" className="mt-4 w-full gap-2">
-                    <Plus className="h-4 w-4" />
+                  <Button onClick={addLineItem} variant="outline" className="mt-4 w-full">
+                    <Plus className="mr-2 h-4 w-4" />
                     Add Line Item
                   </Button>
                 </CardContent>
@@ -352,144 +333,108 @@ function TotalAmountCalculatorPage() {
 
             {/* Summary Section */}
             <div className="lg:col-span-1">
-              <div className="space-y-6 lg:sticky lg:top-24">
-                {/* Adjustments Card */}
-                <Card className="no-print">
-                  <CardHeader>
-                    <CardTitle>Adjustments</CardTitle>
-                    <CardDescription>Apply tax and discounts</CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Tax */}
-                    <div className="space-y-2">
-                      <Label htmlFor="tax">Tax Rate (%)</Label>
-                      <Input
-                        id="tax"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={state.taxRate || ''}
-                        onChange={(e) =>
-                          setState((prev) => ({
-                            ...prev,
-                            taxRate: clampNonNegative(safeParseNumber(e.target.value)),
-                          }))
-                        }
-                      />
-                    </div>
+              <Card className="sticky top-24">
+                <CardHeader>
+                  <CardTitle>Summary</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label htmlFor="taxRate">Tax Rate (%)</Label>
+                    <Input
+                      id="taxRate"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0"
+                      value={state.taxRate || ''}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          taxRate: clampNonNegative(safeParseNumber(e.target.value)),
+                        }))
+                      }
+                    />
+                  </div>
 
-                    <Separator />
+                  <div>
+                    <Label>Discount Type</Label>
+                    <Tabs
+                      value={state.discountType}
+                      onValueChange={(value) =>
+                        setState((prev) => ({
+                          ...prev,
+                          discountType: value as 'percentage' | 'fixed',
+                        }))
+                      }
+                    >
+                      <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="percentage">%</TabsTrigger>
+                        <TabsTrigger value="fixed">₹</TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </div>
 
-                    {/* Discount */}
-                    <div className="space-y-2">
-                      <Label>Discount</Label>
-                      <Tabs
-                        value={state.discountType}
-                        onValueChange={(value) =>
-                          setState((prev) => ({
-                            ...prev,
-                            discountType: value as 'percentage' | 'fixed',
-                          }))
-                        }
-                      >
-                        <TabsList className="grid w-full grid-cols-2">
-                          <TabsTrigger value="percentage">%</TabsTrigger>
-                          <TabsTrigger value="fixed">₹</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="percentage" className="mt-2">
-                          <Input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={state.discountValue || ''}
-                            onChange={(e) =>
-                              setState((prev) => ({
-                                ...prev,
-                                discountValue: clampNonNegative(safeParseNumber(e.target.value)),
-                              }))
-                            }
-                          />
-                        </TabsContent>
-                        <TabsContent value="fixed" className="mt-2">
-                          <Input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            placeholder="0.00"
-                            value={state.discountValue || ''}
-                            onChange={(e) =>
-                              setState((prev) => ({
-                                ...prev,
-                                discountValue: clampNonNegative(safeParseNumber(e.target.value)),
-                              }))
-                            }
-                          />
-                        </TabsContent>
-                      </Tabs>
-                    </div>
-                  </CardContent>
-                </Card>
+                  <div>
+                    <Label htmlFor="discountValue">
+                      Discount {state.discountType === 'percentage' ? '(%)' : '(₹)'}
+                    </Label>
+                    <Input
+                      id="discountValue"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0"
+                      value={state.discountValue || ''}
+                      onChange={(e) =>
+                        setState((prev) => ({
+                          ...prev,
+                          discountValue: clampNonNegative(safeParseNumber(e.target.value)),
+                        }))
+                      }
+                    />
+                  </div>
 
-                {/* Breakdown Card */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="h-5 w-5" />
-                      Summary
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex justify-between text-sm">
+                  <Separator />
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal:</span>
                       <span className="font-medium">{formatCurrency(breakdown.subtotal)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Tax:</span>
-                      <span className="font-medium text-amber-600">
-                        +{formatCurrency(breakdown.taxAmount)}
-                      </span>
+                      <span className="font-medium">{formatCurrency(breakdown.taxAmount)}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground">Discount:</span>
-                      <span className="font-medium text-green-600">
-                        -{formatCurrency(breakdown.discountAmount)}
-                      </span>
+                      <span className="font-medium">-{formatCurrency(breakdown.discountAmount)}</span>
                     </div>
                     <Separator />
                     <div className="flex justify-between text-lg font-bold">
                       <span>Total:</span>
-                      <span className="text-primary">{formatCurrency(breakdown.finalTotal)}</span>
+                      <span>{formatCurrency(breakdown.finalTotal)}</span>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
 
-                {/* Action Buttons */}
-                <div className="no-print space-y-3">
-                  <Button onClick={handlePrintBill} className="w-full gap-2" size="lg">
-                    <Printer className="h-5 w-5" />
-                    Print Bill
-                  </Button>
-                  <Button
-                    onClick={resetCalculator}
-                    variant="outline"
-                    className="w-full gap-2"
-                    size="lg"
-                  >
-                    <RotateCcw className="h-5 w-5" />
-                    Reset
-                  </Button>
-                </div>
-              </div>
+                  <div className="flex gap-2 pt-4">
+                    <Button onClick={resetCalculator} variant="outline" className="flex-1">
+                      <RotateCcw className="mr-2 h-4 w-4" />
+                      Reset
+                    </Button>
+                    <Button onClick={handlePrintBill} className="flex-1">
+                      <Printer className="mr-2 h-4 w-4" />
+                      Print
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Hidden PrintBill component for backward compatibility */}
-      <div className="hidden">
+      {/* Print-only Component - Hidden on screen, visible during print */}
+      <div className="print-only">
         <PrintBill
           lineItems={state.lineItems}
           breakdown={breakdown}

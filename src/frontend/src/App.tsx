@@ -1,7 +1,6 @@
 // Import II provider shim before any authentication hooks
 import './utils/iiProviderShim';
 
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Calculator, TrendingUp, Settings } from 'lucide-react';
 import TotalAmountCalculatorPage from './features/calculator/TotalAmountCalculatorPage';
 import { BalanceSheetView } from './features/balanceSheet/BalanceSheetView';
@@ -16,8 +15,8 @@ import { useInternetIdentity } from './hooks/useInternetIdentity';
 import { useBranchAuth, BranchAuthProvider } from './hooks/useBranchAuth';
 import { AuthGatePage } from './components/auth/AuthGatePage';
 import { BranchSessionControl } from './components/auth/BranchSessionControl';
-
-const queryClient = new QueryClient();
+import { AppErrorBoundary } from './components/AppErrorBoundary';
+import { useStartupFailureHandlers } from './hooks/useStartupFailureHandlers';
 
 type ViewMode = 'calculator' | 'dailyTotals' | 'optimizeBill';
 
@@ -26,6 +25,9 @@ function AppContent() {
   const [viewMode, setViewMode] = useState<ViewMode>('calculator');
   const { identity } = useInternetIdentity();
   const { isAuthenticated: branchAuthenticated } = useBranchAuth();
+
+  // Capture startup failures
+  const startupError = useStartupFailureHandlers();
 
   // Sync bill print location from backend when authenticated
   useSyncBillPrintLocation();
@@ -136,12 +138,14 @@ function AppContent() {
 }
 
 function App() {
+  const startupError = useStartupFailureHandlers();
+
   return (
-    <QueryClientProvider client={queryClient}>
+    <AppErrorBoundary externalError={startupError}>
       <BranchAuthProvider>
         <AppContent />
       </BranchAuthProvider>
-    </QueryClientProvider>
+    </AppErrorBoundary>
   );
 }
 

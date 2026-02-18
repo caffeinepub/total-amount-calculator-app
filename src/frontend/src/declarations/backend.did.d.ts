@@ -22,15 +22,16 @@ export type UserRole = { 'admin' : null } |
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
-  'getBalanceSheet' : ActorMethod<[], Array<[string, DailyTotalView]>>,
+  'clearAllDailyTotals' : ActorMethod<[], undefined>,
+  'getBalanceSheet' : ActorMethod<[string], Array<[string, DailyTotalView]>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
-  'getDailyTotal' : ActorMethod<[string], [] | [DailyTotalView]>,
+  'getDailyTotal' : ActorMethod<[string, string], [] | [DailyTotalView]>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
   'saveDailyTotal' : ActorMethod<
-    [string, bigint, Array<[string, bigint]>],
+    [string, string, bigint, Array<[string, bigint]>],
     undefined
   >,
 }

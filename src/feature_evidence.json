@@ -2,12 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-when-the-authenticated-branch-username-is-exactly-bachupally-force-the-bill-print-location-address-value-to-be-exactly-bachupally-across-the-app-regardless-of-any-existing-localstorage-or-backend-profile-value",
-      "featureTitle": "When the authenticated branch username is exactly \"bachupally\", force the bill print location address value to be exactly \"bachupally\" across the app, regardless of any existing localStorage or backend profile value.",
+      "featureId": "feature-restore-the-previous-behavior-when-the-user-presses-the-print-print-bill-button-on-the-calculator-page-so-printing-happens-in-the-same-page-using-the-existing-in-page-printable-receipt-printbill-component-instead-of-navigating-opening-a-separate-print-view-tab-window",
+      "featureTitle": "Restore the previous behavior when the user presses the \"Print\" (Print Bill) button on the calculator page so printing happens in the same page using the existing in-page printable receipt (PrintBill component), instead of navigating/opening a separate print view tab/window.",
       "files": [
-        "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
-        "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
-        "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts"
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -23,12 +21,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-when-the-authenticated-branch-username-is-exactly-nezampat-force-the-bill-print-location-address-value-to-be-exactly-nezampat-across-the-app-regardless-of-any-existing-localstorage-or-backend-profile-value",
-      "featureTitle": "When the authenticated branch username is exactly \"nezampat\", force the bill print location address value to be exactly \"nezampat\" across the app, regardless of any existing localStorage or backend profile value.",
+      "featureId": "feature-preserve-the-existing-bill-saving-and-daily-totals-side-effects-that-occur-when-printing-saving-the-bill-to-branch-scoped-localstorage-appending-a-ledger-entry-updating-the-daily-summary-and-attempting-a-non-blocking-backend-daily-total-save-while-changing-only-the-print-ui-flow-back-to-the-previous-behavior",
+      "featureTitle": "Preserve the existing bill-saving and daily totals side effects that occur when printing (saving the bill to branch-scoped localStorage, appending a ledger entry, updating the daily summary, and attempting a non-blocking backend daily total save), while changing only the print UI flow back to the previous behavior.",
       "files": [
-        "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts",
-        "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
-        "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts"
+        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
       ],
       "components": [
         "core-infrastructure@1.0.2",
@@ -40,47 +36,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-update-the-optimize-bill-ui-so-that-the-print-location-address-input-is-not-editable-for-branch-users-bachupally-and-nezampat-and-clearly-indicates-it-is-fixed-for-that-branch-user-facing-text-must-be-in-english",
-      "featureTitle": "Update the Optimize Bill UI so that the Print Location Address input is not editable for branch users \"bachupally\" and \"nezampat\" and clearly indicates it is fixed for that branch (user-facing text must be in English).",
-      "files": [
-        "frontend/src/features/optimizeBill/OptimizeBillPage.tsx",
-        "frontend/src/features/optimizeBill/branchFixedPrintLocation.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-sync-and-persistence-logic-cannot-overwrite-the-fixed-branch-address-a-backend-to-local-sync-must-not-replace-the-fixed-address-for-bachupally-nezampat-and-b-saving-defaults-must-always-write-the-fixed-value-for-these-branches-to-both-localstorage-and-when-available-the-backend-user-profile-billprintlocation",
-      "featureTitle": "Ensure sync and persistence logic cannot overwrite the fixed branch address: (a) backend-to-local sync must not replace the fixed address for \"bachupally\"/\"nezampat\", and (b) saving defaults must always write the fixed value for these branches to both localStorage and (when available) the backend user profile billPrintLocation.",
-      "files": [
-        "frontend/src/features/optimizeBill/optimizeBillStorage.ts",
-        "frontend/src/features/optimizeBill/useOptimizeBillDefaults.ts",
-        "frontend/src/features/optimizeBill/useSyncBillPrintLocation.ts"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
       ],
       "confidence": "high"
     }

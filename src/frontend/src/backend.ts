@@ -106,14 +106,15 @@ export enum UserRole {
 export interface backendInterface {
     _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
     assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
-    getBalanceSheet(): Promise<Array<[string, DailyTotalView]>>;
+    clearAllDailyTotals(): Promise<void>;
+    getBalanceSheet(branch: string): Promise<Array<[string, DailyTotalView]>>;
     getCallerUserProfile(): Promise<UserProfile | null>;
     getCallerUserRole(): Promise<UserRole>;
-    getDailyTotal(date: string): Promise<DailyTotalView | null>;
+    getDailyTotal(branch: string, date: string): Promise<DailyTotalView | null>;
     getUserProfile(user: Principal): Promise<UserProfile | null>;
     isCallerAdmin(): Promise<boolean>;
     saveCallerUserProfile(profile: UserProfile): Promise<void>;
-    saveDailyTotal(date: string, totalRevenue: bigint, productQuantities: Array<[string, bigint]>): Promise<void>;
+    saveDailyTotal(branch: string, date: string, totalRevenue: bigint, productQuantities: Array<[string, bigint]>): Promise<void>;
 }
 import type { DailyTotalView as _DailyTotalView, UserProfile as _UserProfile, UserRole as _UserRole } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
@@ -146,17 +147,31 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async getBalanceSheet(): Promise<Array<[string, DailyTotalView]>> {
+    async clearAllDailyTotals(): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.getBalanceSheet();
+                const result = await this.actor.clearAllDailyTotals();
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getBalanceSheet();
+            const result = await this.actor.clearAllDailyTotals();
+            return result;
+        }
+    }
+    async getBalanceSheet(arg0: string): Promise<Array<[string, DailyTotalView]>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getBalanceSheet(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getBalanceSheet(arg0);
             return result;
         }
     }
@@ -188,17 +203,17 @@ export class Backend implements backendInterface {
             return from_candid_UserRole_n4(this._uploadFile, this._downloadFile, result);
         }
     }
-    async getDailyTotal(arg0: string): Promise<DailyTotalView | null> {
+    async getDailyTotal(arg0: string, arg1: string): Promise<DailyTotalView | null> {
         if (this.processError) {
             try {
-                const result = await this.actor.getDailyTotal(arg0);
+                const result = await this.actor.getDailyTotal(arg0, arg1);
                 return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.getDailyTotal(arg0);
+            const result = await this.actor.getDailyTotal(arg0, arg1);
             return from_candid_opt_n6(this._uploadFile, this._downloadFile, result);
         }
     }
@@ -244,17 +259,17 @@ export class Backend implements backendInterface {
             return result;
         }
     }
-    async saveDailyTotal(arg0: string, arg1: bigint, arg2: Array<[string, bigint]>): Promise<void> {
+    async saveDailyTotal(arg0: string, arg1: string, arg2: bigint, arg3: Array<[string, bigint]>): Promise<void> {
         if (this.processError) {
             try {
-                const result = await this.actor.saveDailyTotal(arg0, arg1, arg2);
+                const result = await this.actor.saveDailyTotal(arg0, arg1, arg2, arg3);
                 return result;
             } catch (e) {
                 this.processError(e);
                 throw new Error("unreachable");
             }
         } else {
-            const result = await this.actor.saveDailyTotal(arg0, arg1, arg2);
+            const result = await this.actor.saveDailyTotal(arg0, arg1, arg2, arg3);
             return result;
         }
     }

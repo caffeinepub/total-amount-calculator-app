@@ -1,13 +1,57 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { formatCurrency } from '../calculator/format';
-import { formatDayKey } from './ledgerUtils';
+import { formatDayKey, clearDailyTotalsCache } from './ledgerUtils';
 import { useDailyTotal } from './hooks/useDailyTotal';
-import { Calendar, Package } from 'lucide-react';
+import { useClearAllDailyTotals } from '@/hooks/useQueries';
+import { useBranchAuth } from '@/hooks/useBranchAuth';
+import { confirmClearAll } from '@/utils/confirmDelete';
+import { Calendar, Package, Trash2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { useState } from 'react';
 
 export function BalanceSheetView() {
   const { availableDays, selectedDay, setSelectedDay, dayTotal, itemQuantities, isLoading } = useDailyTotal();
+  const clearAllMutation = useClearAllDailyTotals();
+  const { branchUser } = useBranchAuth();
+  const [clearStatus, setClearStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  const handleClearAll = async () => {
+    if (!confirmClearAll()) {
+      return;
+    }
+
+    setClearStatus('idle');
+    
+    try {
+      await clearAllMutation.mutateAsync();
+      
+      // Clear localStorage fallback caches for the current branch
+      if (branchUser) {
+        clearDailyTotalsCache(branchUser);
+      }
+      
+      // Reset selected day
+      setSelectedDay(null);
+      
+      setClearStatus('success');
+      
+      // Auto-hide success message after 3 seconds
+      setTimeout(() => {
+        setClearStatus('idle');
+      }, 3000);
+    } catch (error: any) {
+      console.error('Error clearing daily totals:', error);
+      setClearStatus('error');
+      
+      // Auto-hide error message after 5 seconds
+      setTimeout(() => {
+        setClearStatus('idle');
+      }, 5000);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -17,6 +61,59 @@ export function BalanceSheetView() {
           View revenue and item quantities for each day
         </p>
       </div>
+
+      {/* Clear All Action with Feedback */}
+      {availableDays.length > 0 && (
+        <Card className="border-destructive/50">
+          <CardHeader>
+            <CardTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-5 w-5" />
+              Clear All Data
+            </CardTitle>
+            <CardDescription>
+              Permanently delete all daily totals. This action cannot be undone.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button
+              variant="destructive"
+              onClick={handleClearAll}
+              disabled={clearAllMutation.isPending}
+              className="w-full sm:w-auto"
+            >
+              {clearAllMutation.isPending ? (
+                <>
+                  <span className="animate-spin mr-2">⏳</span>
+                  Clearing...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear All Daily Totals
+                </>
+              )}
+            </Button>
+
+            {clearStatus === 'success' && (
+              <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
+                <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <AlertDescription className="text-green-800 dark:text-green-200">
+                  All daily totals have been successfully cleared.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {clearStatus === 'error' && (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>
+                  Failed to clear daily totals. {clearAllMutation.error instanceof Error ? clearAllMutation.error.message : 'You may not have permission to perform this action.'}
+                </AlertDescription>
+              </Alert>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Day Selector */}
       <Card>

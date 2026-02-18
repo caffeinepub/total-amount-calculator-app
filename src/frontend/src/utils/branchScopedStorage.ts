@@ -77,6 +77,26 @@ export function getBillDefaultsKey(branch?: string): string {
 }
 
 /**
+ * Check if a storage key belongs to a specific branch
+ * Useful for filtering storage events
+ */
+export function isKeyForBranch(storageKey: string | null, branch: string): boolean {
+  if (!storageKey) return false;
+  const prefix = `branch_${branch}_`;
+  return storageKey.startsWith(prefix);
+}
+
+/**
+ * Check if a storage key is a daily totals key (ledger or summary) for a specific branch
+ */
+export function isDailyTotalsKeyForBranch(storageKey: string | null, branch: string): boolean {
+  if (!storageKey) return false;
+  const ledgerKey = getDailyLedgerKey(branch);
+  const summaryKey = getDailySummaryKey(branch);
+  return storageKey === ledgerKey || storageKey === summaryKey;
+}
+
+/**
  * Get migration marker key for a specific branch
  */
 function getMigrationMarkerKey(branch: string): string {

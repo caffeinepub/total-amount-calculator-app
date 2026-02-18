@@ -103,6 +103,22 @@ export function saveDailySummaries(store: DailySummaryStore, branch?: string): v
 }
 
 /**
+ * Clear all daily totals localStorage caches for a specific branch
+ * Removes both daily ledger and daily summary data
+ */
+export function clearDailyTotalsCache(branch: string): void {
+  try {
+    const ledgerKey = getDailyLedgerKey(branch);
+    const summaryKey = getDailySummaryKey(branch);
+    
+    localStorage.removeItem(ledgerKey);
+    localStorage.removeItem(summaryKey);
+  } catch (error) {
+    console.error('Error clearing daily totals cache:', error);
+  }
+}
+
+/**
  * Get or compute daily summary for a specific day
  * If summary doesn't exist, compute from ledger and persist
  */

@@ -38,7 +38,7 @@ export function useSaveCallerUserProfile() {
   });
 }
 
-export function useSaveDailyTotal() {
+export function useSaveDailyTotal(branch: string) {
   const { actor } = useActor();
   const queryClient = useQueryClient();
 
@@ -53,39 +53,55 @@ export function useSaveDailyTotal() {
       productQuantities: Array<[string, bigint]>;
     }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.saveDailyTotal(date, totalRevenue, productQuantities);
+      return actor.saveDailyTotal(branch, date, totalRevenue, productQuantities);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['balanceSheet'] });
-      queryClient.invalidateQueries({ queryKey: ['dailyTotal'] });
+      queryClient.invalidateQueries({ queryKey: ['balanceSheet', branch] });
+      queryClient.invalidateQueries({ queryKey: ['dailyTotal', branch] });
     },
   });
 }
 
-export function useGetDailyTotal(date: string | null) {
+export function useGetDailyTotal(branch: string, date: string | null) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<DailyTotalView | null>({
-    queryKey: ['dailyTotal', date],
+    queryKey: ['dailyTotal', branch, date],
     queryFn: async () => {
       if (!actor || !date) return null;
-      return actor.getDailyTotal(date);
+      return actor.getDailyTotal(branch, date);
     },
     enabled: !!actor && !actorFetching && !!date,
     retry: false,
   });
 }
 
-export function useGetBalanceSheet() {
+export function useGetBalanceSheet(branch: string) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<Array<[string, DailyTotalView]>>({
-    queryKey: ['balanceSheet'],
+    queryKey: ['balanceSheet', branch],
     queryFn: async () => {
       if (!actor) return [];
-      return actor.getBalanceSheet();
+      return actor.getBalanceSheet(branch);
     },
     enabled: !!actor && !actorFetching,
     retry: false,
+  });
+}
+
+export function useClearAllDailyTotals() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.clearAllDailyTotals();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['balanceSheet'] });
+      queryClient.invalidateQueries({ queryKey: ['dailyTotal'] });
+    },
   });
 }
