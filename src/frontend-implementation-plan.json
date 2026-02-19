@@ -1,21 +1,23 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Remove upper section from bill receipt, keep 'From Varshini Classic Cuisine' and below",
+  "title": "Remove bill section from balance sheet display",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Remove all content above the 'From Varshini Classic Cuisine' text in the printed bill receipt, keeping only the 'From Varshini Classic Cuisine' line and everything below it",
+      "summary": "Remove the bill-related section from the balance sheet view while preserving all other daily totals and item quantity displays",
       "acceptanceCriteria": [
-        "The printed bill shows 'From Varshini Classic Cuisine' as the topmost element",
-        "All content that previously appeared above 'From Varshini Classic Cuisine' is removed",
-        "All content below 'From Varshini Classic Cuisine' remains intact and functional"
+        "The bill section is no longer visible in the balance sheet view",
+        "Daily revenue totals continue to display correctly",
+        "Item quantities remain visible and functional",
+        "Day selection functionality remains unchanged",
+        "Clear-all functionality continues to work for remaining data"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/calculator/PrintBill.tsx",
+          "path": "frontend/src/features/balanceSheet/BalanceSheetView.tsx",
           "operation": "modify",
-          "description": "Remove all JSX elements and content that render above the 'From Varshini Classic Cuisine' text in the bill receipt. Ensure the 'From Varshini Classic Cuisine' line becomes the first visible element in the printed output, and preserve all subsequent content including line items, totals, taxes, discounts, and footer information. Maintain existing print styling and layout for the retained content."
+          "description": "Remove the bill-related section from the balance sheet display. Locate and delete the UI section that renders saved bills (likely a list or table showing individual bills with details). Keep the daily revenue totals card/section, the item quantities display, the day selection dropdown, and the clear-all button fully intact and functional. Ensure the remaining layout adapts properly without the removed section."
         }
       ]
     }

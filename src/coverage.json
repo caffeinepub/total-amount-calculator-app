@@ -1,35 +1,30 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-19T12:13:52.761Z",
+  "generatedAt": "2026-02-19T16:20:32.822Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 1,
-    "implemented": 1,
+    "implemented": 0,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Remove all content above the 'From Varshini Classic Cuisine' text in the printed bill receipt, keeping only the 'From Varshini Classic Cuisine' line and everything below it",
-        "status": "implemented",
+        "summary": "Remove the bill-related section from the balance sheet view while preserving all other daily totals and item quantity displays",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/features/calculator/PrintBill.tsx"
+          "frontend/src/features/balanceSheet/BalanceSheetView.tsx"
         ],
-        "matchedFiles": [
-          "frontend/src/features/calculator/PrintBill.tsx"
-        ]
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
     "build-request.json",
-    "caffeine.lock.json",
     "feature_evidence.json",
-    "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/features/calculator/PrintBill.tsx",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

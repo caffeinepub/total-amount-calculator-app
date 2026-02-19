@@ -1,34 +1,37 @@
 {
   "kind": "build_request",
-  "title": "Remove upper section from bill receipt, keep 'From Varshini Classic Cuisine' and below",
+  "title": "Remove bill section from balance sheet display",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Remove all content above the 'From Varshini Classic Cuisine' text in the printed bill receipt, keeping only the 'From Varshini Classic Cuisine' line and everything below it",
+      "text": "Remove the bill-related section from the balance sheet view while preserving all other daily totals and item quantity displays",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-latest"
         ],
         "quotes": [
-          "i want only the from varshini classic cusine and the down part of it. delete the upper part of it"
+          "delete that bill part in the sheet bill and leave the rest of the sheet"
         ]
       },
       "acceptanceCriteria": [
-        "The printed bill shows 'From Varshini Classic Cuisine' as the topmost element",
-        "All content that previously appeared above 'From Varshini Classic Cuisine' is removed",
-        "All content below 'From Varshini Classic Cuisine' remains intact and functional"
+        "The bill section is no longer visible in the balance sheet view",
+        "Daily revenue totals continue to display correctly",
+        "Item quantities remain visible and functional",
+        "Day selection functionality remains unchanged",
+        "Clear-all functionality continues to work for remaining data"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the bill calculation logic or data structure",
-    "Maintain all existing print functionality below the 'From Varshini Classic Cuisine' line"
+    "Do not modify backend data structures or storage",
+    "Preserve all existing balance sheet functionality except the bill display section"
   ],
   "nonGoals": [
-    "Changing the receipt style or formatting of remaining content",
-    "Modifying the backend bill storage or retrieval logic"
+    "Modifying the calculator or print bill views",
+    "Changing how bills are saved or stored",
+    "Altering the daily totals calculation logic"
   ],
   "imageRequirements": {
     "required": [],

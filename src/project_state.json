@@ -5,18 +5,18 @@
   "architectural_notes": [],
   "known_issues": [],
   "isFixRequest": false,
-  "existing_features": [
+  "existing_features": [],
+  "new_feature_requests": [
     {
-      "id": "feature-remove-all-content-above-the-from-varshini-classic-cuisine-text-in-the-printed-bill-receipt-keeping-only-the-from-varshini-classic-cuisine-line-and-everything-below-it",
-      "title": "Remove all content above the 'From Varshini Classic Cuisine' text in the printed bill receipt, keeping only the 'From Varshini Classic Cuisine' line and everything below it",
+      "id": "AR-1",
+      "summary": "Remove the bill-related section from the balance sheet view while preserving all other daily totals and item quantity displays",
       "reqIds": [
         "REQ-1"
       ],
-      "version": 1
+      "status": "pending"
     }
   ],
-  "new_feature_requests": [],
-  "projectName": "Remove upper section from bill receipt, keep 'From Varshini Classic Cuisine' and below",
+  "projectName": "Remove bill section from balance sheet display",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

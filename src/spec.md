@@ -1,11 +1,12 @@
 # Specification
 
 ## Summary
-**Goal:** Remove the upper section of the bill receipt, keeping only "From Varshini Classic Cuisine" and all content below it.
+**Goal:** Remove the bill section from the balance sheet display while keeping all other sheet information intact.
 
 **Planned changes:**
-- Remove all content that appears above the "From Varshini Classic Cuisine" text in the printed bill receipt
-- Keep "From Varshini Classic Cuisine" as the topmost element
-- Preserve all content below "From Varshini Classic Cuisine" unchanged
+- Remove the bill-related section from the balance sheet view
+- Preserve daily totals display
+- Preserve item quantities display
+- Keep day selection and clear-all functionality working
 
-**User-visible outcome:** When printing a bill, users will see a receipt starting with "From Varshini Classic Cuisine" at the top, with no header content above it.
+**User-visible outcome:** The balance sheet will show daily totals and item quantities without displaying the bill section, providing a cleaner view of the data.
