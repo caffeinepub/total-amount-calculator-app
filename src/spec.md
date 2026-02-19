@@ -1,10 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Exclude the print view page from displaying or triggering any screenshot functionality.
+**Goal:** Remove the upper section of the bill receipt, keeping only "From Varshini Classic Cuisine" and all content below it.
 
 **Planned changes:**
-- Ensure PrintViewPage.tsx does not display or trigger screenshot capture when rendering bills
-- Maintain classic text-only receipt format in print view without any image generation
+- Remove all content that appears above the "From Varshini Classic Cuisine" text in the printed bill receipt
+- Keep "From Varshini Classic Cuisine" as the topmost element
+- Preserve all content below "From Varshini Classic Cuisine" unchanged
 
-**User-visible outcome:** When users access the print view, bills will render in traditional receipt-style text format only, without any screenshot features appearing or being triggered.
+**User-visible outcome:** When printing a bill, users will see a receipt starting with "From Varshini Classic Cuisine" at the top, with no header content above it.

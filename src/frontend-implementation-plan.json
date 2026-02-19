@@ -1,26 +1,21 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Exclude print view from screenshot feature",
+  "title": "Remove upper section from bill receipt, keep 'From Varshini Classic Cuisine' and below",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Ensure the print view page does not display or trigger any screenshot functionality when rendering bills",
+      "summary": "Remove all content above the 'From Varshini Classic Cuisine' text in the printed bill receipt, keeping only the 'From Varshini Classic Cuisine' line and everything below it",
       "acceptanceCriteria": [
-        "The print view page renders bills in classic text format only",
-        "No screenshot capture or image generation occurs on the print view route",
-        "Bills displayed for printing maintain the traditional receipt-style layout with proper formatting"
+        "The printed bill shows 'From Varshini Classic Cuisine' as the topmost element",
+        "All content that previously appeared above 'From Varshini Classic Cuisine' is removed",
+        "All content below 'From Varshini Classic Cuisine' remains intact and functional"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/print/PrintViewPage.tsx",
+          "path": "frontend/src/features/calculator/PrintBill.tsx",
           "operation": "modify",
-          "description": "Remove or disable any screenshot capture, image generation, or canvas-based rendering logic from the print view page. Ensure that only the PrintBill component is rendered for classic text-based receipt display. Verify that no screenshot-related UI elements, buttons, or automated capture triggers are present in this view."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Review the print view route configuration to ensure no screenshot-related props, context providers, or feature flags are passed to PrintViewPage. Confirm that the print route remains isolated from any screenshot functionality that may exist elsewhere in the application."
+          "description": "Remove all JSX elements and content that render above the 'From Varshini Classic Cuisine' text in the bill receipt. Ensure the 'From Varshini Classic Cuisine' line becomes the first visible element in the printed output, and preserve all subsequent content including line items, totals, taxes, discounts, and footer information. Maintain existing print styling and layout for the retained content."
         }
       ]
     }

@@ -85,156 +85,6 @@
     }
 }
 
-/* Print Bill Container Styles - Screen View */
-.print-bill-container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 1rem;
-}
-
-.print-bill-content {
-    background: white;
-    color: black;
-    padding: 2rem;
-    border: 1px solid #e5e7eb;
-    border-radius: 0.5rem;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-.print-bill-header {
-    text-align: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid black;
-}
-
-.print-bill-title {
-    font-size: 1.875rem;
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-.print-bill-location {
-    font-size: 0.875rem;
-    margin-bottom: 0.5rem;
-    color: #374151;
-}
-
-.print-bill-meta {
-    font-size: 0.75rem;
-    margin-top: 0.5rem;
-    color: #6b7280;
-}
-
-.print-bill-meta p {
-    margin: 0.25rem 0;
-}
-
-.print-bill-table {
-    width: 100%;
-    margin-bottom: 1.5rem;
-    border-collapse: collapse;
-}
-
-.print-bill-table thead tr {
-    border-bottom: 2px solid black;
-}
-
-.print-bill-table th {
-    padding: 0.5rem;
-    font-weight: bold;
-    font-size: 0.875rem;
-}
-
-.print-bill-table tbody tr {
-    border-bottom: 1px solid #d1d5db;
-}
-
-.print-bill-table td {
-    padding: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.print-bill-totals {
-    border-top: 2px solid black;
-    padding-top: 1rem;
-    margin-bottom: 1.5rem;
-}
-
-.print-bill-totals-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-}
-
-.print-bill-total-final {
-    font-size: 1.25rem;
-    font-weight: bold;
-    border-top: 2px solid black;
-    padding-top: 1rem;
-    margin-top: 1rem;
-}
-
-.print-bill-payment-scan {
-    text-align: center;
-    margin: 1.5rem 0;
-}
-
-.print-bill-payment-image {
-    max-width: 200px;
-    height: auto;
-    margin: 0 auto;
-}
-
-.print-bill-footer {
-    text-align: center;
-    margin-top: 2rem;
-    padding-top: 1rem;
-    border-top: 1px solid #d1d5db;
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-/* Compact Style Variations */
-.print-bill-container.compact .print-bill-content {
-    padding: 1rem;
-}
-
-.print-bill-container.compact .print-bill-header {
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-}
-
-.print-bill-container.compact .print-bill-title {
-    font-size: 1.5rem;
-}
-
-.print-bill-container.compact .print-bill-table th,
-.print-bill-container.compact .print-bill-table td {
-    padding: 0.25rem;
-    font-size: 0.75rem;
-}
-
-.print-bill-container.compact .print-bill-totals {
-    padding-top: 0.5rem;
-    margin-bottom: 1rem;
-}
-
-.print-bill-container.compact .print-bill-totals-row {
-    font-size: 0.75rem;
-}
-
-.print-bill-container.compact .print-bill-total-final {
-    font-size: 1rem;
-    padding-top: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.print-bill-container.compact .print-bill-payment-image {
-    max-width: 150px;
-}
-
 /* Print Styles */
 @media print {
     /* Hide all non-print elements */
@@ -267,145 +117,6 @@
         text-shadow: none !important;
     }
 
-    /* Print Bill Container - Full Width on Print */
-    .print-bill-container {
-        max-width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-    .print-bill-content {
-        border: none;
-        border-radius: 0;
-        padding: 1.5rem;
-        font-family: 'Courier New', Courier, monospace;
-    }
-
-    .print-bill-header {
-        margin-bottom: 1.5rem;
-        padding-bottom: 0.75rem;
-    }
-
-    .print-bill-title {
-        font-size: 20pt;
-        font-weight: bold;
-    }
-
-    .print-bill-location {
-        font-size: 10pt;
-        color: black;
-    }
-
-    .print-bill-meta {
-        font-size: 9pt;
-        color: black;
-    }
-
-    .print-bill-table {
-        margin-bottom: 1rem;
-        page-break-inside: avoid;
-    }
-
-    .print-bill-table th {
-        font-size: 10pt;
-        padding: 0.4rem 0.3rem;
-    }
-
-    .print-bill-table td {
-        font-size: 10pt;
-        padding: 0.4rem 0.3rem;
-    }
-
-    .print-bill-table tbody tr {
-        page-break-inside: avoid;
-    }
-
-    .print-bill-totals {
-        padding-top: 0.75rem;
-        margin-bottom: 1rem;
-    }
-
-    .print-bill-totals-row {
-        font-size: 10pt;
-        margin-bottom: 0.4rem;
-    }
-
-    .print-bill-total-final {
-        font-size: 14pt;
-        padding-top: 0.75rem;
-        margin-top: 0.75rem;
-    }
-
-    .print-bill-payment-scan {
-        margin: 1rem 0;
-        page-break-inside: avoid;
-    }
-
-    .print-bill-payment-image {
-        max-width: 180px;
-    }
-
-    .print-bill-footer {
-        margin-top: 1.5rem;
-        padding-top: 0.75rem;
-        font-size: 9pt;
-        color: black;
-    }
-
-    /* Compact Style for Print */
-    .print-bill-container.compact .print-bill-content {
-        padding: 1rem;
-    }
-
-    .print-bill-container.compact .print-bill-header {
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-    }
-
-    .print-bill-container.compact .print-bill-title {
-        font-size: 16pt;
-    }
-
-    .print-bill-container.compact .print-bill-location {
-        font-size: 9pt;
-    }
-
-    .print-bill-container.compact .print-bill-meta {
-        font-size: 8pt;
-    }
-
-    .print-bill-container.compact .print-bill-table th,
-    .print-bill-container.compact .print-bill-table td {
-        font-size: 9pt;
-        padding: 0.25rem 0.2rem;
-    }
-
-    .print-bill-container.compact .print-bill-totals {
-        padding-top: 0.5rem;
-        margin-bottom: 0.75rem;
-    }
-
-    .print-bill-container.compact .print-bill-totals-row {
-        font-size: 9pt;
-        margin-bottom: 0.3rem;
-    }
-
-    .print-bill-container.compact .print-bill-total-final {
-        font-size: 12pt;
-        padding-top: 0.5rem;
-        margin-top: 0.5rem;
-    }
-
-    .print-bill-container.compact .print-bill-payment-image {
-        max-width: 140px;
-    }
-
-    .print-bill-container.compact .print-bill-footer {
-        margin-top: 1rem;
-        padding-top: 0.5rem;
-        font-size: 8pt;
-    }
-
     /* Optimize table printing */
     table {
         page-break-inside: avoid;
@@ -413,6 +124,20 @@
 
     tr {
         page-break-inside: avoid;
+    }
+
+    /* Ensure readable text */
+    body, p, td, th {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+
+    h1 {
+        font-size: 24pt;
+    }
+
+    h2 {
+        font-size: 18pt;
     }
 
     /* Remove unnecessary spacing */

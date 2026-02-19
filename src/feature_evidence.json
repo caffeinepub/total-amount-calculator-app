@@ -1,4 +1,24 @@
 {
   "kind": "feature_evidence_report",
-  "features": []
+  "features": [
+    {
+      "featureId": "feature-remove-all-content-above-the-from-varshini-classic-cuisine-text-in-the-printed-bill-receipt-keeping-only-the-from-varshini-classic-cuisine-line-and-everything-below-it",
+      "featureTitle": "Remove all content above the 'From Varshini Classic Cuisine' text in the printed bill receipt, keeping only the 'From Varshini Classic Cuisine' line and everything below it",
+      "files": [
+        "frontend/src/features/calculator/PrintBill.tsx"
+      ],
+      "components": [
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0",
+        "authorization@4.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    }
+  ]
 }

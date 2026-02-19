@@ -1,35 +1,34 @@
 {
   "kind": "build_request",
-  "title": "Exclude print view from screenshot feature",
+  "title": "Remove upper section from bill receipt, keep 'From Varshini Classic Cuisine' and below",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Ensure the print view page (PrintViewPage.tsx) does not display or trigger any screenshot functionality when rendering bills",
+      "text": "Remove all content above the 'From Varshini Classic Cuisine' text in the printed bill receipt, keeping only the 'From Varshini Classic Cuisine' line and everything below it",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-user-latest"
+          "msg-latest"
         ],
         "quotes": [
-          "not the print out"
+          "i want only the from varshini classic cusine and the down part of it. delete the upper part of it"
         ]
       },
       "acceptanceCriteria": [
-        "The print view page renders bills in classic text format only",
-        "No screenshot capture or image generation occurs on the print view route",
-        "Bills displayed for printing maintain the traditional receipt-style layout with proper formatting"
+        "The printed bill shows 'From Varshini Classic Cuisine' as the topmost element",
+        "All content that previously appeared above 'From Varshini Classic Cuisine' is removed",
+        "All content below 'From Varshini Classic Cuisine' remains intact and functional"
       ]
     }
   ],
   "constraints": [
-    "Do not modify the classic receipt rendering logic in PrintBill.tsx",
-    "Preserve the existing print-specific CSS styling in index.css"
+    "Do not modify the bill calculation logic or data structure",
+    "Maintain all existing print functionality below the 'From Varshini Classic Cuisine' line"
   ],
   "nonGoals": [
-    "Adding new screenshot functionality elsewhere in the app",
-    "Changing the bill format or layout styling",
-    "Modifying how bills are saved or loaded from storage"
+    "Changing the receipt style or formatting of remaining content",
+    "Modifying the backend bill storage or retrieval logic"
   ],
   "imageRequirements": {
     "required": [],

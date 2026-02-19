@@ -11,19 +11,12 @@ interface PrintBillProps {
 }
 
 export function PrintBill({ lineItems, breakdown, taxRate, discountType, discountValue }: PrintBillProps) {
-  const printDate = new Date().toLocaleString('en-IN', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-
   return (
     <div className="print-only hidden">
       <div className="max-w-3xl mx-auto p-8 bg-white text-black">
         {/* Header */}
         <div className="text-center mb-8 border-b-2 border-black pb-4">
-          <h1 className="text-3xl font-bold mb-2">Varshini Classic Cuisine</h1>
-          <p className="text-sm">Bill Receipt</p>
-          <p className="text-xs mt-2">{printDate}</p>
+          <h1 className="text-3xl font-bold">From Varshini Classic Cuisine</h1>
         </div>
 
         {/* Line Items Table */}
