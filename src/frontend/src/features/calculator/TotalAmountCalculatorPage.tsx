@@ -12,7 +12,6 @@ import { calculateLineTotal, calculateBreakdown, safeParseNumber, clampNonNegati
 import { formatCurrency } from './format';
 import { PredefinedItemCatalog } from './PredefinedItemCatalog';
 import { PREDEFINED_CATALOG, CatalogItem } from './catalog';
-import { PrintBill } from './PrintBill';
 import { saveBill } from './savedBills';
 import { appendLedgerEntry, updateDailySummary, getDayKey } from '../balanceSheet/ledgerUtils';
 import { findMatchingLineItem } from './lineItemCatalogMatching';
@@ -431,17 +430,6 @@ function TotalAmountCalculatorPage() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Print-only Component - Hidden on screen, visible during print */}
-      <div className="print-only">
-        <PrintBill
-          lineItems={state.lineItems}
-          breakdown={breakdown}
-          taxRate={state.taxRate}
-          discountType={state.discountType}
-          discountValue={state.discountValue}
-        />
       </div>
     </div>
   );

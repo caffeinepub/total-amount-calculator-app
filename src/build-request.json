@@ -1,55 +1,35 @@
 {
   "kind": "build_request",
-  "title": "Restore previous Print Bill behavior",
-  "projectName": "Varshini Classic Cuisine",
-  "priority": "high",
+  "title": "Exclude print view from screenshot feature",
+  "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Restore the previous behavior when the user presses the \"Print\" (Print Bill) button on the calculator page so printing happens in the same page using the existing in-page printable receipt (PrintBill component), instead of navigating/opening a separate print view tab/window.",
+      "text": "Ensure the print view page (PrintViewPage.tsx) does not display or trigger any screenshot functionality when rendering bills",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-user-latest"
         ],
         "quotes": [
-          "when print bill is pressed i want it as it is before"
+          "not the print out"
         ]
       },
       "acceptanceCriteria": [
-        "Clicking the calculator page \"Print\" button does not open a new tab/window and does not navigate to a URL containing `?print=true`.",
-        "Clicking the calculator page \"Print\" button triggers the browser print dialog (via `window.print()`), and after closing the dialog the user remains on the calculator page with their current inputs intact.",
-        "The printed output uses the existing `PrintBill` receipt layout (from `frontend/src/features/calculator/PrintBill.tsx`) and is visible in the print preview/printed page.",
-        "`PrintBill` is rendered in a way that allows it to appear during printing (i.e., it is not wrapped inside a permanently hidden parent container that prevents it from being displayed in print media)."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Preserve the existing bill-saving and daily totals side effects that occur when printing (saving the bill to branch-scoped localStorage, appending a ledger entry, updating the daily summary, and attempting a non-blocking backend daily total save), while changing only the print UI flow back to the previous behavior.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-4"
-        ],
-        "quotes": [
-          "when print bill is pressed i want it as it is before"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After clicking \"Print\", a new bill record is still saved in branch-scoped localStorage (as before).",
-        "After clicking \"Print\", daily totals ledger/summary updates still occur (as before).",
-        "If the backend daily total save fails, printing still proceeds and no additional blocking error is introduced beyond current behavior."
+        "The print view page renders bills in classic text format only",
+        "No screenshot capture or image generation occurs on the print view route",
+        "Bills displayed for printing maintain the traditional receipt-style layout with proper formatting"
       ]
     }
   ],
   "constraints": [
-    "Do not modify files under `frontend/src/components/ui` (read-only UI component sources).",
-    "Do not edit immutable hook files listed in SYSTEM_CONTEXT (compose them instead if needed)."
+    "Do not modify the classic receipt rendering logic in PrintBill.tsx",
+    "Preserve the existing print-specific CSS styling in index.css"
   ],
   "nonGoals": [
-    "Redesigning the receipt/print layout or changing receipt content beyond restoring the previous print flow.",
-    "Changing authentication behavior or branch access gating.",
-    "Adding new printing features (e.g., silent printing, printer selection)."
+    "Adding new screenshot functionality elsewhere in the app",
+    "Changing the bill format or layout styling",
+    "Modifying how bills are saved or loaded from storage"
   ],
   "imageRequirements": {
     "required": [],

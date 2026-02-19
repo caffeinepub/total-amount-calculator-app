@@ -1,38 +1,26 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Restore in-page Print Bill flow on calculator",
+  "title": "Exclude print view from screenshot feature",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Change calculator \"Print\" to print in-place using the existing PrintBill component instead of navigating/opening PrintViewPage.",
+      "summary": "Ensure the print view page does not display or trigger any screenshot functionality when rendering bills",
       "acceptanceCriteria": [
-        "Clicking the calculator page \"Print\" button does not open a new tab/window and does not navigate to a URL containing `?print=true`.",
-        "Clicking the calculator page \"Print\" button triggers the browser print dialog (via `window.print()`), and after closing the dialog the user remains on the calculator page with their current inputs intact.",
-        "The printed output uses the existing `PrintBill` receipt layout (from `frontend/src/features/calculator/PrintBill.tsx`) and is visible in the print preview/printed page.",
-        "`PrintBill` is rendered in a way that allows it to appear during printing (i.e., it is not wrapped inside a permanently hidden parent container that prevents it from being displayed in print media)."
+        "The print view page renders bills in classic text format only",
+        "No screenshot capture or image generation occurs on the print view route",
+        "Bills displayed for printing maintain the traditional receipt-style layout with proper formatting"
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+          "path": "frontend/src/features/print/PrintViewPage.tsx",
           "operation": "modify",
-          "description": "Update the Print button handler to stop constructing/opening a `?print=true` URL and instead invoke `window.print()` after the existing in-page PrintBill is present in the DOM. Remove the outer permanently-hidden wrapper around `PrintBill` so it can be shown during print via existing print CSS, while keeping it hidden on-screen."
-        }
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "summary": "Keep all existing print-triggered side effects (localStorage bill save, ledger entry append, daily summary update, and non-blocking backend save) while only changing the print UI flow.",
-      "acceptanceCriteria": [
-        "After clicking \"Print\", a new bill record is still saved in branch-scoped localStorage (as before).",
-        "After clicking \"Print\", daily totals ledger/summary updates still occur (as before).",
-        "If the backend daily total save fails, printing still proceeds and no additional blocking error is introduced beyond current behavior."
-      ],
-      "file_operations": [
+          "description": "Remove or disable any screenshot capture, image generation, or canvas-based rendering logic from the print view page. Ensure that only the PrintBill component is rendered for classic text-based receipt display. Verify that no screenshot-related UI elements, buttons, or automated capture triggers are present in this view."
+        },
         {
-          "path": "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx",
+          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Preserve the current bill-saving, ledger/summary update, and non-blocking backend daily total save logic inside `handlePrintBill`, changing only the final step to proceed with `window.print()` (no navigation/new window) regardless of backend save outcome."
+          "description": "Review the print view route configuration to ensure no screenshot-related props, context providers, or feature flags are passed to PrintViewPage. Confirm that the print route remains isolated from any screenshot functionality that may exist elsewhere in the application."
         }
       ]
     }

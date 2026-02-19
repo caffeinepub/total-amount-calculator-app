@@ -3,37 +3,20 @@
   "projectStateVersion": 3,
   "summary": "New project",
   "architectural_notes": [],
-  "known_issues": [
-    "Current 'Print Bill' action does not behave as it did previously (regression reported by user)."
-  ],
-  "isFixRequest": true,
-  "existing_features": [
-    {
-      "id": "feature-restore-the-previous-behavior-when-the-user-presses-the-print-print-bill-button-on-the-calculator-page-so-printing-happens-in-the-same-page-using-the-existing-in-page-printable-receipt-printbill-component-instead-of-navigating-opening-a-separate-print-view-tab-window",
-      "title": "Restore the previous behavior when the user presses the \"Print\" (Print Bill) button on the calculator page so printing happens in the same page using the existing in-page printable receipt (PrintBill component), instead of navigating/opening a separate print view tab/window.",
-      "reqIds": [
-        "REQ-1"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-preserve-the-existing-bill-saving-and-daily-totals-side-effects-that-occur-when-printing-saving-the-bill-to-branch-scoped-localstorage-appending-a-ledger-entry-updating-the-daily-summary-and-attempting-a-non-blocking-backend-daily-total-save-while-changing-only-the-print-ui-flow-back-to-the-previous-behavior",
-      "title": "Preserve the existing bill-saving and daily totals side effects that occur when printing (saving the bill to branch-scoped localStorage, appending a ledger entry, updating the daily summary, and attempting a non-blocking backend daily total save), while changing only the print UI flow back to the previous behavior.",
-      "reqIds": [
-        "REQ-2"
-      ],
-      "version": 1
-    }
-  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "existing_features": [],
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Restore previous behavior when 'Print Bill' is pressed (revert current change/regression)",
-      "reqIds": [],
+      "summary": "Ensure the print view page (PrintViewPage.tsx) does not display or trigger any screenshot functionality when rendering bills",
+      "reqIds": [
+        "REQ-1"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "Varshini Classic Cuisine",
+  "projectName": "Exclude print view from screenshot feature",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

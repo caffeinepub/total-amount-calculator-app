@@ -1,11 +1,10 @@
 # Specification
 
 ## Summary
-**Goal:** Restore the calculator page “Print” (Print Bill) button to print in-place using the existing `PrintBill` receipt, without opening/navigating to a separate print view.
+**Goal:** Exclude the print view page from displaying or triggering any screenshot functionality.
 
 **Planned changes:**
-- Update the calculator page Print button flow to render the existing `PrintBill` component in-page for print media and trigger printing via `window.print()` (no new tab/window and no `?print=true` navigation).
-- Ensure `PrintBill` is not placed inside a container that prevents it from appearing in print preview/print output.
-- Keep the current “on print” side effects intact (bill save to branch-scoped localStorage, ledger entry append, daily summary updates, and non-blocking backend daily total save attempt), changing only the print UI flow.
+- Ensure PrintViewPage.tsx does not display or trigger screenshot capture when rendering bills
+- Maintain classic text-only receipt format in print view without any image generation
 
-**User-visible outcome:** Pressing “Print” on the calculator prints the receipt using the existing `PrintBill` layout in the same page (with inputs preserved), and existing bill/daily-total updates still occur as before.
+**User-visible outcome:** When users access the print view, bills will render in traditional receipt-style text format only, without any screenshot features appearing or being triggered.

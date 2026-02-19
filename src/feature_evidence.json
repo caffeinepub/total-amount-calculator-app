@@ -1,43 +1,4 @@
 {
   "kind": "feature_evidence_report",
-  "features": [
-    {
-      "featureId": "feature-restore-the-previous-behavior-when-the-user-presses-the-print-print-bill-button-on-the-calculator-page-so-printing-happens-in-the-same-page-using-the-existing-in-page-printable-receipt-printbill-component-instead-of-navigating-opening-a-separate-print-view-tab-window",
-      "featureTitle": "Restore the previous behavior when the user presses the \"Print\" (Print Bill) button on the calculator page so printing happens in the same page using the existing in-page printable receipt (PrintBill component), instead of navigating/opening a separate print view tab/window.",
-      "files": [
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-1"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-preserve-the-existing-bill-saving-and-daily-totals-side-effects-that-occur-when-printing-saving-the-bill-to-branch-scoped-localstorage-appending-a-ledger-entry-updating-the-daily-summary-and-attempting-a-non-blocking-backend-daily-total-save-while-changing-only-the-print-ui-flow-back-to-the-previous-behavior",
-      "featureTitle": "Preserve the existing bill-saving and daily totals side effects that occur when printing (saving the bill to branch-scoped localStorage, appending a ledger entry, updating the daily summary, and attempting a non-blocking backend daily total save), while changing only the print UI flow back to the previous behavior.",
-      "files": [
-        "frontend/src/features/calculator/TotalAmountCalculatorPage.tsx"
-      ],
-      "components": [
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0",
-        "authorization@4.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    }
-  ]
+  "features": []
 }

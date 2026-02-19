@@ -122,7 +122,7 @@ export function PrintViewPage() {
         </div>
       </div>
 
-      {/* Bill Content - Visible during print */}
+      {/* Bill Content - Text-based classic receipt format */}
       <div className={`print-bill-container ${isCompact ? 'compact' : 'classic'}`}>
         <div className="print-bill-content">
           {/* Header */}
@@ -137,7 +137,7 @@ export function PrintViewPage() {
             </div>
           </div>
 
-          {/* Line Items Table */}
+          {/* Line Items Table - Classic text-based format */}
           <table className="print-bill-table">
             <thead>
               <tr>
