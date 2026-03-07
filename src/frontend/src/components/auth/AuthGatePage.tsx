@@ -1,7 +1,7 @@
-import { BranchLoginForm } from './BranchLoginForm';
-import LoginButton from './LoginButton';
-import { Calculator } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from "@/components/ui/separator";
+import { Calculator } from "lucide-react";
+import { BranchLoginForm } from "./BranchLoginForm";
+import LoginButton from "./LoginButton";
 
 export function AuthGatePage() {
   return (
@@ -14,7 +14,9 @@ export function AuthGatePage() {
               <Calculator className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">Varshini Classic Cuisine</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Varshini Classic Cuisine
+          </h1>
           <p className="text-muted-foreground">Restaurant Management System</p>
         </div>
 
@@ -35,7 +37,9 @@ export function AuthGatePage() {
               <Separator />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Optional</span>
+              <span className="bg-card px-2 text-muted-foreground">
+                Optional
+              </span>
             </div>
           </div>
 
@@ -43,7 +47,8 @@ export function AuthGatePage() {
             <div className="space-y-2">
               <h2 className="text-lg font-semibold">Internet Identity</h2>
               <p className="text-sm text-muted-foreground">
-                Optionally connect with Internet Identity for additional features
+                Optionally connect with Internet Identity for additional
+                features
               </p>
             </div>
             <div className="flex justify-center">
@@ -55,10 +60,12 @@ export function AuthGatePage() {
         {/* Footer */}
         <div className="text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Built with ❤️ using{' '}
+            © {new Date().getFullYear()} Built with ❤️ using{" "}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                typeof window !== 'undefined' ? window.location.hostname : 'varshini-classic-cuisine'
+                typeof window !== "undefined"
+                  ? window.location.hostname
+                  : "varshini-classic-cuisine",
               )}`}
               target="_blank"
               rel="noopener noreferrer"

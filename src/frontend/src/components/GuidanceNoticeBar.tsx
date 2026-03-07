@@ -1,9 +1,9 @@
-import { Info, Copy, Check, AlertCircle } from 'lucide-react';
-import { Button } from './ui/button';
-import { useCopyCurrentUrl } from '../hooks/useCopyCurrentUrl';
+import { AlertCircle, Check, Copy, Info } from "lucide-react";
+import { useCopyCurrentUrl } from "../hooks/useCopyCurrentUrl";
+import { Button } from "./ui/button";
 
 export function GuidanceNoticeBar() {
-  const { copyUrl, status, isSuccess, isError } = useCopyCurrentUrl();
+  const { copyUrl, isSuccess, isError } = useCopyCurrentUrl();
 
   return (
     <div className="no-print border-b bg-accent/10 backdrop-blur-sm">
@@ -12,10 +12,11 @@ export function GuidanceNoticeBar() {
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <Info className="h-5 w-5 text-accent-foreground flex-shrink-0" />
             <p className="text-sm text-accent-foreground">
-              <span className="font-medium">Note:</span> Draft links may expire. For permanent access, use the production/live deployment link.
+              <span className="font-medium">Note:</span> Draft links may expire.
+              For permanent access, use the production/live deployment link.
             </p>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -41,7 +42,7 @@ export function GuidanceNoticeBar() {
                 </>
               )}
             </Button>
-            
+
             {isError && (
               <span className="text-xs text-destructive">
                 Unable to copy. Please copy manually.

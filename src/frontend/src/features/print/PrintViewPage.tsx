@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from '@tanstack/react-router';
-import { getBillById, SavedBillRecord } from '../calculator/savedBills';
-import { formatCurrency } from '../calculator/format';
-import { Button } from '@/components/ui/button';
-import { Printer, ArrowLeft } from 'lucide-react';
-import { RECEIPT_STYLES } from '../optimizeBill/receiptStyles';
-import { getActiveBranch } from '@/utils/branchScopedStorage';
+import { Button } from "@/components/ui/button";
+import { getActiveBranch } from "@/utils/branchScopedStorage";
+import { useNavigate } from "@tanstack/react-router";
+import { ArrowLeft, Printer } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { formatCurrency } from "../calculator/format";
+import { type SavedBillRecord, getBillById } from "../calculator/savedBills";
+import { RECEIPT_STYLES } from "../optimizeBill/receiptStyles";
 
 export function PrintViewPage() {
   const navigate = useNavigate();
@@ -17,21 +17,21 @@ export function PrintViewPage() {
   useEffect(() => {
     // Parse URL parameters
     const params = new URLSearchParams(window.location.search);
-    const billId = params.get('id');
-    const shouldPrint = params.get('print') === 'true';
-    const branchParam = params.get('branch');
+    const billId = params.get("id");
+    const shouldPrint = params.get("print") === "true";
+    const branchParam = params.get("branch");
 
     if (!billId) {
-      setError('No bill ID provided');
+      setError("No bill ID provided");
       return;
     }
 
     // Determine which branch to load from
     // Priority: URL branch param > stored branch in localStorage
     const targetBranch = branchParam || getActiveBranch();
-    
+
     if (!targetBranch) {
-      setError('No branch context available');
+      setError("No branch context available");
       return;
     }
 
@@ -39,7 +39,7 @@ export function PrintViewPage() {
     const loadedBill = getBillById(billId, targetBranch);
 
     if (!loadedBill) {
-      setError('Bill not found');
+      setError("Bill not found");
       return;
     }
 
@@ -48,7 +48,7 @@ export function PrintViewPage() {
     // Auto-print once after bill loads (guarded by printAttempted flag)
     if (shouldPrint && !printAttempted) {
       setPrintAttempted(true);
-      
+
       // Delay print to ensure rendering is complete
       printTimeoutRef.current = window.setTimeout(() => {
         window.print();
@@ -68,7 +68,7 @@ export function PrintViewPage() {
   };
 
   const handleBackToCalculator = () => {
-    navigate({ to: '/' });
+    navigate({ to: "/" });
   };
 
   if (error) {
@@ -95,18 +95,23 @@ export function PrintViewPage() {
   }
 
   // Get receipt style configuration
-  const receiptStyle = RECEIPT_STYLES.find(
-    (style) => style.id === bill.billFormatSnapshot.receiptStyle
-  ) || RECEIPT_STYLES[0];
+  const receiptStyle =
+    RECEIPT_STYLES.find(
+      (style) => style.id === bill.billFormatSnapshot.receiptStyle,
+    ) || RECEIPT_STYLES[0];
 
-  const isCompact = receiptStyle.id === 'compact';
+  const isCompact = receiptStyle.id === "compact";
 
   return (
     <div className="min-h-screen bg-background">
       {/* Print Controls - Hidden during print */}
       <div className="no-print sticky top-0 z-10 bg-background border-b p-4">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-          <Button onClick={handleBackToCalculator} variant="outline" className="gap-2">
+          <Button
+            onClick={handleBackToCalculator}
+            variant="outline"
+            className="gap-2"
+          >
             <ArrowLeft className="h-4 w-4" />
             Back to Calculator
           </Button>
@@ -123,17 +128,21 @@ export function PrintViewPage() {
       </div>
 
       {/* Bill Content - Visible during print */}
-      <div className={`print-bill-container ${isCompact ? 'compact' : 'classic'}`}>
+      <div
+        className={`print-bill-container ${isCompact ? "compact" : "classic"}`}
+      >
         <div className="print-bill-content">
           {/* Header */}
           <div className="print-bill-header">
             <h1 className="print-bill-title">Varshini Classic Cuisine</h1>
             {bill.billFormatSnapshot.printLocationAddress && (
-              <p className="print-bill-location">{bill.billFormatSnapshot.printLocationAddress}</p>
+              <p className="print-bill-location">
+                {bill.billFormatSnapshot.printLocationAddress}
+              </p>
             )}
             <div className="print-bill-meta">
               <p>Bill: {bill.billCode}</p>
-              <p>{new Date(bill.timestamp).toLocaleString('en-IN')}</p>
+              <p>{new Date(bill.timestamp).toLocaleString("en-IN")}</p>
             </div>
           </div>
 
@@ -148,11 +157,13 @@ export function PrintViewPage() {
               </tr>
             </thead>
             <tbody>
-              {bill.lineItems.map((item, index) => (
-                <tr key={index}>
+              {bill.lineItems.map((item) => (
+                <tr key={`${item.label}-${item.unitPrice}`}>
                   <td>{item.label}</td>
                   <td className="text-center">{item.quantity}</td>
-                  <td className="text-right">{formatCurrency(item.unitPrice)}</td>
+                  <td className="text-right">
+                    {formatCurrency(item.unitPrice)}
+                  </td>
                   <td className="text-right">
                     {formatCurrency(item.quantity * item.unitPrice)}
                   </td>
@@ -177,7 +188,7 @@ export function PrintViewPage() {
               <div className="print-bill-totals-row">
                 <span>
                   Discount (
-                  {bill.discountType === 'percentage'
+                  {bill.discountType === "percentage"
                     ? `${bill.discountValue}%`
                     : formatCurrency(bill.discountValue)}
                   ):

@@ -1,23 +1,38 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, X, Save, CheckCircle2, Lock } from 'lucide-react';
-import { useOptimizeBillDefaults } from './useOptimizeBillDefaults';
-import { RECEIPT_STYLES, ReceiptStyleId } from './receiptStyles';
-import { readImageFileAsDataUrl } from '../calculator/utils/readImageFileAsDataUrl';
-import { useBranchAuth } from '@/hooks/useBranchAuth';
-import { isFixedBranchUser, getFixedPrintLocationForBranchUser } from './branchFixedPrintLocation';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useBranchAuth } from "@/hooks/useBranchAuth";
+import { CheckCircle2, Lock, Save, Upload, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { readImageFileAsDataUrl } from "../calculator/utils/readImageFileAsDataUrl";
+import {
+  getFixedPrintLocationForBranchUser,
+  isFixedBranchUser,
+} from "./branchFixedPrintLocation";
+import { RECEIPT_STYLES, type ReceiptStyleId } from "./receiptStyles";
+import { useOptimizeBillDefaults } from "./useOptimizeBillDefaults";
 
 export function OptimizeBillPage() {
   const { branchUser } = useBranchAuth();
   const { defaults, saveDefaults } = useOptimizeBillDefaults();
-  
-  const [receiptStyle, setReceiptStyle] = useState<ReceiptStyleId>(defaults.receiptStyle);
-  const [paymentScanDataUrl, setPaymentScanDataUrl] = useState<string | undefined>(defaults.paymentScanDataUrl);
-  const [printLocationAddress, setPrintLocationAddress] = useState<string>(defaults.printLocationAddress || '');
+
+  const [receiptStyle, setReceiptStyle] = useState<ReceiptStyleId>(
+    defaults.receiptStyle,
+  );
+  const [paymentScanDataUrl, setPaymentScanDataUrl] = useState<
+    string | undefined
+  >(defaults.paymentScanDataUrl);
+  const [printLocationAddress, setPrintLocationAddress] = useState<string>(
+    defaults.printLocationAddress || "",
+  );
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -27,15 +42,16 @@ export function OptimizeBillPage() {
   const fixedAddress = getFixedPrintLocationForBranchUser(branchUser);
 
   // Re-initialize state when branch changes or defaults change
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally exclude setters
   useEffect(() => {
     setReceiptStyle(defaults.receiptStyle);
     setPaymentScanDataUrl(defaults.paymentScanDataUrl);
-    
+
     // For fixed branches, always use the fixed address
     if (fixedAddress) {
       setPrintLocationAddress(fixedAddress);
     } else {
-      setPrintLocationAddress(defaults.printLocationAddress || '');
+      setPrintLocationAddress(defaults.printLocationAddress || "");
     }
   }, [defaults, branchUser, fixedAddress]);
 
@@ -50,16 +66,18 @@ export function OptimizeBillPage() {
       setPaymentScanDataUrl(dataUrl);
     } catch (error) {
       if (error instanceof Error) {
-        setUploadError(error.message === 'File must be an image' 
-          ? 'Please upload a valid image file (JPG, PNG, etc.)'
-          : 'Failed to read the image file. Please try again.');
+        setUploadError(
+          error.message === "File must be an image"
+            ? "Please upload a valid image file (JPG, PNG, etc.)"
+            : "Failed to read the image file. Please try again.",
+        );
       } else {
-        setUploadError('An unexpected error occurred. Please try again.');
+        setUploadError("An unexpected error occurred. Please try again.");
       }
     }
 
     // Reset input
-    e.target.value = '';
+    e.target.value = "";
   };
 
   const handleRemoveImage = () => {
@@ -79,7 +97,7 @@ export function OptimizeBillPage() {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (error) {
-      console.error('Error saving defaults:', error);
+      console.error("Error saving defaults:", error);
     } finally {
       setIsSaving(false);
     }
@@ -90,7 +108,8 @@ export function OptimizeBillPage() {
       <div className="mb-6">
         <h2 className="text-3xl font-bold tracking-tight">Optimize Bill</h2>
         <p className="text-muted-foreground mt-2">
-          Configure default bill format settings that will be applied to all future bills
+          Configure default bill format settings that will be applied to all
+          future bills
         </p>
       </div>
 
@@ -99,10 +118,17 @@ export function OptimizeBillPage() {
         <Card>
           <CardHeader>
             <CardTitle>Receipt Style</CardTitle>
-            <CardDescription>Choose the layout style for printed receipts</CardDescription>
+            <CardDescription>
+              Choose the layout style for printed receipts
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs value={receiptStyle} onValueChange={(value) => setReceiptStyle(value as ReceiptStyleId)}>
+            <Tabs
+              value={receiptStyle}
+              onValueChange={(value) =>
+                setReceiptStyle(value as ReceiptStyleId)
+              }
+            >
               <TabsList className="grid w-full grid-cols-2">
                 {RECEIPT_STYLES.map((style) => (
                   <TabsTrigger key={style.id} value={style.id}>
@@ -123,7 +149,9 @@ export function OptimizeBillPage() {
         <Card>
           <CardHeader>
             <CardTitle>Payment Scan</CardTitle>
-            <CardDescription>Upload a scan or image of your payment information (optional)</CardDescription>
+            <CardDescription>
+              Upload a scan or image of your payment information (optional)
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {paymentScanDataUrl ? (
@@ -143,7 +171,13 @@ export function OptimizeBillPage() {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button variant="outline" className="w-full" onClick={() => document.getElementById('payment-scan-input')?.click()}>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() =>
+                    document.getElementById("payment-scan-input")?.click()
+                  }
+                >
                   <Upload className="h-4 w-4 mr-2" />
                   Change Image
                 </Button>
@@ -153,7 +187,9 @@ export function OptimizeBillPage() {
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => document.getElementById('payment-scan-input')?.click()}
+                  onClick={() =>
+                    document.getElementById("payment-scan-input")?.click()
+                  }
                 >
                   <Upload className="h-4 w-4 mr-2" />
                   Upload Payment Scan
@@ -178,16 +214,21 @@ export function OptimizeBillPage() {
           <CardHeader>
             <CardTitle>Print Location Address</CardTitle>
             <CardDescription>
-              {isFixedBranch 
-                ? 'The address is fixed for your branch and cannot be changed'
-                : 'Enter the address where bills are printed (optional)'}
+              {isFixedBranch
+                ? "The address is fixed for your branch and cannot be changed"
+                : "Enter the address where bills are printed (optional)"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <Label htmlFor="print-location" className="flex items-center gap-2">
+              <Label
+                htmlFor="print-location"
+                className="flex items-center gap-2"
+              >
                 Address
-                {isFixedBranch && <Lock className="h-3 w-3 text-muted-foreground" />}
+                {isFixedBranch && (
+                  <Lock className="h-3 w-3 text-muted-foreground" />
+                )}
               </Label>
               <Input
                 id="print-location"
@@ -196,7 +237,7 @@ export function OptimizeBillPage() {
                 value={printLocationAddress}
                 onChange={(e) => setPrintLocationAddress(e.target.value)}
                 disabled={isFixedBranch}
-                className={isFixedBranch ? 'bg-muted cursor-not-allowed' : ''}
+                className={isFixedBranch ? "bg-muted cursor-not-allowed" : ""}
               />
               {isFixedBranch && (
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -216,9 +257,13 @@ export function OptimizeBillPage() {
               <span>Defaults saved successfully!</span>
             </div>
           )}
-          <Button onClick={handleSaveDefaults} className="gap-2" disabled={isSaving}>
+          <Button
+            onClick={handleSaveDefaults}
+            className="gap-2"
+            disabled={isSaving}
+          >
             <Save className="h-4 w-4" />
-            {isSaving ? 'Saving...' : 'Save Defaults'}
+            {isSaving ? "Saving..." : "Save Defaults"}
           </Button>
         </div>
       </div>

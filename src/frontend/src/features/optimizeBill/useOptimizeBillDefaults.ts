@@ -1,12 +1,18 @@
-import { useState, useEffect } from 'react';
-import { BillFormatDefaults, loadBillFormatDefaults, saveBillFormatDefaults } from './optimizeBillStorage';
-import { useActor } from '@/hooks/useActor';
-import { useBranchAuth } from '@/hooks/useBranchAuth';
-import { enforceFixedPrintLocation } from './branchFixedPrintLocation';
+import { useActor } from "@/hooks/useActor";
+import { useBranchAuth } from "@/hooks/useBranchAuth";
+import { useEffect, useState } from "react";
+import { enforceFixedPrintLocation } from "./branchFixedPrintLocation";
+import {
+  type BillFormatDefaults,
+  loadBillFormatDefaults,
+  saveBillFormatDefaults,
+} from "./optimizeBillStorage";
 
 export function useOptimizeBillDefaults() {
   const { branchUser } = useBranchAuth();
-  const [defaults, setDefaults] = useState<BillFormatDefaults>(loadBillFormatDefaults(branchUser || undefined));
+  const [defaults, setDefaults] = useState<BillFormatDefaults>(
+    loadBillFormatDefaults(branchUser || undefined),
+  );
   const { actor } = useActor();
 
   useEffect(() => {
@@ -18,13 +24,16 @@ export function useOptimizeBillDefaults() {
 
   const saveDefaults = async (newDefaults: BillFormatDefaults) => {
     // Enforce fixed address for fixed branches before saving
-    const finalAddress = enforceFixedPrintLocation(branchUser || undefined, newDefaults.printLocationAddress);
-    
+    const finalAddress = enforceFixedPrintLocation(
+      branchUser || undefined,
+      newDefaults.printLocationAddress,
+    );
+
     const defaultsToSave: BillFormatDefaults = {
       ...newDefaults,
       printLocationAddress: finalAddress,
     };
-    
+
     // Always save to branch-scoped localStorage first
     saveBillFormatDefaults(defaultsToSave, branchUser || undefined);
     setDefaults(defaultsToSave);
@@ -34,14 +43,14 @@ export function useOptimizeBillDefaults() {
       try {
         // Get current profile or create new one
         const existingProfile = await actor.getCallerUserProfile();
-        
+
         await actor.saveCallerUserProfile({
-          name: existingProfile?.name || 'User',
-          billPrintLocation: finalAddress || '',
+          name: existingProfile?.name || "User",
+          billPrintLocation: finalAddress || "",
         });
       } catch (error) {
         // Don't crash if backend save fails - localStorage is already updated
-        console.warn('Failed to save bill print location to backend:', error);
+        console.warn("Failed to save bill print location to backend:", error);
       }
     }
   };

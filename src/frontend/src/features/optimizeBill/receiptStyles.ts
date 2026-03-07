@@ -1,4 +1,4 @@
-export type ReceiptStyleId = 'classic' | 'compact';
+export type ReceiptStyleId = "classic" | "compact";
 
 export interface ReceiptStyle {
   id: ReceiptStyleId;
@@ -8,15 +8,15 @@ export interface ReceiptStyle {
 
 export const RECEIPT_STYLES: ReceiptStyle[] = [
   {
-    id: 'classic',
-    name: 'Classic',
-    description: 'Traditional receipt with clear spacing and borders',
+    id: "classic",
+    name: "Classic",
+    description: "Traditional receipt with clear spacing and borders",
   },
   {
-    id: 'compact',
-    name: 'Compact',
-    description: 'Space-efficient layout with minimal borders',
+    id: "compact",
+    name: "Compact",
+    description: "Space-efficient layout with minimal borders",
   },
 ];
 
-export const DEFAULT_RECEIPT_STYLE: ReceiptStyleId = 'classic';
+export const DEFAULT_RECEIPT_STYLE: ReceiptStyleId = "classic";

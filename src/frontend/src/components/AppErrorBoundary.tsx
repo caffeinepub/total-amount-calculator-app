@@ -1,5 +1,6 @@
-import React, { Component, ReactNode } from 'react';
-import { CrashFallbackScreen } from './CrashFallbackScreen';
+import type React from "react";
+import { Component, type ReactNode } from "react";
+import { CrashFallbackScreen } from "./CrashFallbackScreen";
 
 interface AppErrorBoundaryProps {
   children: ReactNode;
@@ -11,7 +12,10 @@ interface AppErrorBoundaryState {
   error: Error | null;
 }
 
-export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorBoundaryState> {
+export class AppErrorBoundary extends Component<
+  AppErrorBoundaryProps,
+  AppErrorBoundaryState
+> {
   constructor(props: AppErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -22,7 +26,7 @@ export class AppErrorBoundary extends Component<AppErrorBoundaryProps, AppErrorB
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('React Error Boundary caught an error:', error, errorInfo);
+    console.error("React Error Boundary caught an error:", error, errorInfo);
   }
 
   render() {

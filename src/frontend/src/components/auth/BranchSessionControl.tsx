@@ -1,6 +1,6 @@
-import { useBranchAuth } from '../../hooks/useBranchAuth';
-import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
+import { useBranchAuth } from "../../hooks/useBranchAuth";
 
 export function BranchSessionControl() {
   const { branchUser, logout, isAuthenticated } = useBranchAuth();

@@ -1,16 +1,22 @@
-import { LineItem, CalculationBreakdown } from './types';
-import { formatCurrency } from './format';
-import { calculateLineTotal } from './utils';
+import { formatCurrency } from "./format";
+import type { CalculationBreakdown, LineItem } from "./types";
+import { calculateLineTotal } from "./utils";
 
 interface PrintBillProps {
   lineItems: LineItem[];
   breakdown: CalculationBreakdown;
   taxRate: number;
-  discountType: 'percentage' | 'fixed';
+  discountType: "percentage" | "fixed";
   discountValue: number;
 }
 
-export function PrintBill({ lineItems, breakdown, taxRate, discountType, discountValue }: PrintBillProps) {
+export function PrintBill({
+  lineItems,
+  breakdown,
+  taxRate,
+  discountType,
+  discountValue,
+}: PrintBillProps) {
   return (
     <div className="print-only hidden">
       <div className="max-w-3xl mx-auto p-8 bg-white text-black">
@@ -31,14 +37,18 @@ export function PrintBill({ lineItems, breakdown, taxRate, discountType, discoun
           </thead>
           <tbody>
             {lineItems
-              .filter((item) => item.label.trim() !== '' && item.quantity > 0)
+              .filter((item) => item.label.trim() !== "" && item.quantity > 0)
               .map((item) => (
                 <tr key={item.id} className="border-b border-gray-300">
                   <td className="py-2 px-2">{item.label}</td>
                   <td className="text-center py-2 px-2">{item.quantity}</td>
-                  <td className="text-right py-2 px-2">{formatCurrency(item.unitPrice)}</td>
+                  <td className="text-right py-2 px-2">
+                    {formatCurrency(item.unitPrice)}
+                  </td>
                   <td className="text-right py-2 px-2 font-medium">
-                    {formatCurrency(calculateLineTotal(item.quantity, item.unitPrice))}
+                    {formatCurrency(
+                      calculateLineTotal(item.quantity, item.unitPrice),
+                    )}
                   </td>
                 </tr>
               ))}
@@ -49,17 +59,24 @@ export function PrintBill({ lineItems, breakdown, taxRate, discountType, discoun
         <div className="border-t-2 border-black pt-4">
           <div className="flex justify-between mb-2">
             <span>Subtotal:</span>
-            <span className="font-medium">{formatCurrency(breakdown.subtotal)}</span>
+            <span className="font-medium">
+              {formatCurrency(breakdown.subtotal)}
+            </span>
           </div>
           <div className="flex justify-between mb-2">
             <span>Tax ({taxRate}%):</span>
-            <span className="font-medium">+{formatCurrency(breakdown.taxAmount)}</span>
+            <span className="font-medium">
+              +{formatCurrency(breakdown.taxAmount)}
+            </span>
           </div>
           <div className="flex justify-between mb-2">
             <span>
-              Discount ({discountType === 'percentage' ? `${discountValue}%` : '₹'}):
+              Discount (
+              {discountType === "percentage" ? `${discountValue}%` : "₹"}):
             </span>
-            <span className="font-medium">-{formatCurrency(breakdown.discountAmount)}</span>
+            <span className="font-medium">
+              -{formatCurrency(breakdown.discountAmount)}
+            </span>
           </div>
           <div className="flex justify-between text-xl font-bold border-t-2 border-black pt-4 mt-4">
             <span>Final Total:</span>

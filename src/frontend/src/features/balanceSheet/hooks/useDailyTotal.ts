@@ -1,25 +1,32 @@
-import { useState, useEffect } from 'react';
+import { useBranchAuth } from "@/hooks/useBranchAuth";
+import { useGetBalanceSheet } from "@/hooks/useQueries";
+import { isDailyTotalsKeyForBranch } from "@/utils/branchScopedStorage";
+import { useEffect, useState } from "react";
+import { getAllBills } from "../../calculator/savedBills";
 import {
+  aggregateItemQuantities,
   getAvailableDays,
   getDailySummary,
-  aggregateItemQuantities,
-} from '../ledgerUtils';
-import { getAllBills } from '../../calculator/savedBills';
-import { useBranchAuth } from '@/hooks/useBranchAuth';
-import { useGetBalanceSheet } from '@/hooks/useQueries';
-import { isDailyTotalsKeyForBranch } from '@/utils/branchScopedStorage';
+} from "../ledgerUtils";
 
 export function useDailyTotal() {
   const { branchUser } = useBranchAuth();
   const [selectedDay, setSelectedDay] = useState<string | null>(null);
   const [availableDays, setAvailableDays] = useState<string[]>([]);
   const [dayTotal, setDayTotal] = useState<number>(0);
-  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>({});
+  const [itemQuantities, setItemQuantities] = useState<Record<string, number>>(
+    {},
+  );
 
   // Fetch backend balance sheet with branch parameter
-  const { data: backendBalanceSheet, isLoading: backendLoading, isError: backendError } = useGetBalanceSheet(branchUser || '');
+  const {
+    data: backendBalanceSheet,
+    isLoading: backendLoading,
+    isError: backendError,
+  } = useGetBalanceSheet(branchUser || "");
 
   // Reset state when branch changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally exclude setters
   useEffect(() => {
     setSelectedDay(null);
     setAvailableDays([]);
@@ -38,8 +45,15 @@ export function useDailyTotal() {
     let days: string[] = [];
 
     // Prefer backend data if available
-    if (backendBalanceSheet && backendBalanceSheet.length > 0 && !backendError) {
-      days = backendBalanceSheet.map(([date]) => date).sort().reverse();
+    if (
+      backendBalanceSheet &&
+      backendBalanceSheet.length > 0 &&
+      !backendError
+    ) {
+      days = backendBalanceSheet
+        .map(([date]) => date)
+        .sort()
+        .reverse();
     } else {
       // Fallback to localStorage
       days = getAvailableDays(branchUser);
@@ -65,19 +79,21 @@ export function useDailyTotal() {
 
     // Try to get data from backend first
     if (backendBalanceSheet && !backendError) {
-      const backendEntry = backendBalanceSheet.find(([date]) => date === selectedDay);
+      const backendEntry = backendBalanceSheet.find(
+        ([date]) => date === selectedDay,
+      );
       if (backendEntry) {
         const [, dailyTotalView] = backendEntry;
-        
+
         // Convert bigint to number (divide by 100 to restore 2 decimal places)
         const totalRevenue = Number(dailyTotalView.totalRevenue) / 100;
-        
+
         // Convert productQuantities array to Record
         const quantities: Record<string, number> = {};
         for (const [label, qty] of dailyTotalView.productQuantities) {
           quantities[label] = Number(qty);
         }
-        
+
         setDayTotal(totalRevenue);
         setItemQuantities(quantities);
         return;
@@ -92,7 +108,7 @@ export function useDailyTotal() {
     const allBills = getAllBills(branchUser);
     const billsForDay = allBills.filter((bill) => {
       const billDate = new Date(bill.timestamp);
-      const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, '0')}-${String(billDate.getDate()).padStart(2, '0')}`;
+      const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, "0")}-${String(billDate.getDate()).padStart(2, "0")}`;
       return billDayKey === selectedDay;
     });
 
@@ -122,7 +138,7 @@ export function useDailyTotal() {
         const allBills = getAllBills(branchUser);
         const billsForDay = allBills.filter((bill) => {
           const billDate = new Date(bill.timestamp);
-          const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, '0')}-${String(billDate.getDate()).padStart(2, '0')}`;
+          const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, "0")}-${String(billDate.getDate()).padStart(2, "0")}`;
           return billDayKey === selectedDay;
         });
 
@@ -131,8 +147,8 @@ export function useDailyTotal() {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, [branchUser, selectedDay]);
 
   return {

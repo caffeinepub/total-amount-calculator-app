@@ -3,14 +3,14 @@
  * Provides namespaced storage keys per branch and one-time migration from legacy global keys
  */
 
-const BRANCH_AUTH_KEY = 'branchAuthUser';
+const BRANCH_AUTH_KEY = "branchAuthUser";
 
 // Legacy global keys that need migration
 const LEGACY_KEYS = {
-  savedBills: 'varshini_saved_bills',
-  dailyLedger: 'varshini_daily_totals_ledger',
-  dailySummary: 'varshini_daily_summary',
-  billDefaults: 'varshini_bill_format_defaults',
+  savedBills: "varshini_saved_bills",
+  dailyLedger: "varshini_daily_totals_ledger",
+  dailySummary: "varshini_daily_summary",
+  billDefaults: "varshini_bill_format_defaults",
 };
 
 /**
@@ -38,9 +38,9 @@ export function getBranchScopedKey(branch: string, baseKey: string): string {
 export function getSavedBillsKey(branch?: string): string {
   const activeBranch = branch || getActiveBranch();
   if (!activeBranch) {
-    throw new Error('No active branch for saved bills storage');
+    throw new Error("No active branch for saved bills storage");
   }
-  return getBranchScopedKey(activeBranch, 'saved_bills');
+  return getBranchScopedKey(activeBranch, "saved_bills");
 }
 
 /**
@@ -49,9 +49,9 @@ export function getSavedBillsKey(branch?: string): string {
 export function getDailyLedgerKey(branch?: string): string {
   const activeBranch = branch || getActiveBranch();
   if (!activeBranch) {
-    throw new Error('No active branch for daily ledger storage');
+    throw new Error("No active branch for daily ledger storage");
   }
-  return getBranchScopedKey(activeBranch, 'daily_ledger');
+  return getBranchScopedKey(activeBranch, "daily_ledger");
 }
 
 /**
@@ -60,9 +60,9 @@ export function getDailyLedgerKey(branch?: string): string {
 export function getDailySummaryKey(branch?: string): string {
   const activeBranch = branch || getActiveBranch();
   if (!activeBranch) {
-    throw new Error('No active branch for daily summary storage');
+    throw new Error("No active branch for daily summary storage");
   }
-  return getBranchScopedKey(activeBranch, 'daily_summary');
+  return getBranchScopedKey(activeBranch, "daily_summary");
 }
 
 /**
@@ -71,16 +71,19 @@ export function getDailySummaryKey(branch?: string): string {
 export function getBillDefaultsKey(branch?: string): string {
   const activeBranch = branch || getActiveBranch();
   if (!activeBranch) {
-    throw new Error('No active branch for bill defaults storage');
+    throw new Error("No active branch for bill defaults storage");
   }
-  return getBranchScopedKey(activeBranch, 'bill_defaults');
+  return getBranchScopedKey(activeBranch, "bill_defaults");
 }
 
 /**
  * Check if a storage key belongs to a specific branch
  * Useful for filtering storage events
  */
-export function isKeyForBranch(storageKey: string | null, branch: string): boolean {
+export function isKeyForBranch(
+  storageKey: string | null,
+  branch: string,
+): boolean {
   if (!storageKey) return false;
   const prefix = `branch_${branch}_`;
   return storageKey.startsWith(prefix);
@@ -89,7 +92,10 @@ export function isKeyForBranch(storageKey: string | null, branch: string): boole
 /**
  * Check if a storage key is a daily totals key (ledger or summary) for a specific branch
  */
-export function isDailyTotalsKeyForBranch(storageKey: string | null, branch: string): boolean {
+export function isDailyTotalsKeyForBranch(
+  storageKey: string | null,
+  branch: string,
+): boolean {
   if (!storageKey) return false;
   const ledgerKey = getDailyLedgerKey(branch);
   const summaryKey = getDailySummaryKey(branch);
@@ -100,7 +106,7 @@ export function isDailyTotalsKeyForBranch(storageKey: string | null, branch: str
  * Get migration marker key for a specific branch
  */
 function getMigrationMarkerKey(branch: string): string {
-  return getBranchScopedKey(branch, 'migration_complete');
+  return getBranchScopedKey(branch, "migration_complete");
 }
 
 /**
@@ -109,7 +115,7 @@ function getMigrationMarkerKey(branch: string): string {
 function isMigrationComplete(branch: string): boolean {
   try {
     const marker = localStorage.getItem(getMigrationMarkerKey(branch));
-    return marker === 'true';
+    return marker === "true";
   } catch {
     return false;
   }
@@ -120,9 +126,9 @@ function isMigrationComplete(branch: string): boolean {
  */
 function markMigrationComplete(branch: string): void {
   try {
-    localStorage.setItem(getMigrationMarkerKey(branch), 'true');
+    localStorage.setItem(getMigrationMarkerKey(branch), "true");
   } catch (error) {
-    console.error('Failed to mark migration complete:', error);
+    console.error("Failed to mark migration complete:", error);
   }
 }
 
@@ -131,7 +137,9 @@ function markMigrationComplete(branch: string): void {
  */
 function hasLegacyData(): boolean {
   try {
-    return Object.values(LEGACY_KEYS).some(key => localStorage.getItem(key) !== null);
+    return Object.values(LEGACY_KEYS).some(
+      (key) => localStorage.getItem(key) !== null,
+    );
   } catch {
     return false;
   }
@@ -148,7 +156,7 @@ function hasBranchScopedData(branch: string): boolean {
       getDailySummaryKey(branch),
       getBillDefaultsKey(branch),
     ];
-    return keys.some(key => localStorage.getItem(key) !== null);
+    return keys.some((key) => localStorage.getItem(key) !== null);
   } catch {
     return false;
   }
@@ -210,6 +218,6 @@ export function migrateLegacyDataToBranch(branch: string): void {
     markMigrationComplete(branch);
     console.log(`Migration complete for branch: ${branch}`);
   } catch (error) {
-    console.error('Error during migration:', error);
+    console.error("Error during migration:", error);
   }
 }

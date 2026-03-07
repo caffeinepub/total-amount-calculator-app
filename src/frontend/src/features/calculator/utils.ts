@@ -1,14 +1,14 @@
-import { LineItem, CalculationBreakdown } from './types';
+import type { CalculationBreakdown, LineItem } from "./types";
 
 /**
  * Safely parse a numeric input, returning 0 for invalid/empty values
  */
 export function safeParseNumber(value: string | number): number {
-  if (typeof value === 'number') {
-    return isFinite(value) ? value : 0;
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
   }
-  const parsed = parseFloat(value);
-  return isFinite(parsed) ? parsed : 0;
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 /**
@@ -21,7 +21,10 @@ export function clampNonNegative(value: number): number {
 /**
  * Calculate the total for a single line item
  */
-export function calculateLineTotal(quantity: number, unitPrice: number): number {
+export function calculateLineTotal(
+  quantity: number,
+  unitPrice: number,
+): number {
   const safeQty = clampNonNegative(safeParseNumber(quantity));
   const safePrice = clampNonNegative(safeParseNumber(unitPrice));
   return safeQty * safePrice;
@@ -42,8 +45,8 @@ export function calculateSubtotal(lineItems: LineItem[]): number {
 export function calculateBreakdown(
   lineItems: LineItem[],
   taxRate: number,
-  discountType: 'percentage' | 'fixed',
-  discountValue: number
+  discountType: "percentage" | "fixed",
+  discountValue: number,
 ): CalculationBreakdown {
   const subtotal = calculateSubtotal(lineItems);
   const safeTaxRate = clampNonNegative(safeParseNumber(taxRate));
@@ -52,7 +55,7 @@ export function calculateBreakdown(
   const taxAmount = (subtotal * safeTaxRate) / 100;
 
   let discountAmount = 0;
-  if (discountType === 'percentage') {
+  if (discountType === "percentage") {
     discountAmount = (subtotal * safeDiscountValue) / 100;
   } else {
     discountAmount = Math.min(safeDiscountValue, subtotal); // Can't discount more than subtotal

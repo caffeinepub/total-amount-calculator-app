@@ -1,39 +1,39 @@
-import { useState } from 'react';
-import { useBranchAuth } from '../../hooks/useBranchAuth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { LogIn } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LogIn } from "lucide-react";
+import { useState } from "react";
+import { useBranchAuth } from "../../hooks/useBranchAuth";
 
 export function BranchLoginForm() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login } = useBranchAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Prevent double submission
     if (isSubmitting) return;
-    
+
     setIsSubmitting(true);
-    setError('');
+    setError("");
 
     // Normalize inputs before passing to login
     const normalizedUsername = username.trim();
     const normalizedPassword = password.trim();
 
     const success = login(normalizedUsername, normalizedPassword);
-    
+
     if (!success) {
-      setError('Invalid username or password. Please try again.');
+      setError("Invalid username or password. Please try again.");
       setIsSubmitting(false);
     } else {
       // Clear error on success; the app will unlock automatically via state change
-      setError('');
+      setError("");
       // Keep isSubmitting true to prevent re-submission during transition
     }
   };
@@ -71,7 +71,7 @@ export function BranchLoginForm() {
       )}
       <Button type="submit" className="w-full gap-2" disabled={isSubmitting}>
         <LogIn className="h-4 w-4" />
-        {isSubmitting ? 'Logging in...' : 'Login'}
+        {isSubmitting ? "Logging in..." : "Login"}
       </Button>
     </form>
   );

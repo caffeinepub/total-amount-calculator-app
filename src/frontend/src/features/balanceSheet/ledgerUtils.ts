@@ -3,8 +3,11 @@
  * Browser localStorage-based ledger for tracking daily bill totals with branch-scoped storage
  */
 
-import { LineItem } from '../calculator/types';
-import { getDailyLedgerKey, getDailySummaryKey } from '@/utils/branchScopedStorage';
+import {
+  getDailyLedgerKey,
+  getDailySummaryKey,
+} from "@/utils/branchScopedStorage";
+import { LineItem } from "../calculator/types";
 
 export interface LedgerEntry {
   billId: string;
@@ -37,8 +40,8 @@ export interface DailySummaryStore {
 export function getDayKey(timestamp: number = Date.now()): string {
   const date = new Date(timestamp);
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
 }
 
@@ -53,9 +56,11 @@ export function loadLedger(branch?: string): Ledger {
       return { days: {} };
     }
     const parsed = JSON.parse(stored);
-    return parsed && typeof parsed === 'object' && parsed.days ? parsed : { days: {} };
+    return parsed && typeof parsed === "object" && parsed.days
+      ? parsed
+      : { days: {} };
   } catch (error) {
-    console.error('Error loading ledger:', error);
+    console.error("Error loading ledger:", error);
     return { days: {} };
   }
 }
@@ -68,7 +73,7 @@ export function saveLedger(ledger: Ledger, branch?: string): void {
     const storageKey = getDailyLedgerKey(branch);
     localStorage.setItem(storageKey, JSON.stringify(ledger));
   } catch (error) {
-    console.error('Error saving ledger:', error);
+    console.error("Error saving ledger:", error);
   }
 }
 
@@ -83,9 +88,11 @@ export function loadDailySummaries(branch?: string): DailySummaryStore {
       return { summaries: {} };
     }
     const parsed = JSON.parse(stored);
-    return parsed && typeof parsed === 'object' && parsed.summaries ? parsed : { summaries: {} };
+    return parsed && typeof parsed === "object" && parsed.summaries
+      ? parsed
+      : { summaries: {} };
   } catch (error) {
-    console.error('Error loading daily summaries:', error);
+    console.error("Error loading daily summaries:", error);
     return { summaries: {} };
   }
 }
@@ -93,12 +100,15 @@ export function loadDailySummaries(branch?: string): DailySummaryStore {
 /**
  * Save daily summaries to branch-scoped localStorage
  */
-export function saveDailySummaries(store: DailySummaryStore, branch?: string): void {
+export function saveDailySummaries(
+  store: DailySummaryStore,
+  branch?: string,
+): void {
   try {
     const storageKey = getDailySummaryKey(branch);
     localStorage.setItem(storageKey, JSON.stringify(store));
   } catch (error) {
-    console.error('Error saving daily summaries:', error);
+    console.error("Error saving daily summaries:", error);
   }
 }
 
@@ -110,11 +120,11 @@ export function clearDailyTotalsCache(branch: string): void {
   try {
     const ledgerKey = getDailyLedgerKey(branch);
     const summaryKey = getDailySummaryKey(branch);
-    
+
     localStorage.removeItem(ledgerKey);
     localStorage.removeItem(summaryKey);
   } catch (error) {
-    console.error('Error clearing daily totals cache:', error);
+    console.error("Error clearing daily totals cache:", error);
   }
 }
 
@@ -124,39 +134,43 @@ export function clearDailyTotalsCache(branch: string): void {
  */
 export function getDailySummary(dayKey: string, branch?: string): DailySummary {
   const store = loadDailySummaries(branch);
-  
+
   // Return existing summary if available
   if (store.summaries[dayKey]) {
     return store.summaries[dayKey];
   }
-  
+
   // Compute from ledger entries
   const totalRevenue = calculateDayTotal(dayKey, branch);
   const summary: DailySummary = {
     dayKey,
     totalRevenue,
   };
-  
+
   // Persist computed summary
   store.summaries[dayKey] = summary;
   saveDailySummaries(store, branch);
-  
+
   return summary;
 }
 
 /**
  * Update daily summary by incrementing the total revenue
  */
-export function updateDailySummary(dayKey: string, additionalRevenue: number, branch?: string): void {
+export function updateDailySummary(
+  dayKey: string,
+  additionalRevenue: number,
+  branch?: string,
+): void {
   const store = loadDailySummaries(branch);
-  
+
   if (!store.summaries[dayKey]) {
     store.summaries[dayKey] = {
       dayKey,
       totalRevenue: 0,
     };
   }
-  
+
   store.summaries[dayKey].totalRevenue += additionalRevenue;
   saveDailySummaries(store, branch);
 }
@@ -164,7 +178,11 @@ export function updateDailySummary(dayKey: string, additionalRevenue: number, br
 /**
  * Append a new entry to the ledger for today
  */
-export function appendLedgerEntry(billId: string, finalTotal: number, branch?: string): void {
+export function appendLedgerEntry(
+  billId: string,
+  finalTotal: number,
+  branch?: string,
+): void {
   const ledger = loadLedger(branch);
   const timestamp = Date.now();
   const dayKey = getDayKey(timestamp);
@@ -196,7 +214,10 @@ export function getAvailableDays(branch?: string): string[] {
 /**
  * Get entries for a specific day
  */
-export function getEntriesForDay(dayKey: string, branch?: string): LedgerEntry[] {
+export function getEntriesForDay(
+  dayKey: string,
+  branch?: string,
+): LedgerEntry[] {
   const ledger = loadLedger(branch);
   return ledger.days[dayKey]?.entries || [];
 }
@@ -215,14 +236,14 @@ export function calculateDayTotal(dayKey: string, branch?: string): number {
  * Normalizes labels by trimming whitespace
  */
 export function aggregateItemQuantities(
-  bills: Array<{ lineItems: Array<{ label: string; quantity: number }> }>
+  bills: Array<{ lineItems: Array<{ label: string; quantity: number }> }>,
 ): Record<string, number> {
   const aggregated: Record<string, number> = {};
 
   for (const bill of bills) {
     for (const item of bill.lineItems) {
       const normalizedLabel = item.label.trim();
-      
+
       // Skip empty labels and non-positive quantities
       if (!normalizedLabel || item.quantity <= 0) {
         continue;
@@ -243,15 +264,19 @@ export function aggregateItemQuantities(
  */
 export function formatDayKey(dayKey: string): string {
   try {
-    const [year, month, day] = dayKey.split('-');
-    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    return date.toLocaleDateString('en-IN', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+    const [year, month, day] = dayKey.split("-");
+    const date = new Date(
+      Number.parseInt(year),
+      Number.parseInt(month) - 1,
+      Number.parseInt(day),
+    );
+    return date.toLocaleDateString("en-IN", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
-  } catch (error) {
+  } catch (_error) {
     return dayKey;
   }
 }

@@ -1,53 +1,81 @@
-import { useState } from 'react';
-import { Plus, Trash2, RotateCcw, Calculator, Printer } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LineItem, CalculatorState } from './types';
-import { calculateLineTotal, calculateBreakdown, safeParseNumber, clampNonNegative } from './utils';
-import { formatCurrency } from './format';
-import { PredefinedItemCatalog } from './PredefinedItemCatalog';
-import { PREDEFINED_CATALOG, CatalogItem } from './catalog';
-import { PrintBill } from './PrintBill';
-import { saveBill } from './savedBills';
-import { appendLedgerEntry, updateDailySummary, getDayKey } from '../balanceSheet/ledgerUtils';
-import { findMatchingLineItem } from './lineItemCatalogMatching';
-import { confirmDelete } from '@/utils/confirmDelete';
-import { generateBillCode } from './billCode';
-import { loadBillFormatDefaults } from '../optimizeBill/optimizeBillStorage';
-import { useBranchAuth } from '@/hooks/useBranchAuth';
-import { useSaveDailyTotal } from '@/hooks/useQueries';
-import { aggregateItemQuantities } from '../balanceSheet/ledgerUtils';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useBranchAuth } from "@/hooks/useBranchAuth";
+import { useSaveDailyTotal } from "@/hooks/useQueries";
+import { confirmDelete } from "@/utils/confirmDelete";
+import { Calculator, Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
+import { useState } from "react";
+import {
+  appendLedgerEntry,
+  getDayKey,
+  updateDailySummary,
+} from "../balanceSheet/ledgerUtils";
+import { aggregateItemQuantities } from "../balanceSheet/ledgerUtils";
+import { loadBillFormatDefaults } from "../optimizeBill/optimizeBillStorage";
+import { PredefinedItemCatalog } from "./PredefinedItemCatalog";
+import { PrintBill } from "./PrintBill";
+import { generateBillCode } from "./billCode";
+import { type CatalogItem, PREDEFINED_CATALOG } from "./catalog";
+import { formatCurrency } from "./format";
+import { findMatchingLineItem } from "./lineItemCatalogMatching";
+import { saveBill } from "./savedBills";
+import type { CalculatorState, LineItem } from "./types";
+import {
+  calculateBreakdown,
+  calculateLineTotal,
+  clampNonNegative,
+  safeParseNumber,
+} from "./utils";
 
 function TotalAmountCalculatorPage() {
   const { branchUser } = useBranchAuth();
-  const saveDailyTotalMutation = useSaveDailyTotal(branchUser || '');
-  
+  const saveDailyTotalMutation = useSaveDailyTotal(branchUser || "");
+
   const [state, setState] = useState<CalculatorState>({
-    lineItems: [{ id: crypto.randomUUID(), label: '', quantity: 0, unitPrice: 0 }],
+    lineItems: [
+      { id: crypto.randomUUID(), label: "", quantity: 0, unitPrice: 0 },
+    ],
     taxRate: 0,
-    discountType: 'percentage',
+    discountType: "percentage",
     discountValue: 0,
   });
 
   // Manage catalog items in state for runtime add/delete/toggle
-  const [catalogItems, setCatalogItems] = useState<CatalogItem[]>(PREDEFINED_CATALOG);
+  const [catalogItems, setCatalogItems] =
+    useState<CatalogItem[]>(PREDEFINED_CATALOG);
 
   const breakdown = calculateBreakdown(
     state.lineItems,
     state.taxRate,
     state.discountType,
-    state.discountValue
+    state.discountValue,
   );
 
   const addLineItem = () => {
     setState((prev) => ({
       ...prev,
-      lineItems: [...prev.lineItems, { id: crypto.randomUUID(), label: '', quantity: 0, unitPrice: 0 }],
+      lineItems: [
+        ...prev.lineItems,
+        { id: crypto.randomUUID(), label: "", quantity: 0, unitPrice: 0 },
+      ],
     }));
   };
 
@@ -56,11 +84,14 @@ function TotalAmountCalculatorPage() {
     if (catalogItem.outOfStock) {
       return;
     }
-    
+
     setState((prev) => {
       // Check if a matching line item already exists
-      const matchingItem = findMatchingLineItem(catalogItem.name, prev.lineItems);
-      
+      const matchingItem = findMatchingLineItem(
+        catalogItem.name,
+        prev.lineItems,
+      );
+
       if (matchingItem) {
         // Increment quantity of existing line item
         return {
@@ -68,40 +99,43 @@ function TotalAmountCalculatorPage() {
           lineItems: prev.lineItems.map((item) =>
             item.id === matchingItem.id
               ? { ...item, quantity: item.quantity + 1 }
-              : item
+              : item,
           ),
         };
-      } else {
-        // Add new line item with quantity = 1
-        return {
-          ...prev,
-          lineItems: [
-            ...prev.lineItems,
-            {
-              id: crypto.randomUUID(),
-              label: catalogItem.name,
-              quantity: 1,
-              unitPrice: catalogItem.unitPrice,
-            },
-          ],
-        };
       }
+      // Add new line item with quantity = 1
+      return {
+        ...prev,
+        lineItems: [
+          ...prev.lineItems,
+          {
+            id: crypto.randomUUID(),
+            label: catalogItem.name,
+            quantity: 1,
+            unitPrice: catalogItem.unitPrice,
+          },
+        ],
+      };
     });
   };
 
   const removeLineItem = (id: string) => {
     // Show confirmation dialog before deleting
-    if (!confirmDelete('item')) {
+    if (!confirmDelete("item")) {
       return;
     }
-    
+
     setState((prev) => ({
       ...prev,
       lineItems: prev.lineItems.filter((item) => item.id !== id),
     }));
   };
 
-  const updateLineItem = (id: string, field: keyof LineItem, value: string | number) => {
+  const updateLineItem = (
+    id: string,
+    field: keyof LineItem,
+    value: string | number,
+  ) => {
     setState((prev) => ({
       ...prev,
       lineItems: prev.lineItems.map((item) =>
@@ -109,27 +143,29 @@ function TotalAmountCalculatorPage() {
           ? {
               ...item,
               [field]:
-                field === 'quantity' || field === 'unitPrice'
+                field === "quantity" || field === "unitPrice"
                   ? clampNonNegative(safeParseNumber(value))
                   : value,
             }
-          : item
+          : item,
       ),
     }));
   };
 
   const resetCalculator = () => {
     setState({
-      lineItems: [{ id: crypto.randomUUID(), label: '', quantity: 0, unitPrice: 0 }],
+      lineItems: [
+        { id: crypto.randomUUID(), label: "", quantity: 0, unitPrice: 0 },
+      ],
       taxRate: 0,
-      discountType: 'percentage',
+      discountType: "percentage",
       discountValue: 0,
     });
   };
 
   const handlePrintBill = async () => {
     if (!branchUser) {
-      alert('Please log in to print bills.');
+      alert("Please log in to print bills.");
       return;
     }
 
@@ -141,19 +177,22 @@ function TotalAmountCalculatorPage() {
       const billFormatDefaults = loadBillFormatDefaults(branchUser);
 
       // Save bill to branch-scoped localStorage with bill code and format snapshot
-      const billId = saveBill({
-        billCode,
-        lineItems: state.lineItems.map(({ label, quantity, unitPrice }) => ({
-          label,
-          quantity,
-          unitPrice,
-        })),
-        taxRate: state.taxRate,
-        discountType: state.discountType,
-        discountValue: state.discountValue,
-        breakdown,
-        billFormatSnapshot: billFormatDefaults,
-      }, branchUser);
+      const billId = saveBill(
+        {
+          billCode,
+          lineItems: state.lineItems.map(({ label, quantity, unitPrice }) => ({
+            label,
+            quantity,
+            unitPrice,
+          })),
+          taxRate: state.taxRate,
+          discountType: state.discountType,
+          discountValue: state.discountValue,
+          breakdown,
+          billFormatSnapshot: billFormatDefaults,
+        },
+        branchUser,
+      );
 
       // Record in branch-scoped Daily Totals ledger
       appendLedgerEntry(billId, breakdown.finalTotal, branchUser);
@@ -165,13 +204,17 @@ function TotalAmountCalculatorPage() {
       // Save to backend (non-blocking) with branch parameter
       try {
         // Compute per-item quantities from line items
-        const itemQuantities = aggregateItemQuantities([{ lineItems: state.lineItems }]);
-        const productQuantities: Array<[string, bigint]> = Object.entries(itemQuantities).map(
-          ([label, qty]) => [label, BigInt(qty)]
-        );
+        const itemQuantities = aggregateItemQuantities([
+          { lineItems: state.lineItems },
+        ]);
+        const productQuantities: Array<[string, bigint]> = Object.entries(
+          itemQuantities,
+        ).map(([label, qty]) => [label, BigInt(qty)]);
 
         // Convert total revenue to bigint (multiply by 100 to preserve 2 decimal places)
-        const totalRevenueBigInt = BigInt(Math.round(breakdown.finalTotal * 100));
+        const totalRevenueBigInt = BigInt(
+          Math.round(breakdown.finalTotal * 100),
+        );
 
         await saveDailyTotalMutation.mutateAsync({
           date: todayKey,
@@ -180,18 +223,18 @@ function TotalAmountCalculatorPage() {
         });
       } catch (backendError) {
         // Log error but don't interrupt the print flow
-        console.error('Failed to save daily total to backend:', backendError);
+        console.error("Failed to save daily total to backend:", backendError);
       }
 
       // Trigger browser print dialog
       window.print();
     } catch (error) {
-      console.error('Error printing bill:', error);
-      alert('Failed to save bill. Please try again.');
+      console.error("Error printing bill:", error);
+      alert("Failed to save bill. Please try again.");
     }
   };
 
-  const handleAddNewCatalogItem = (newItem: Omit<CatalogItem, 'id'>) => {
+  const handleAddNewCatalogItem = (newItem: Omit<CatalogItem, "id">) => {
     const catalogItem: CatalogItem = {
       ...newItem,
       id: crypto.randomUUID(),
@@ -201,34 +244,34 @@ function TotalAmountCalculatorPage() {
 
   const handleDeleteCatalogItem = (id: string) => {
     // Show confirmation dialog before deleting catalog item
-    if (!confirmDelete('catalog item')) {
+    if (!confirmDelete("catalog item")) {
       return;
     }
-    
+
     setCatalogItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const handleToggleOutOfStock = (id: string) => {
     setCatalogItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, outOfStock: !item.outOfStock } : item
-      )
+        item.id === id ? { ...item, outOfStock: !item.outOfStock } : item,
+      ),
     );
   };
 
   const handleUpdateItemImage = (id: string, imageDataUrl: string) => {
     setCatalogItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, image: imageDataUrl } : item
-      )
+        item.id === id ? { ...item, image: imageDataUrl } : item,
+      ),
     );
   };
 
   const handleRemoveItemImage = (id: string) => {
     setCatalogItems((prev) =>
       prev.map((item) =>
-        item.id === id ? { ...item, image: undefined } : item
-      )
+        item.id === id ? { ...item, image: undefined } : item,
+      ),
     );
   };
 
@@ -259,7 +302,9 @@ function TotalAmountCalculatorPage() {
               <Card>
                 <CardHeader>
                   <CardTitle>Line Items</CardTitle>
-                  <CardDescription>Add items with quantity and unit price</CardDescription>
+                  <CardDescription>
+                    Add items with quantity and unit price
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="overflow-x-auto">
@@ -269,8 +314,10 @@ function TotalAmountCalculatorPage() {
                           <TableHead className="w-[40%]">Item</TableHead>
                           <TableHead className="w-[20%]">Quantity</TableHead>
                           <TableHead className="w-[20%]">Unit Price</TableHead>
-                          <TableHead className="w-[15%] text-right">Total</TableHead>
-                          <TableHead className="w-[5%]"></TableHead>
+                          <TableHead className="w-[15%] text-right">
+                            Total
+                          </TableHead>
+                          <TableHead className="w-[5%]" />
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -281,7 +328,13 @@ function TotalAmountCalculatorPage() {
                                 type="text"
                                 placeholder="Item name"
                                 value={item.label}
-                                onChange={(e) => updateLineItem(item.id, 'label', e.target.value)}
+                                onChange={(e) =>
+                                  updateLineItem(
+                                    item.id,
+                                    "label",
+                                    e.target.value,
+                                  )
+                                }
                               />
                             </TableCell>
                             <TableCell>
@@ -290,8 +343,14 @@ function TotalAmountCalculatorPage() {
                                 min="0"
                                 step="1"
                                 placeholder="0"
-                                value={item.quantity || ''}
-                                onChange={(e) => updateLineItem(item.id, 'quantity', e.target.value)}
+                                value={item.quantity || ""}
+                                onChange={(e) =>
+                                  updateLineItem(
+                                    item.id,
+                                    "quantity",
+                                    e.target.value,
+                                  )
+                                }
                               />
                             </TableCell>
                             <TableCell>
@@ -300,12 +359,23 @@ function TotalAmountCalculatorPage() {
                                 min="0"
                                 step="0.01"
                                 placeholder="0.00"
-                                value={item.unitPrice || ''}
-                                onChange={(e) => updateLineItem(item.id, 'unitPrice', e.target.value)}
+                                value={item.unitPrice || ""}
+                                onChange={(e) =>
+                                  updateLineItem(
+                                    item.id,
+                                    "unitPrice",
+                                    e.target.value,
+                                  )
+                                }
                               />
                             </TableCell>
                             <TableCell className="text-right font-medium">
-                              {formatCurrency(calculateLineTotal(item.quantity, item.unitPrice))}
+                              {formatCurrency(
+                                calculateLineTotal(
+                                  item.quantity,
+                                  item.unitPrice,
+                                ),
+                              )}
                             </TableCell>
                             <TableCell>
                               <Button
@@ -323,7 +393,11 @@ function TotalAmountCalculatorPage() {
                       </TableBody>
                     </Table>
                   </div>
-                  <Button onClick={addLineItem} variant="outline" className="mt-4 w-full">
+                  <Button
+                    onClick={addLineItem}
+                    variant="outline"
+                    className="mt-4 w-full"
+                  >
                     <Plus className="mr-2 h-4 w-4" />
                     Add Line Item
                   </Button>
@@ -346,11 +420,13 @@ function TotalAmountCalculatorPage() {
                       min="0"
                       step="0.01"
                       placeholder="0"
-                      value={state.taxRate || ''}
+                      value={state.taxRate || ""}
                       onChange={(e) =>
                         setState((prev) => ({
                           ...prev,
-                          taxRate: clampNonNegative(safeParseNumber(e.target.value)),
+                          taxRate: clampNonNegative(
+                            safeParseNumber(e.target.value),
+                          ),
                         }))
                       }
                     />
@@ -363,7 +439,7 @@ function TotalAmountCalculatorPage() {
                       onValueChange={(value) =>
                         setState((prev) => ({
                           ...prev,
-                          discountType: value as 'percentage' | 'fixed',
+                          discountType: value as "percentage" | "fixed",
                         }))
                       }
                     >
@@ -376,7 +452,8 @@ function TotalAmountCalculatorPage() {
 
                   <div>
                     <Label htmlFor="discountValue">
-                      Discount {state.discountType === 'percentage' ? '(%)' : '(₹)'}
+                      Discount{" "}
+                      {state.discountType === "percentage" ? "(%)" : "(₹)"}
                     </Label>
                     <Input
                       id="discountValue"
@@ -384,11 +461,13 @@ function TotalAmountCalculatorPage() {
                       min="0"
                       step="0.01"
                       placeholder="0"
-                      value={state.discountValue || ''}
+                      value={state.discountValue || ""}
                       onChange={(e) =>
                         setState((prev) => ({
                           ...prev,
-                          discountValue: clampNonNegative(safeParseNumber(e.target.value)),
+                          discountValue: clampNonNegative(
+                            safeParseNumber(e.target.value),
+                          ),
                         }))
                       }
                     />
@@ -399,15 +478,21 @@ function TotalAmountCalculatorPage() {
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Subtotal:</span>
-                      <span className="font-medium">{formatCurrency(breakdown.subtotal)}</span>
+                      <span className="font-medium">
+                        {formatCurrency(breakdown.subtotal)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Tax:</span>
-                      <span className="font-medium">{formatCurrency(breakdown.taxAmount)}</span>
+                      <span className="font-medium">
+                        {formatCurrency(breakdown.taxAmount)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Discount:</span>
-                      <span className="font-medium">-{formatCurrency(breakdown.discountAmount)}</span>
+                      <span className="font-medium">
+                        -{formatCurrency(breakdown.discountAmount)}
+                      </span>
                     </div>
                     <Separator />
                     <div className="flex justify-between text-lg font-bold">
@@ -417,7 +502,11 @@ function TotalAmountCalculatorPage() {
                   </div>
 
                   <div className="flex gap-2 pt-4">
-                    <Button onClick={resetCalculator} variant="outline" className="flex-1">
+                    <Button
+                      onClick={resetCalculator}
+                      variant="outline"
+                      className="flex-1"
+                    >
                       <RotateCcw className="mr-2 h-4 w-4" />
                       Reset
                     </Button>

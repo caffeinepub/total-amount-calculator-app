@@ -3,7 +3,7 @@
  * @param itemType Optional description of what is being deleted (e.g., "item", "catalog entry")
  * @returns true if user confirms deletion, false otherwise
  */
-export function confirmDelete(itemType: string = 'item'): boolean {
+export function confirmDelete(itemType = "item"): boolean {
   return window.confirm(`Are you sure you want to delete this ${itemType}?`);
 }
 
@@ -13,8 +13,8 @@ export function confirmDelete(itemType: string = 'item'): boolean {
  */
 export function confirmClearAll(): boolean {
   return window.confirm(
-    'Are you sure you want to clear all daily totals?\n\n' +
-    'This will permanently delete all revenue and item quantity data for all days. ' +
-    'This action cannot be undone.'
+    "Are you sure you want to clear all daily totals?\n\n" +
+      "This will permanently delete all revenue and item quantity data for all days. " +
+      "This action cannot be undone.",
   );
 }

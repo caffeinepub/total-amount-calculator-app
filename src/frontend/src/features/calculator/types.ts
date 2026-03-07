@@ -8,7 +8,7 @@ export interface LineItem {
 export interface CalculatorState {
   lineItems: LineItem[];
   taxRate: number;
-  discountType: 'percentage' | 'fixed';
+  discountType: "percentage" | "fixed";
   discountValue: number;
 }
 

@@ -1,33 +1,33 @@
 // Import II provider shim before any authentication hooks
-import './utils/iiProviderShim';
+import "./utils/iiProviderShim";
 
-import { Calculator, TrendingUp, Settings } from 'lucide-react';
-import TotalAmountCalculatorPage from './features/calculator/TotalAmountCalculatorPage';
-import { BalanceSheetView } from './features/balanceSheet/BalanceSheetView';
-import { PrintViewPage } from './features/print/PrintViewPage';
-import { GuidanceNoticeBar } from './components/GuidanceNoticeBar';
-import { OptimizeBillPage } from './features/optimizeBill/OptimizeBillPage';
-import { useEffect, useState } from 'react';
-import { Button } from './components/ui/button';
-import LoginButton from './components/auth/LoginButton';
-import { useSyncBillPrintLocation } from './features/optimizeBill/useSyncBillPrintLocation';
-import { useInternetIdentity } from './hooks/useInternetIdentity';
-import { useBranchAuth, BranchAuthProvider } from './hooks/useBranchAuth';
-import { AuthGatePage } from './components/auth/AuthGatePage';
-import { BranchSessionControl } from './components/auth/BranchSessionControl';
-import { AppErrorBoundary } from './components/AppErrorBoundary';
-import { useStartupFailureHandlers } from './hooks/useStartupFailureHandlers';
+import { Calculator, Settings, TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
+import { GuidanceNoticeBar } from "./components/GuidanceNoticeBar";
+import { AuthGatePage } from "./components/auth/AuthGatePage";
+import { BranchSessionControl } from "./components/auth/BranchSessionControl";
+import LoginButton from "./components/auth/LoginButton";
+import { Button } from "./components/ui/button";
+import { BalanceSheetView } from "./features/balanceSheet/BalanceSheetView";
+import TotalAmountCalculatorPage from "./features/calculator/TotalAmountCalculatorPage";
+import { OptimizeBillPage } from "./features/optimizeBill/OptimizeBillPage";
+import { useSyncBillPrintLocation } from "./features/optimizeBill/useSyncBillPrintLocation";
+import { PrintViewPage } from "./features/print/PrintViewPage";
+import { BranchAuthProvider, useBranchAuth } from "./hooks/useBranchAuth";
+import { useInternetIdentity } from "./hooks/useInternetIdentity";
+import { useStartupFailureHandlers } from "./hooks/useStartupFailureHandlers";
 
-type ViewMode = 'calculator' | 'dailyTotals' | 'optimizeBill';
+type ViewMode = "calculator" | "dailyTotals" | "optimizeBill";
 
 function AppContent() {
   const [isPrintView, setIsPrintView] = useState(false);
-  const [viewMode, setViewMode] = useState<ViewMode>('calculator');
-  const { identity } = useInternetIdentity();
+  const [viewMode, setViewMode] = useState<ViewMode>("calculator");
+  useInternetIdentity();
   const { isAuthenticated: branchAuthenticated } = useBranchAuth();
 
   // Capture startup failures
-  const startupError = useStartupFailureHandlers();
+  const _startupError = useStartupFailureHandlers();
 
   // Sync bill print location from backend when authenticated
   useSyncBillPrintLocation();
@@ -35,7 +35,7 @@ function AppContent() {
   useEffect(() => {
     // Check if this is a print view request
     const params = new URLSearchParams(window.location.search);
-    setIsPrintView(params.get('print') === 'true');
+    setIsPrintView(params.get("print") === "true");
   }, []);
 
   // Render print view without header/footer/guidance
@@ -64,32 +64,36 @@ function AppContent() {
                 <Calculator className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight">Varshini Classic Cuisine</h1>
-                <p className="text-sm text-muted-foreground">Restaurant Management System</p>
+                <h1 className="text-2xl font-bold tracking-tight">
+                  Varshini Classic Cuisine
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  Restaurant Management System
+                </p>
               </div>
             </div>
-            
+
             {/* View Toggle Buttons and Login */}
             <div className="flex gap-2 items-center">
               <Button
-                variant={viewMode === 'calculator' ? 'default' : 'outline'}
-                onClick={() => setViewMode('calculator')}
+                variant={viewMode === "calculator" ? "default" : "outline"}
+                onClick={() => setViewMode("calculator")}
                 className="gap-2"
               >
                 <Calculator className="h-4 w-4" />
                 Calculator
               </Button>
               <Button
-                variant={viewMode === 'dailyTotals' ? 'default' : 'outline'}
-                onClick={() => setViewMode('dailyTotals')}
+                variant={viewMode === "dailyTotals" ? "default" : "outline"}
+                onClick={() => setViewMode("dailyTotals")}
                 className="gap-2"
               >
                 <TrendingUp className="h-4 w-4" />
                 Daily Totals
               </Button>
               <Button
-                variant={viewMode === 'optimizeBill' ? 'default' : 'outline'}
-                onClick={() => setViewMode('optimizeBill')}
+                variant={viewMode === "optimizeBill" ? "default" : "outline"}
+                onClick={() => setViewMode("optimizeBill")}
                 className="gap-2"
               >
                 <Settings className="h-4 w-4" />
@@ -106,9 +110,9 @@ function AppContent() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {viewMode === 'calculator' ? (
+        {viewMode === "calculator" ? (
           <TotalAmountCalculatorPage />
-        ) : viewMode === 'dailyTotals' ? (
+        ) : viewMode === "dailyTotals" ? (
           <BalanceSheetView />
         ) : (
           <OptimizeBillPage />
@@ -119,10 +123,12 @@ function AppContent() {
       <footer className="no-print border-t mt-16 py-8 bg-card/30">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
           <p>
-            © {new Date().getFullYear()} Built with ❤️ using{' '}
+            © {new Date().getFullYear()} Built with ❤️ using{" "}
             <a
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(
-                typeof window !== 'undefined' ? window.location.hostname : 'varshini-classic-cuisine'
+                typeof window !== "undefined"
+                  ? window.location.hostname
+                  : "varshini-classic-cuisine",
               )}`}
               target="_blank"
               rel="noopener noreferrer"

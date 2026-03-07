@@ -1,5 +1,5 @@
-import { ReceiptStyleId } from '../optimizeBill/receiptStyles';
-import { getSavedBillsKey, getActiveBranch } from '@/utils/branchScopedStorage';
+import { getActiveBranch, getSavedBillsKey } from "@/utils/branchScopedStorage";
+import type { ReceiptStyleId } from "../optimizeBill/receiptStyles";
 
 export interface BillFormatSnapshot {
   receiptStyle: ReceiptStyleId;
@@ -17,7 +17,7 @@ export interface SavedBillRecord {
     unitPrice: number;
   }>;
   taxRate: number;
-  discountType: 'percentage' | 'fixed';
+  discountType: "percentage" | "fixed";
   discountValue: number;
   breakdown: {
     subtotal: number;
@@ -28,10 +28,13 @@ export interface SavedBillRecord {
   billFormatSnapshot: BillFormatSnapshot;
 }
 
-export function saveBill(bill: Omit<SavedBillRecord, 'id' | 'timestamp'>, branch?: string): string {
+export function saveBill(
+  bill: Omit<SavedBillRecord, "id" | "timestamp">,
+  branch?: string,
+): string {
   const billId = crypto.randomUUID();
   const timestamp = Date.now();
-  
+
   const savedBill: SavedBillRecord = {
     id: billId,
     timestamp,
@@ -41,29 +44,32 @@ export function saveBill(bill: Omit<SavedBillRecord, 'id' | 'timestamp'>, branch
   try {
     // Get branch-scoped storage key
     const storageKey = getSavedBillsKey(branch);
-    
+
     // Get existing bills
     const existingBills = getAllBills(branch);
-    
+
     // Add new bill
     existingBills.push(savedBill);
-    
+
     // Save back to localStorage
     localStorage.setItem(storageKey, JSON.stringify(existingBills));
-    
+
     return billId;
   } catch (error) {
-    console.error('Error saving bill:', error);
-    throw new Error('Failed to save bill');
+    console.error("Error saving bill:", error);
+    throw new Error("Failed to save bill");
   }
 }
 
-export function getBillById(billId: string, branch?: string): SavedBillRecord | null {
+export function getBillById(
+  billId: string,
+  branch?: string,
+): SavedBillRecord | null {
   try {
     const bills = getAllBills(branch);
-    return bills.find(bill => bill.id === billId) || null;
+    return bills.find((bill) => bill.id === billId) || null;
   } catch (error) {
-    console.error('Error loading bill:', error);
+    console.error("Error loading bill:", error);
     return null;
   }
 }
@@ -75,7 +81,7 @@ export function getAllBills(branch?: string): SavedBillRecord[] {
     if (!stored) return [];
     return JSON.parse(stored);
   } catch (error) {
-    console.error('Error loading bills:', error);
+    console.error("Error loading bills:", error);
     return [];
   }
 }
@@ -85,6 +91,6 @@ export function clearAllBills(branch?: string): void {
     const storageKey = getSavedBillsKey(branch);
     localStorage.removeItem(storageKey);
   } catch (error) {
-    console.error('Error clearing bills:', error);
+    console.error("Error clearing bills:", error);
   }
 }

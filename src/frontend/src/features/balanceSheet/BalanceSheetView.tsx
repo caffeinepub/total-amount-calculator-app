@@ -1,54 +1,88 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { formatCurrency } from '../calculator/format';
-import { formatDayKey, clearDailyTotalsCache } from './ledgerUtils';
-import { useDailyTotal } from './hooks/useDailyTotal';
-import { useClearAllDailyTotals } from '@/hooks/useQueries';
-import { useBranchAuth } from '@/hooks/useBranchAuth';
-import { confirmClearAll } from '@/utils/confirmDelete';
-import { Calendar, Package, Trash2, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { useState } from 'react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useBranchAuth } from "@/hooks/useBranchAuth";
+import { useClearAllDailyTotals } from "@/hooks/useQueries";
+import { confirmClearAll } from "@/utils/confirmDelete";
+import {
+  AlertCircle,
+  Calendar,
+  CheckCircle2,
+  Package,
+  Trash2,
+} from "lucide-react";
+import { useState } from "react";
+import { formatCurrency } from "../calculator/format";
+import { useDailyTotal } from "./hooks/useDailyTotal";
+import { clearDailyTotalsCache, formatDayKey } from "./ledgerUtils";
 
 export function BalanceSheetView() {
-  const { availableDays, selectedDay, setSelectedDay, dayTotal, itemQuantities, isLoading } = useDailyTotal();
+  const {
+    availableDays,
+    selectedDay,
+    setSelectedDay,
+    dayTotal,
+    itemQuantities,
+    isLoading,
+  } = useDailyTotal();
   const clearAllMutation = useClearAllDailyTotals();
   const { branchUser } = useBranchAuth();
-  const [clearStatus, setClearStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [clearStatus, setClearStatus] = useState<"idle" | "success" | "error">(
+    "idle",
+  );
 
   const handleClearAll = async () => {
     if (!confirmClearAll()) {
       return;
     }
 
-    setClearStatus('idle');
-    
+    setClearStatus("idle");
+
     try {
       await clearAllMutation.mutateAsync();
-      
+
       // Clear localStorage fallback caches for the current branch
       if (branchUser) {
         clearDailyTotalsCache(branchUser);
       }
-      
+
       // Reset selected day
       setSelectedDay(null);
-      
-      setClearStatus('success');
-      
+
+      setClearStatus("success");
+
       // Auto-hide success message after 3 seconds
       setTimeout(() => {
-        setClearStatus('idle');
+        setClearStatus("idle");
       }, 3000);
     } catch (error: any) {
-      console.error('Error clearing daily totals:', error);
-      setClearStatus('error');
-      
+      console.error("Error clearing daily totals:", error);
+      setClearStatus("error");
+
       // Auto-hide error message after 5 seconds
       setTimeout(() => {
-        setClearStatus('idle');
+        setClearStatus("idle");
       }, 5000);
     }
   };
@@ -94,7 +128,7 @@ export function BalanceSheetView() {
               )}
             </Button>
 
-            {clearStatus === 'success' && (
+            {clearStatus === "success" && (
               <Alert className="border-green-500 bg-green-50 dark:bg-green-950">
                 <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
                 <AlertDescription className="text-green-800 dark:text-green-200">
@@ -103,11 +137,14 @@ export function BalanceSheetView() {
               </Alert>
             )}
 
-            {clearStatus === 'error' && (
+            {clearStatus === "error" && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Failed to clear daily totals. {clearAllMutation.error instanceof Error ? clearAllMutation.error.message : 'You may not have permission to perform this action.'}
+                  Failed to clear daily totals.{" "}
+                  {clearAllMutation.error instanceof Error
+                    ? clearAllMutation.error.message
+                    : "You may not have permission to perform this action."}
                 </AlertDescription>
               </Alert>
             )}
@@ -129,10 +166,14 @@ export function BalanceSheetView() {
             <div className="text-sm text-muted-foreground">Loading days...</div>
           ) : availableDays.length === 0 ? (
             <div className="text-sm text-muted-foreground">
-              No data available yet. Print your first bill to start tracking daily totals.
+              No data available yet. Print your first bill to start tracking
+              daily totals.
             </div>
           ) : (
-            <Select value={selectedDay || undefined} onValueChange={setSelectedDay}>
+            <Select
+              value={selectedDay || undefined}
+              onValueChange={setSelectedDay}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a day" />
               </SelectTrigger>
@@ -156,7 +197,9 @@ export function BalanceSheetView() {
             <CardDescription>{formatDayKey(selectedDay)}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-primary">{formatCurrency(dayTotal)}</div>
+            <div className="text-4xl font-bold text-primary">
+              {formatCurrency(dayTotal)}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -169,7 +212,9 @@ export function BalanceSheetView() {
               <Package className="h-5 w-5" />
               Item Quantities
             </CardTitle>
-            <CardDescription>Total quantities sold on {formatDayKey(selectedDay)}</CardDescription>
+            <CardDescription>
+              Total quantities sold on {formatDayKey(selectedDay)}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>

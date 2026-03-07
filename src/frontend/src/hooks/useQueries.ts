@@ -1,14 +1,14 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useActor } from './useActor';
-import { UserProfile, DailyTotalView } from '../backend';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { DailyTotalView, UserProfile } from "../backend";
+import { useActor } from "./useActor";
 
 export function useGetCallerUserProfile() {
   const { actor, isFetching: actorFetching } = useActor();
 
   const query = useQuery<UserProfile | null>({
-    queryKey: ['currentUserProfile'],
+    queryKey: ["currentUserProfile"],
     queryFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.getCallerUserProfile();
     },
     enabled: !!actor && !actorFetching,
@@ -29,11 +29,11 @@ export function useSaveCallerUserProfile() {
 
   return useMutation({
     mutationFn: async (profile: UserProfile) => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.saveCallerUserProfile(profile);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUserProfile'] });
+      queryClient.invalidateQueries({ queryKey: ["currentUserProfile"] });
     },
   });
 }
@@ -52,12 +52,17 @@ export function useSaveDailyTotal(branch: string) {
       totalRevenue: bigint;
       productQuantities: Array<[string, bigint]>;
     }) => {
-      if (!actor) throw new Error('Actor not available');
-      return actor.saveDailyTotal(branch, date, totalRevenue, productQuantities);
+      if (!actor) throw new Error("Actor not available");
+      return actor.saveDailyTotal(
+        branch,
+        date,
+        totalRevenue,
+        productQuantities,
+      );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['balanceSheet', branch] });
-      queryClient.invalidateQueries({ queryKey: ['dailyTotal', branch] });
+      queryClient.invalidateQueries({ queryKey: ["balanceSheet", branch] });
+      queryClient.invalidateQueries({ queryKey: ["dailyTotal", branch] });
     },
   });
 }
@@ -66,7 +71,7 @@ export function useGetDailyTotal(branch: string, date: string | null) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<DailyTotalView | null>({
-    queryKey: ['dailyTotal', branch, date],
+    queryKey: ["dailyTotal", branch, date],
     queryFn: async () => {
       if (!actor || !date) return null;
       return actor.getDailyTotal(branch, date);
@@ -80,7 +85,7 @@ export function useGetBalanceSheet(branch: string) {
   const { actor, isFetching: actorFetching } = useActor();
 
   return useQuery<Array<[string, DailyTotalView]>>({
-    queryKey: ['balanceSheet', branch],
+    queryKey: ["balanceSheet", branch],
     queryFn: async () => {
       if (!actor) return [];
       return actor.getBalanceSheet(branch);
@@ -96,12 +101,12 @@ export function useClearAllDailyTotals() {
 
   return useMutation({
     mutationFn: async () => {
-      if (!actor) throw new Error('Actor not available');
+      if (!actor) throw new Error("Actor not available");
       return actor.clearAllDailyTotals();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['balanceSheet'] });
-      queryClient.invalidateQueries({ queryKey: ['dailyTotal'] });
+      queryClient.invalidateQueries({ queryKey: ["balanceSheet"] });
+      queryClient.invalidateQueries({ queryKey: ["dailyTotal"] });
     },
   });
 }
