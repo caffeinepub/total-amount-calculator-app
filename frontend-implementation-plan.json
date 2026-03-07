@@ -1,0 +1,25 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Remove bill section from balance sheet display",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Remove the bill-related section from the balance sheet view while preserving all other daily totals and item quantity displays",
+      "acceptanceCriteria": [
+        "The bill section is no longer visible in the balance sheet view",
+        "Daily revenue totals continue to display correctly",
+        "Item quantities remain visible and functional",
+        "Day selection functionality remains unchanged",
+        "Clear-all functionality continues to work for remaining data"
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/balanceSheet/BalanceSheetView.tsx",
+          "operation": "modify",
+          "description": "Remove the bill-related section from the balance sheet display. Locate and delete the UI section that renders saved bills (likely a list or table showing individual bills with details). Keep the daily revenue totals card/section, the item quantities display, the day selection dropdown, and the clear-all button fully intact and functional. Ensure the remaining layout adapts properly without the removed section."
+        }
+      ]
+    }
+  ]
+}

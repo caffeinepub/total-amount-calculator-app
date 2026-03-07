@@ -1,0 +1,40 @@
+{
+  "kind": "build_request",
+  "title": "Remove bill section from balance sheet display",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Remove the bill-related section from the balance sheet view while preserving all other daily totals and item quantity displays",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-latest"
+        ],
+        "quotes": [
+          "delete that bill part in the sheet bill and leave the rest of the sheet"
+        ]
+      },
+      "acceptanceCriteria": [
+        "The bill section is no longer visible in the balance sheet view",
+        "Daily revenue totals continue to display correctly",
+        "Item quantities remain visible and functional",
+        "Day selection functionality remains unchanged",
+        "Clear-all functionality continues to work for remaining data"
+      ]
+    }
+  ],
+  "constraints": [
+    "Do not modify backend data structures or storage",
+    "Preserve all existing balance sheet functionality except the bill display section"
+  ],
+  "nonGoals": [
+    "Modifying the calculator or print bill views",
+    "Changing how bills are saved or stored",
+    "Altering the daily totals calculation logic"
+  ],
+  "imageRequirements": {
+    "required": [],
+    "edits": []
+  }
+}
