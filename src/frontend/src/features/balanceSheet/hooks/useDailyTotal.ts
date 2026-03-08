@@ -1,5 +1,4 @@
 import { useBranchAuth } from "@/hooks/useBranchAuth";
-import { useGetBalanceSheet } from "@/hooks/useQueries";
 import { isDailyTotalsKeyForBranch } from "@/utils/branchScopedStorage";
 import { useEffect, useState } from "react";
 import { getAllBills } from "../../calculator/savedBills";
@@ -8,6 +7,25 @@ import {
   getAvailableDays,
   getDailySummary,
 } from "../ledgerUtils";
+
+function loadDaysFromStorage(branch: string): string[] {
+  return getAvailableDays(branch);
+}
+
+function loadDayData(
+  branch: string,
+  day: string,
+): { total: number; quantities: Record<string, number> } {
+  const summary = getDailySummary(day, branch);
+  const allBills = getAllBills(branch);
+  const billsForDay = allBills.filter((bill) => {
+    const billDate = new Date(bill.timestamp);
+    const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, "0")}-${String(billDate.getDate()).padStart(2, "0")}`;
+    return billDayKey === day;
+  });
+  const quantities = aggregateItemQuantities(billsForDay);
+  return { total: summary.totalRevenue, quantities };
+}
 
 export function useDailyTotal() {
   const { branchUser } = useBranchAuth();
@@ -18,13 +36,6 @@ export function useDailyTotal() {
     {},
   );
 
-  // Fetch backend balance sheet with branch parameter
-  const {
-    data: backendBalanceSheet,
-    isLoading: backendLoading,
-    isError: backendError,
-  } = useGetBalanceSheet(branchUser || "");
-
   // Reset state when branch changes
   // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally exclude setters
   useEffect(() => {
@@ -34,7 +45,8 @@ export function useDailyTotal() {
     setItemQuantities({});
   }, [branchUser]);
 
-  // Load available days and selected day
+  // Load available days when branch is set
+  // biome-ignore lint/correctness/useExhaustiveDependencies: selectedDay intentionally excluded to avoid loop
   useEffect(() => {
     if (!branchUser) {
       setAvailableDays([]);
@@ -42,32 +54,15 @@ export function useDailyTotal() {
       return;
     }
 
-    let days: string[] = [];
-
-    // Prefer backend data if available
-    if (
-      backendBalanceSheet &&
-      backendBalanceSheet.length > 0 &&
-      !backendError
-    ) {
-      days = backendBalanceSheet
-        .map(([date]) => date)
-        .sort()
-        .reverse();
-    } else {
-      // Fallback to localStorage
-      days = getAvailableDays(branchUser);
-    }
-
+    const days = loadDaysFromStorage(branchUser);
     setAvailableDays(days);
 
-    // Auto-select the most recent day if none selected
     if (days.length > 0 && !selectedDay) {
       setSelectedDay(days[0]);
     } else if (days.length === 0) {
       setSelectedDay(null);
     }
-  }, [branchUser, backendBalanceSheet, backendError, selectedDay]);
+  }, [branchUser]);
 
   // Load day total and item quantities for selected day
   useEffect(() => {
@@ -77,72 +72,24 @@ export function useDailyTotal() {
       return;
     }
 
-    // Try to get data from backend first
-    if (backendBalanceSheet && !backendError) {
-      const backendEntry = backendBalanceSheet.find(
-        ([date]) => date === selectedDay,
-      );
-      if (backendEntry) {
-        const [, dailyTotalView] = backendEntry;
-
-        // Convert bigint to number (divide by 100 to restore 2 decimal places)
-        const totalRevenue = Number(dailyTotalView.totalRevenue) / 100;
-
-        // Convert productQuantities array to Record
-        const quantities: Record<string, number> = {};
-        for (const [label, qty] of dailyTotalView.productQuantities) {
-          quantities[label] = Number(qty);
-        }
-
-        setDayTotal(totalRevenue);
-        setItemQuantities(quantities);
-        return;
-      }
-    }
-
-    // Fallback to localStorage
-    const summary = getDailySummary(selectedDay, branchUser);
-    setDayTotal(summary.totalRevenue);
-
-    // Load item quantities from saved bills
-    const allBills = getAllBills(branchUser);
-    const billsForDay = allBills.filter((bill) => {
-      const billDate = new Date(bill.timestamp);
-      const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, "0")}-${String(billDate.getDate()).padStart(2, "0")}`;
-      return billDayKey === selectedDay;
-    });
-
-    const quantities = aggregateItemQuantities(billsForDay);
+    const { total, quantities } = loadDayData(branchUser, selectedDay);
+    setDayTotal(total);
     setItemQuantities(quantities);
-  }, [branchUser, selectedDay, backendBalanceSheet, backendError]);
+  }, [branchUser, selectedDay]);
 
   // Listen for storage changes in branch-scoped keys
   useEffect(() => {
     if (!branchUser) return;
 
     const handleStorageChange = (e: StorageEvent) => {
-      // Only respond to daily totals changes for the current branch
-      if (!isDailyTotalsKeyForBranch(e.key, branchUser)) {
-        return;
-      }
+      if (!isDailyTotalsKeyForBranch(e.key, branchUser)) return;
 
-      // Reload available days
-      const days = getAvailableDays(branchUser);
+      const days = loadDaysFromStorage(branchUser);
       setAvailableDays(days);
 
-      // Reload selected day data if it exists
       if (selectedDay) {
-        const summary = getDailySummary(selectedDay, branchUser);
-        setDayTotal(summary.totalRevenue);
-
-        const allBills = getAllBills(branchUser);
-        const billsForDay = allBills.filter((bill) => {
-          const billDate = new Date(bill.timestamp);
-          const billDayKey = `${billDate.getFullYear()}-${String(billDate.getMonth() + 1).padStart(2, "0")}-${String(billDate.getDate()).padStart(2, "0")}`;
-          return billDayKey === selectedDay;
-        });
-
-        const quantities = aggregateItemQuantities(billsForDay);
+        const { total, quantities } = loadDayData(branchUser, selectedDay);
+        setDayTotal(total);
         setItemQuantities(quantities);
       }
     };
@@ -157,6 +104,6 @@ export function useDailyTotal() {
     setSelectedDay,
     dayTotal,
     itemQuantities,
-    isLoading: backendLoading,
+    isLoading: false,
   };
 }

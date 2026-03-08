@@ -6,6 +6,8 @@ export interface BillFormatDefaults {
   receiptStyle: ReceiptStyleId;
   paymentScanDataUrl?: string;
   printLocationAddress?: string;
+  tableNumber?: string;
+  serverName?: string;
 }
 
 export function loadBillFormatDefaults(branch?: string): BillFormatDefaults {
@@ -31,6 +33,8 @@ export function loadBillFormatDefaults(branch?: string): BillFormatDefaults {
       receiptStyle: parsed.receiptStyle || DEFAULT_RECEIPT_STYLE,
       paymentScanDataUrl: parsed.paymentScanDataUrl || undefined,
       printLocationAddress: finalAddress,
+      tableNumber: parsed.tableNumber || undefined,
+      serverName: parsed.serverName || undefined,
     };
   } catch (error) {
     console.error("Error loading bill format defaults:", error);
@@ -65,6 +69,14 @@ export function saveBillFormatDefaults(
 
     if (finalAddress) {
       toSave.printLocationAddress = finalAddress;
+    }
+
+    if (defaults.tableNumber) {
+      toSave.tableNumber = defaults.tableNumber;
+    }
+
+    if (defaults.serverName) {
+      toSave.serverName = defaults.serverName;
     }
 
     localStorage.setItem(storageKey, JSON.stringify(toSave));

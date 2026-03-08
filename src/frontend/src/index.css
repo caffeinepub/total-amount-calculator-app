@@ -85,9 +85,580 @@
   }
 }
 
-/* Print Styles */
+/* ============================================================
+   CLASSIC BILL STYLES — Premium Restaurant Invoice
+   ============================================================ */
+
+/* Bill CSS custom properties */
+.classic-bill-wrapper {
+  --bill-bg: #fdf8f0;
+  --bill-outer-bg: #1a0a00;
+  --bill-maroon: #6b0f0f;
+  --bill-gold: #c9960c;
+  --bill-text: #1c1006;
+  --bill-text-secondary: #4a2c00;
+  --bill-text-muted: #6b4c2a;
+  --bill-border-light: #d4b896;
+  --bill-border-gold: #c9960c;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 1rem 4rem;
+  background: var(--bill-outer-bg);
+  background-image: radial-gradient(
+      ellipse at 20% 10%,
+      rgba(201, 150, 12, 0.08) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 80% 90%,
+      rgba(107, 15, 15, 0.12) 0%,
+      transparent 50%
+    );
+  min-height: calc(100vh - 80px);
+}
+
+.classic-bill {
+  width: 680px;
+  max-width: 100%;
+  background: var(--bill-bg);
+  border: 1px solid #b8a07a;
+  box-shadow: 0 0 0 4px rgba(201, 150, 12, 0.18), 0 8px 40px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  padding: 44px 52px 40px;
+  font-family: "Georgia", "Times New Roman", serif;
+  color: var(--bill-text);
+  position: relative;
+}
+
+/* Decorative corner ornaments */
+.classic-bill::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  border: 1px solid rgba(201, 150, 12, 0.25);
+  pointer-events: none;
+}
+
+.classic-bill.compact {
+  padding: 32px 40px 28px;
+}
+
+/* ── Header ── */
+.classic-bill-header {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+/* Gold rule above restaurant name */
+.classic-bill-header-rule-top {
+  height: 1px;
+  background: var(--bill-gold);
+  margin: 0 0 14px;
+  opacity: 0.7;
+}
+
+/* Double-border frame around restaurant name */
+.classic-bill-name-frame {
+  border: 2px solid var(--bill-maroon);
+  outline: 1px solid var(--bill-maroon);
+  outline-offset: 4px;
+  display: inline-block;
+  padding: 10px 28px;
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.classic-bill-restaurant {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--bill-maroon);
+  line-height: 1.15;
+  margin: 0;
+}
+
+.classic-bill.compact .classic-bill-restaurant {
+  font-size: 21px;
+}
+
+/* Decorative tagline */
+.classic-bill-tagline-subtitle {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--bill-text-muted);
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
+
+/* Gold rule below restaurant name */
+.classic-bill-header-rule-bottom {
+  height: 1px;
+  background: var(--bill-gold);
+  margin: 0 0 14px;
+  opacity: 0.7;
+}
+
+.classic-bill-address {
+  font-size: 12.5px;
+  color: var(--bill-text-secondary);
+  margin-bottom: 0;
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+/* ── Dividers ── */
+.classic-bill-divider-thick {
+  height: 0;
+  border: none;
+  border-top: 2px solid var(--bill-maroon);
+  margin: 14px 0 4px;
+  position: relative;
+}
+
+.classic-bill-divider-thick::after {
+  content: "";
+  display: block;
+  border-top: 1px solid var(--bill-maroon);
+  margin-top: 3px;
+  opacity: 0.4;
+}
+
+.classic-bill-divider {
+  height: 1px;
+  background: var(--bill-border-light);
+  margin: 12px 0;
+  opacity: 0.7;
+}
+
+/* ── Meta info (2-column grid) ── */
+.classic-bill-meta {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  gap: 0 16px;
+  margin: 14px 0;
+  padding: 10px 12px;
+  background: rgba(201, 150, 12, 0.04);
+  border: 1px solid rgba(201, 150, 12, 0.2);
+}
+
+/* Vertical divider in center of meta grid */
+.classic-bill-meta-divider {
+  width: 1px;
+  background: var(--bill-border-light);
+  align-self: stretch;
+}
+
+.classic-bill-meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.classic-bill-meta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 12.5px;
+}
+
+.classic-bill-meta-label {
+  font-variant: small-caps;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--bill-text-muted);
+  text-transform: uppercase;
+}
+
+.classic-bill-meta-value {
+  font-weight: 700;
+  color: var(--bill-text);
+  font-size: 13px;
+}
+
+/* ── Items Table ── */
+.classic-bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.classic-bill.compact .classic-bill-table {
+  font-size: 13px;
+}
+
+.classic-th {
+  padding: 9px 8px;
+  font-weight: 700;
+  font-size: 10.5px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--bill-maroon);
+  border-bottom: 2px solid var(--bill-maroon);
+  border-top: 1px solid var(--bill-maroon);
+  background: rgba(107, 15, 15, 0.04);
+}
+
+.classic-th-left {
+  text-align: left;
+}
+.classic-th-center {
+  text-align: center;
+}
+.classic-th-right {
+  text-align: right;
+}
+
+.classic-td {
+  padding: 8px 8px;
+  border-bottom: 1px dotted var(--bill-border-light);
+  color: var(--bill-text);
+}
+
+.classic-td-left {
+  text-align: left;
+}
+.classic-td-center {
+  text-align: center;
+}
+.classic-td-right {
+  text-align: right;
+}
+
+.classic-td-amount {
+  font-weight: 700;
+  color: var(--bill-text);
+}
+
+/* No alternating backgrounds — clean rows with dotted separator */
+.classic-tr-even,
+.classic-tr-odd {
+  background: transparent;
+}
+
+.classic-tr-even:hover,
+.classic-tr-odd:hover {
+  background: rgba(201, 150, 12, 0.04);
+}
+
+/* ── Totals ── */
+.classic-bill-totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin: 6px 0 14px;
+}
+
+.classic-totals-block {
+  width: 260px;
+}
+
+.classic-totals-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 4px 6px;
+  color: var(--bill-text-muted);
+}
+
+.classic-totals-grand {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--bill-maroon);
+  padding: 9px 6px 6px;
+  letter-spacing: 0.5px;
+  border-top: 2px solid var(--bill-maroon);
+  border-bottom: 3px double var(--bill-maroon);
+  margin-top: 4px;
+}
+
+.classic-bill.compact .classic-totals-grand {
+  font-size: 15px;
+}
+
+/* ── Payment Scan ── */
+.classic-bill-payment {
+  margin: 18px 0;
+  text-align: center;
+}
+
+.classic-bill-payment-label {
+  font-size: 10px;
+  font-variant: small-caps;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--bill-maroon);
+  margin-bottom: 10px;
+}
+
+.classic-bill-payment-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  border: 1px solid var(--bill-gold);
+  padding: 5px;
+  background: #fff;
+}
+
+/* ── Footer ── */
+.classic-bill-footer {
+  text-align: center;
+  margin-top: 14px;
+  padding-top: 6px;
+}
+
+.classic-bill-footer-ornament {
+  color: var(--bill-gold);
+  font-size: 16px;
+  letter-spacing: 8px;
+  display: block;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+.classic-bill-thanks {
+  font-size: 13px;
+  font-style: italic;
+  font-weight: 600;
+  color: var(--bill-gold);
+  letter-spacing: 0.5px;
+}
+
+.classic-bill-tagline {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--bill-text-muted);
+  margin-top: 5px;
+}
+
+.classic-bill-footer-ornament-bottom {
+  color: var(--bill-gold);
+  font-size: 13px;
+  letter-spacing: 6px;
+  display: block;
+  margin-top: 6px;
+  opacity: 0.6;
+}
+
+/* ============================================================
+   THERMAL BILL STYLES (screen preview)
+   ============================================================ */
+.thermal-bill-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: #f5f5f5;
+  min-height: calc(100vh - 80px);
+}
+
+.thermal-bill {
+  width: 80mm;
+  max-width: 100%;
+  background: #fff;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 12px;
+  color: #000;
+  padding: 12px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.thermal-header {
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.thermal-restaurant-name {
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.thermal-address {
+  font-size: 10px;
+  margin-bottom: 4px;
+}
+
+.thermal-separator {
+  margin: 4px 0;
+  font-size: 10px;
+  letter-spacing: 0;
+  white-space: pre;
+  overflow: hidden;
+}
+
+.thermal-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  margin: 4px 0;
+}
+
+.thermal-items {
+  margin-bottom: 4px;
+}
+
+.thermal-item-header,
+.thermal-item-row {
+  display: flex;
+  font-size: 11px;
+}
+
+.thermal-item-header {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.thermal-col-item {
+  flex: 1;
+  text-align: left;
+  padding-right: 4px;
+  word-break: break-word;
+}
+
+.thermal-col-qty {
+  width: 30px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.thermal-col-price {
+  width: 70px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.thermal-totals {
+  margin: 4px 0;
+}
+
+.thermal-totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin: 2px 0;
+}
+
+.thermal-grand-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: bold;
+  margin: 4px 0;
+}
+
+.thermal-payment-scan {
+  text-align: center;
+  margin: 8px 0;
+}
+
+.thermal-payment-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.thermal-footer {
+  text-align: center;
+  font-size: 10px;
+  margin-top: 8px;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   VINTAGE BILL STYLES — Monospaced Thermal Receipt
+   ============================================================ */
+
+.vintage-bill-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: #d0c9b8;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.03) 0px,
+    rgba(0, 0, 0, 0.03) 1px,
+    transparent 1px,
+    transparent 4px
+  );
+  min-height: calc(100vh - 80px);
+}
+
+.vintage-bill {
+  width: 340px;
+  max-width: 100%;
+  background: #fffff0;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  color: #1a1a1a;
+  padding: 18px 16px;
+  box-shadow: 2px 2px 0 #bbb, 4px 4px 0 #ccc;
+  border: 1px solid #c8c090;
+  /* Aged paper effect */
+  background-image: radial-gradient(
+      ellipse at 5% 5%,
+      rgba(180, 150, 80, 0.08) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      ellipse at 95% 95%,
+      rgba(180, 150, 80, 0.06) 0%,
+      transparent 60%
+    );
+}
+
+.vintage-line {
+  white-space: pre;
+  line-height: 1.6;
+  overflow: hidden;
+}
+
+.vintage-center {
+  text-align: center;
+  line-height: 1.7;
+  white-space: pre;
+}
+
+.vintage-title {
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.vintage-subtitle {
+  font-size: 11px;
+  color: #555;
+}
+
+.vintage-bold {
+  font-weight: bold;
+}
+
+.vintage-total {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.vintage-thanks {
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   Print Styles
+   ============================================================ */
 @media print {
-  /* Hide all non-print elements */
+  /* Hide screen-only controls */
   .no-print {
     display: none !important;
   }
@@ -97,7 +668,7 @@
     display: block !important;
   }
 
-  /* Reset page styles for printing */
+  /* Page reset */
   body {
     background: white !important;
     color: black !important;
@@ -105,19 +676,151 @@
     padding: 0;
   }
 
-  /* Ensure content fits on page */
-  @page {
-    margin: 1cm;
-    size: A4;
-  }
-
-  /* Remove shadows and backgrounds for print */
   * {
     box-shadow: none !important;
     text-shadow: none !important;
   }
 
-  /* Optimize table printing */
+  /* ── Classic / Compact print ── */
+  .classic-bill-wrapper {
+    display: block !important;
+    padding: 0 !important;
+    background: none !important;
+    margin: 0 !important;
+  }
+
+  .classic-bill {
+    --bill-maroon: #6b0f0f;
+    --bill-gold: #c9960c;
+    --bill-text: #1c1006;
+    --bill-text-secondary: #4a2c00;
+    --bill-text-muted: #6b4c2a;
+    --bill-border-light: #d4b896;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 1px solid #b8a07a !important;
+    box-shadow: none !important;
+    padding: 24px 32px !important;
+    font-family: "Georgia", "Times New Roman", serif !important;
+    color: #1c1006 !important;
+    margin: 0 !important;
+    background: #fdf8f0 !important;
+  }
+
+  .classic-bill::before {
+    display: none !important;
+  }
+
+  .classic-bill-name-frame {
+    border: 2px solid #6b0f0f !important;
+    outline: 1px solid #6b0f0f !important;
+    outline-offset: 4px !important;
+  }
+
+  .classic-bill-restaurant {
+    font-size: 20pt !important;
+    color: #6b0f0f !important;
+    letter-spacing: 3px !important;
+  }
+
+  .classic-bill-address {
+    font-size: 10pt !important;
+    color: #4a2c00 !important;
+  }
+
+  .classic-bill-tagline-subtitle {
+    font-size: 9pt !important;
+    color: #6b4c2a !important;
+  }
+
+  .classic-bill-header-rule-top,
+  .classic-bill-header-rule-bottom {
+    background: #c9960c !important;
+    height: 1px !important;
+    opacity: 0.8 !important;
+  }
+
+  .classic-bill-divider-thick {
+    border-top: 2px solid #6b0f0f !important;
+  }
+
+  .classic-bill-divider-thick::after {
+    border-top: 1px solid #6b0f0f !important;
+  }
+
+  .classic-bill-meta {
+    background: rgba(201, 150, 12, 0.05) !important;
+    border: 1px solid rgba(201, 150, 12, 0.25) !important;
+  }
+
+  .classic-bill-meta-label {
+    color: #6b4c2a !important;
+  }
+
+  .classic-bill-meta-value {
+    color: #1c1006 !important;
+  }
+
+  .classic-bill-table {
+    font-size: 11pt !important;
+    width: 100% !important;
+  }
+
+  .classic-th {
+    font-size: 8.5pt !important;
+    color: #6b0f0f !important;
+    border-bottom: 2px solid #6b0f0f !important;
+    border-top: 1px solid #6b0f0f !important;
+    background: rgba(107, 15, 15, 0.04) !important;
+  }
+
+  .classic-td {
+    font-size: 11pt !important;
+    border-bottom: 1px dotted #d4b896 !important;
+  }
+
+  .classic-tr-even,
+  .classic-tr-odd {
+    background: transparent !important;
+  }
+
+  .classic-totals-block {
+    width: 260px !important;
+  }
+
+  .classic-totals-row {
+    font-size: 10.5pt !important;
+    color: #6b4c2a !important;
+  }
+
+  .classic-totals-grand {
+    font-size: 14pt !important;
+    color: #6b0f0f !important;
+    border-top: 2px solid #6b0f0f !important;
+    border-bottom: 3px double #6b0f0f !important;
+  }
+
+  .classic-bill-payment-image {
+    border: 1px solid #c9960c !important;
+    max-width: 200px !important;
+    max-height: 200px !important;
+  }
+
+  .classic-bill-footer-ornament,
+  .classic-bill-footer-ornament-bottom {
+    color: #c9960c !important;
+  }
+
+  .classic-bill-thanks {
+    font-size: 11pt !important;
+    color: #c9960c !important;
+  }
+
+  .classic-bill-tagline {
+    font-size: 9pt !important;
+    color: #6b4c2a !important;
+  }
+
   table {
     page-break-inside: avoid;
   }
@@ -126,26 +829,44 @@
     page-break-inside: avoid;
   }
 
-  /* Ensure readable text */
-  body,
-  p,
-  td,
-  th {
-    font-size: 12pt;
-    line-height: 1.4;
+  @page {
+    size: A4;
+    margin: 1.5cm;
   }
 
-  h1 {
-    font-size: 24pt;
+  /* ── Vintage print ── */
+  .vintage-bill-wrapper {
+    display: block;
+    padding: 0;
+    background: none;
   }
 
-  h2 {
-    font-size: 18pt;
+  .vintage-bill {
+    width: 80mm;
+    margin: 0 auto;
+    box-shadow: none;
+    border: none;
+    background: #fff !important;
+    background-image: none !important;
+    padding: 0;
   }
 
-  /* Remove unnecessary spacing */
-  .container {
-    max-width: 100% !important;
-    padding: 0 !important;
+  @page {
+    size: 80mm auto;
+    margin: 0.5cm;
+  }
+
+  /* ── Thermal print ── */
+  .thermal-bill-wrapper {
+    display: block;
+    padding: 0;
+    background: none;
+  }
+
+  .thermal-bill {
+    width: 80mm;
+    margin: 0 auto;
+    box-shadow: none;
+    padding: 0;
   }
 }

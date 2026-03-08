@@ -19,19 +19,16 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useBranchAuth } from "@/hooks/useBranchAuth";
-import { useSaveDailyTotal } from "@/hooks/useQueries";
 import { confirmDelete } from "@/utils/confirmDelete";
-import { Calculator, Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
+import { Plus, Printer, RotateCcw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import {
   appendLedgerEntry,
   getDayKey,
   updateDailySummary,
 } from "../balanceSheet/ledgerUtils";
-import { aggregateItemQuantities } from "../balanceSheet/ledgerUtils";
 import { loadBillFormatDefaults } from "../optimizeBill/optimizeBillStorage";
 import { PredefinedItemCatalog } from "./PredefinedItemCatalog";
-import { PrintBill } from "./PrintBill";
 import { generateBillCode } from "./billCode";
 import { type CatalogItem, PREDEFINED_CATALOG } from "./catalog";
 import { formatCurrency } from "./format";
@@ -47,7 +44,6 @@ import {
 
 function TotalAmountCalculatorPage() {
   const { branchUser } = useBranchAuth();
-  const saveDailyTotalMutation = useSaveDailyTotal(branchUser || "");
 
   const [state, setState] = useState<CalculatorState>({
     lineItems: [
@@ -163,7 +159,7 @@ function TotalAmountCalculatorPage() {
     });
   };
 
-  const handlePrintBill = async () => {
+  const handlePrintBill = () => {
     if (!branchUser) {
       alert("Please log in to print bills.");
       return;
@@ -201,33 +197,9 @@ function TotalAmountCalculatorPage() {
       const todayKey = getDayKey();
       updateDailySummary(todayKey, breakdown.finalTotal, branchUser);
 
-      // Save to backend (non-blocking) with branch parameter
-      try {
-        // Compute per-item quantities from line items
-        const itemQuantities = aggregateItemQuantities([
-          { lineItems: state.lineItems },
-        ]);
-        const productQuantities: Array<[string, bigint]> = Object.entries(
-          itemQuantities,
-        ).map(([label, qty]) => [label, BigInt(qty)]);
-
-        // Convert total revenue to bigint (multiply by 100 to preserve 2 decimal places)
-        const totalRevenueBigInt = BigInt(
-          Math.round(breakdown.finalTotal * 100),
-        );
-
-        await saveDailyTotalMutation.mutateAsync({
-          date: todayKey,
-          totalRevenue: totalRevenueBigInt,
-          productQuantities,
-        });
-      } catch (backendError) {
-        // Log error but don't interrupt the print flow
-        console.error("Failed to save daily total to backend:", backendError);
-      }
-
-      // Trigger browser print dialog
-      window.print();
+      // Navigate to print view page with the saved bill ID
+      const printUrl = `/?print=true&id=${billId}&branch=${encodeURIComponent(branchUser)}`;
+      window.open(printUrl, "_blank");
     } catch (error) {
       console.error("Error printing bill:", error);
       alert("Failed to save bill. Please try again.");
@@ -520,17 +492,6 @@ function TotalAmountCalculatorPage() {
             </div>
           </div>
         </div>
-      </div>
-
-      {/* Print-only Component - Hidden on screen, visible during print */}
-      <div className="print-only">
-        <PrintBill
-          lineItems={state.lineItems}
-          breakdown={breakdown}
-          taxRate={state.taxRate}
-          discountType={state.discountType}
-          discountValue={state.discountValue}
-        />
       </div>
     </div>
   );

@@ -23,17 +23,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useBranchAuth } from "@/hooks/useBranchAuth";
-import { useClearAllDailyTotals } from "@/hooks/useQueries";
 import { confirmClearAll } from "@/utils/confirmDelete";
-import {
-  AlertCircle,
-  Calendar,
-  CheckCircle2,
-  Package,
-  Trash2,
-} from "lucide-react";
+import { Calendar, CheckCircle2, Package, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { formatCurrency } from "../calculator/format";
+import { clearAllBills } from "../calculator/savedBills";
 import { useDailyTotal } from "./hooks/useDailyTotal";
 import { clearDailyTotalsCache, formatDayKey } from "./ledgerUtils";
 
@@ -46,44 +40,32 @@ export function BalanceSheetView() {
     itemQuantities,
     isLoading,
   } = useDailyTotal();
-  const clearAllMutation = useClearAllDailyTotals();
   const { branchUser } = useBranchAuth();
   const [clearStatus, setClearStatus] = useState<"idle" | "success" | "error">(
     "idle",
   );
+  const [isClearing, setIsClearing] = useState(false);
 
-  const handleClearAll = async () => {
-    if (!confirmClearAll()) {
-      return;
-    }
+  const handleClearAll = () => {
+    if (!confirmClearAll()) return;
 
+    setIsClearing(true);
     setClearStatus("idle");
 
     try {
-      await clearAllMutation.mutateAsync();
-
-      // Clear localStorage fallback caches for the current branch
       if (branchUser) {
         clearDailyTotalsCache(branchUser);
+        clearAllBills(branchUser);
       }
-
-      // Reset selected day
       setSelectedDay(null);
-
       setClearStatus("success");
-
-      // Auto-hide success message after 3 seconds
-      setTimeout(() => {
-        setClearStatus("idle");
-      }, 3000);
-    } catch (error: any) {
+      setTimeout(() => setClearStatus("idle"), 3000);
+    } catch (error) {
       console.error("Error clearing daily totals:", error);
       setClearStatus("error");
-
-      // Auto-hide error message after 5 seconds
-      setTimeout(() => {
-        setClearStatus("idle");
-      }, 5000);
+      setTimeout(() => setClearStatus("idle"), 5000);
+    } finally {
+      setIsClearing(false);
     }
   };
 
@@ -112,10 +94,10 @@ export function BalanceSheetView() {
             <Button
               variant="destructive"
               onClick={handleClearAll}
-              disabled={clearAllMutation.isPending}
+              disabled={isClearing}
               className="w-full sm:w-auto"
             >
-              {clearAllMutation.isPending ? (
+              {isClearing ? (
                 <>
                   <span className="animate-spin mr-2">⏳</span>
                   Clearing...
@@ -139,12 +121,8 @@ export function BalanceSheetView() {
 
             {clearStatus === "error" && (
               <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Failed to clear daily totals.{" "}
-                  {clearAllMutation.error instanceof Error
-                    ? clearAllMutation.error.message
-                    : "You may not have permission to perform this action."}
+                  Failed to clear daily totals. Please try again.
                 </AlertDescription>
               </Alert>
             )}

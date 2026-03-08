@@ -2,7 +2,7 @@
 import "./utils/iiProviderShim";
 
 import { Calculator, Settings, TrendingUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AppErrorBoundary } from "./components/AppErrorBoundary";
 import { GuidanceNoticeBar } from "./components/GuidanceNoticeBar";
 import { AuthGatePage } from "./components/auth/AuthGatePage";
@@ -21,7 +21,10 @@ import { useStartupFailureHandlers } from "./hooks/useStartupFailureHandlers";
 type ViewMode = "calculator" | "dailyTotals" | "optimizeBill";
 
 function AppContent() {
-  const [isPrintView, setIsPrintView] = useState(false);
+  // Check for print view immediately (synchronously) so it renders before auth gate
+  const isPrintView =
+    new URLSearchParams(window.location.search).get("print") === "true";
+
   const [viewMode, setViewMode] = useState<ViewMode>("calculator");
   useInternetIdentity();
   const { isAuthenticated: branchAuthenticated } = useBranchAuth();
@@ -32,13 +35,7 @@ function AppContent() {
   // Sync bill print location from backend when authenticated
   useSyncBillPrintLocation();
 
-  useEffect(() => {
-    // Check if this is a print view request
-    const params = new URLSearchParams(window.location.search);
-    setIsPrintView(params.get("print") === "true");
-  }, []);
-
-  // Render print view without header/footer/guidance
+  // Render print view without header/footer/guidance — no auth required
   if (isPrintView) {
     return <PrintViewPage />;
   }

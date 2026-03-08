@@ -33,6 +33,12 @@ export function OptimizeBillPage() {
   const [printLocationAddress, setPrintLocationAddress] = useState<string>(
     defaults.printLocationAddress || "",
   );
+  const [tableNumber, setTableNumber] = useState<string>(
+    defaults.tableNumber || "",
+  );
+  const [serverName, setServerName] = useState<string>(
+    defaults.serverName || "",
+  );
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -46,6 +52,8 @@ export function OptimizeBillPage() {
   useEffect(() => {
     setReceiptStyle(defaults.receiptStyle);
     setPaymentScanDataUrl(defaults.paymentScanDataUrl);
+    setTableNumber(defaults.tableNumber || "");
+    setServerName(defaults.serverName || "");
 
     // For fixed branches, always use the fixed address
     if (fixedAddress) {
@@ -92,6 +100,8 @@ export function OptimizeBillPage() {
         receiptStyle,
         paymentScanDataUrl,
         printLocationAddress: printLocationAddress.trim() || undefined,
+        tableNumber: tableNumber.trim() || undefined,
+        serverName: serverName.trim() || undefined,
       });
 
       setSaveSuccess(true);
@@ -129,7 +139,7 @@ export function OptimizeBillPage() {
                 setReceiptStyle(value as ReceiptStyleId)
               }
             >
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-4">
                 {RECEIPT_STYLES.map((style) => (
                   <TabsTrigger key={style.id} value={style.id}>
                     {style.name}
@@ -245,6 +255,43 @@ export function OptimizeBillPage() {
                   This address is automatically set for the {branchUser} branch
                 </p>
               )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Table & Server Info (for Vintage style) */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Table &amp; Server Info</CardTitle>
+            <CardDescription>
+              Used in the Vintage receipt style to show table number and server
+              name on the bill
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="table-number">Table Number</Label>
+                <Input
+                  id="table-number"
+                  type="text"
+                  placeholder="e.g. 5"
+                  value={tableNumber}
+                  onChange={(e) => setTableNumber(e.target.value)}
+                  data-ocid="optimize_bill.table_number.input"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="server-name">Server Name</Label>
+                <Input
+                  id="server-name"
+                  type="text"
+                  placeholder="e.g. Priya"
+                  value={serverName}
+                  onChange={(e) => setServerName(e.target.value)}
+                  data-ocid="optimize_bill.server_name.input"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

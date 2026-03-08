@@ -5,6 +5,8 @@ export interface BillFormatSnapshot {
   receiptStyle: ReceiptStyleId;
   paymentScanDataUrl?: string;
   printLocationAddress?: string;
+  tableNumber?: string;
+  serverName?: string;
 }
 
 export interface SavedBillRecord {
